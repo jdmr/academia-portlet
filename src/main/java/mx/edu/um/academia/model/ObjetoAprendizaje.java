@@ -25,32 +25,33 @@ package mx.edu.um.academia.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import javax.persistence.*;
-import mx.edu.um.academia.utils.Constantes;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
  * @author J. David Mendoza <jdmendoza@um.edu.mx>
  */
 @Entity
-@Table(name="aca_contenidos")
-public class Contenido implements Serializable {
+@Table(name = "aca_objetos")
+public class ObjetoAprendizaje implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Version
     private Integer version;
-    @Column(length=32, nullable = false)
+    @Column(nullable = false, length = 32)
     private String codigo;
-    @Column(length=128, nullable = false)
+    @Column(nullable = false, length = 128)
     private String nombre;
-    @Column(nullable = false)
-    private Long contenidoId;
-    @Column(length = 32, nullable = false)
-    private String tipo = Constantes.TEXTO;
+    @Column(nullable = false, length = 2000)
+    private String descripcion;
     @Column(name = "comunidad_id", nullable = false)
     private Long comunidadId;
+    @ManyToMany
+    @OrderColumn(name = "orden")
+    private List<Contenido> contenido;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "fecha_creacion", nullable = false)
     private Date fechaCreacion;
@@ -59,18 +60,17 @@ public class Contenido implements Serializable {
     private Date fechaModificacion;
     @Column(nullable = false, length = 32)
     private String creador;
-    @Transient
-    private MultipartFile archivo;
-    
-    public Contenido() {
+
+    public ObjetoAprendizaje() {
     }
 
-    public Contenido(String codigo, String nombre, Long contenidoId) {
+    public ObjetoAprendizaje(String codigo, String nombre, String descripcion, Long comunidadId) {
         this.codigo = codigo;
         this.nombre = nombre;
-        this.contenidoId = contenidoId;
+        this.descripcion = descripcion;
+        this.comunidadId = comunidadId;
     }
-
+    
     /**
      * @return the id
      */
@@ -128,31 +128,17 @@ public class Contenido implements Serializable {
     }
 
     /**
-     * @return the contenidoId
+     * @return the descripcion
      */
-    public Long getContenidoId() {
-        return contenidoId;
+    public String getDescripcion() {
+        return descripcion;
     }
 
     /**
-     * @param contenidoId the contenidoId to set
+     * @param descripcion the descripcion to set
      */
-    public void setContenidoId(Long contenidoId) {
-        this.contenidoId = contenidoId;
-    }
-
-    /**
-     * @return the tipo
-     */
-    public String getTipo() {
-        return tipo;
-    }
-
-    /**
-     * @param tipo the tipo to set
-     */
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
 
     /**
@@ -167,6 +153,20 @@ public class Contenido implements Serializable {
      */
     public void setComunidadId(Long comunidadId) {
         this.comunidadId = comunidadId;
+    }
+
+    /**
+     * @return the contenido
+     */
+    public List<Contenido> getContenido() {
+        return contenido;
+    }
+
+    /**
+     * @param contenido the contenido to set
+     */
+    public void setContenido(List<Contenido> contenido) {
+        this.contenido = contenido;
     }
 
     /**
@@ -209,20 +209,6 @@ public class Contenido implements Serializable {
      */
     public void setCreador(String creador) {
         this.creador = creador;
-    }
-
-    /**
-     * @return the archivo
-     */
-    public MultipartFile getArchivo() {
-        return archivo;
-    }
-
-    /**
-     * @param archivo the archivo to set
-     */
-    public void setArchivo(MultipartFile archivo) {
-        this.archivo = archivo;
     }
 
 }

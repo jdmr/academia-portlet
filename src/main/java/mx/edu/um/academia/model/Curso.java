@@ -25,6 +25,7 @@ package mx.edu.um.academia.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import javax.persistence.*;
 
 /**
@@ -50,9 +51,13 @@ public class Curso implements Serializable {
     @Column(name = "fecha_creacion", nullable = false)
     private Date fechaCreacion;
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "fecha_modificacion", nullable = false)
     private Date fechaModificacion;
     @Column(nullable = false, length = 32)
     private String creador;
+    @ManyToMany
+    @OrderColumn(name = "orden")
+    private List<ObjetoAprendizaje> objetos;
     private Long intro;
 
     public Curso() {

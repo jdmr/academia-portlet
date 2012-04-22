@@ -24,13 +24,9 @@
 package mx.edu.um.academia.dao.impl;
 
 import com.liferay.portal.model.User;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import mx.edu.um.academia.dao.CursoDao;
-import mx.edu.um.academia.model.Curso;
+import java.util.*;
+import mx.edu.um.academia.dao.ContenidoDao;
+import mx.edu.um.academia.model.Contenido;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -47,23 +43,60 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Repository
 @Transactional
-public class CursoDaoHibernate implements CursoDao {
-
-    private static final Logger log = LoggerFactory.getLogger(CursoDaoHibernate.class);
+public class ContenidoDaoHibernate implements ContenidoDao {
+    
+    private static final Logger log = LoggerFactory.getLogger(ContenidoDaoHibernate.class);
     @Autowired
     private SessionFactory sessionFactory;
 
-    public CursoDaoHibernate() {
-        log.info("Nueva instancia del dao de cursos");
+    public ContenidoDaoHibernate() {
+        log.info("Nueva instancia de ContenidoDaoHibernate");
     }
-
+    
     private Session currentSession() {
         return sessionFactory.getCurrentSession();
     }
 
     @Override
+    public Contenido actualiza(Contenido contenido, User creador) {
+        log.debug("Actualizando contenido {} por usuario {}", contenido, creador);
+        contenido.setFechaModificacion(new Date());
+        if (creador != null) {
+            contenido.setCreador(creador.getScreenName());
+        } else {
+            contenido.setCreador("admin");
+        }
+        currentSession().update(contenido);
+        return contenido;
+    }
+
+    @Override
+    public Contenido crea(Contenido contenido, User creador) {
+        log.debug("Creando Contenido {} por usuario", contenido, creador);
+        Date fecha = new Date();
+        contenido.setFechaCreacion(fecha);
+        contenido.setFechaModificacion(fecha);
+        if (creador != null) {
+            contenido.setCreador(creador.getScreenName());
+        } else {
+            contenido.setCreador("admin");
+        }
+        currentSession().save(contenido);
+        return contenido;
+    }
+
+    @Override
+    public String elimina(Long contenidoId, User creador) {
+        log.debug("Eliminando contenido {} por usuario {}", contenidoId, creador);
+        Contenido contenido = (Contenido) currentSession().get(Contenido.class, contenidoId);
+        String nombre = contenido.getNombre();
+        currentSession().delete(contenido);
+        return nombre;
+    }
+
+    @Override
     public Map<String, Object> lista(Map<String, Object> params) {
-        log.debug("Buscando lista de cursos con params {}", params);
+        log.debug("Buscando lista de contenidos con params {}", params);
         if (params == null) {
             params = new HashMap<>();
         }
@@ -83,8 +116,8 @@ public class CursoDaoHibernate implements CursoDao {
             offset = (Integer) params.get("offset");
         }
 
-        Criteria criteria = currentSession().createCriteria(Curso.class);
-        Criteria countCriteria = currentSession().createCriteria(Curso.class);
+        Criteria criteria = currentSession().createCriteria(Contenido.class);
+        Criteria countCriteria = currentSession().createCriteria(Contenido.class);
 
         if (params.containsKey("comunidades")) {
             criteria.add(Restrictions.in("comunidadId", (Set<Integer>) params.get("comunidades")));
@@ -112,7 +145,7 @@ public class CursoDaoHibernate implements CursoDao {
 
         criteria.setFirstResult(offset);
         criteria.setMaxResults(max);
-        params.put("cursos", criteria.list());
+        params.put("contenidos", criteria.list());
 
         countCriteria.setProjection(Projections.rowCount());
         List cantidades = countCriteria.list();
@@ -126,45 +159,9 @@ public class CursoDaoHibernate implements CursoDao {
     }
 
     @Override
-    public Curso obtiene(Long cursoId) {
-        log.debug("Obteniendo curso {}", cursoId);
-        return (Curso) currentSession().get(Curso.class, cursoId);
+    public Contenido obtiene(Long contenidoId) {
+        log.debug("Obteniendo contenido {}", contenidoId);
+        return (Contenido) currentSession().get(Contenido.class, contenidoId);
     }
-
-    @Override
-    public Curso crea(Curso curso, User creador) {
-        log.debug("Creando curso {} por usuario", curso, creador);
-        Date fecha = new Date();
-        curso.setFechaCreacion(fecha);
-        curso.setFechaModificacion(fecha);
-        if (creador != null) {
-            curso.setCreador(creador.getScreenName());
-        } else {
-            curso.setCreador("admin");
-        }
-        currentSession().save(curso);
-        return curso;
-    }
-
-    @Override
-    public Curso actualiza(Curso curso, User creador) {
-        log.debug("Actualizando curso {} por usuario {}", curso, creador);
-        curso.setFechaModificacion(new Date());
-        if (creador != null) {
-            curso.setCreador(creador.getScreenName());
-        } else {
-            curso.setCreador("admin");
-        }
-        currentSession().update(curso);
-        return curso;
-    }
-
-    @Override
-    public String elimina(Long cursoId, User creador) {
-        log.debug("Eliminando curso {} por usuario {}", cursoId, creador);
-        Curso curso = (Curso) currentSession().get(Curso.class, cursoId);
-        String nombre = curso.getNombre();
-        currentSession().delete(curso);
-        return nombre;
-    }
+    
 }

@@ -24,13 +24,9 @@
 package mx.edu.um.academia.dao.impl;
 
 import com.liferay.portal.model.User;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import mx.edu.um.academia.dao.CursoDao;
-import mx.edu.um.academia.model.Curso;
+import java.util.*;
+import mx.edu.um.academia.dao.ObjetoAprendizajeDao;
+import mx.edu.um.academia.model.ObjetoAprendizaje;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -47,23 +43,60 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Repository
 @Transactional
-public class CursoDaoHibernate implements CursoDao {
-
-    private static final Logger log = LoggerFactory.getLogger(CursoDaoHibernate.class);
+public class ObjetoAprendizajeDaoHibernate implements ObjetoAprendizajeDao {
+    
+    private static final Logger log = LoggerFactory.getLogger(ObjetoAprendizajeDaoHibernate.class);
     @Autowired
     private SessionFactory sessionFactory;
 
-    public CursoDaoHibernate() {
-        log.info("Nueva instancia del dao de cursos");
+    public ObjetoAprendizajeDaoHibernate() {
+        log.info("Nueva instancia de ObjetoAprendizajeDaoHibernate");
     }
-
+    
     private Session currentSession() {
         return sessionFactory.getCurrentSession();
     }
 
     @Override
+    public ObjetoAprendizaje actualiza(ObjetoAprendizaje objetoAprendizaje, User creador) {
+        log.debug("Actualizando objetoAprendizaje {} por usuario {}", objetoAprendizaje, creador);
+        objetoAprendizaje.setFechaModificacion(new Date());
+        if (creador != null) {
+            objetoAprendizaje.setCreador(creador.getScreenName());
+        } else {
+            objetoAprendizaje.setCreador("admin");
+        }
+        currentSession().update(objetoAprendizaje);
+        return objetoAprendizaje;
+    }
+
+    @Override
+    public ObjetoAprendizaje crea(ObjetoAprendizaje objetoAprendizaje, User creador) {
+        log.debug("Creando ObjetoAprendizaje {} por usuario", objetoAprendizaje, creador);
+        Date fecha = new Date();
+        objetoAprendizaje.setFechaCreacion(fecha);
+        objetoAprendizaje.setFechaModificacion(fecha);
+        if (creador != null) {
+            objetoAprendizaje.setCreador(creador.getScreenName());
+        } else {
+            objetoAprendizaje.setCreador("admin");
+        }
+        currentSession().save(objetoAprendizaje);
+        return objetoAprendizaje;
+    }
+
+    @Override
+    public String elimina(Long objetoAprendizajeId, User creador) {
+        log.debug("Eliminando objetoAprendizaje {} por usuario {}", objetoAprendizajeId, creador);
+        ObjetoAprendizaje objetoAprendizaje = (ObjetoAprendizaje) currentSession().get(ObjetoAprendizaje.class, objetoAprendizajeId);
+        String nombre = objetoAprendizaje.getNombre();
+        currentSession().delete(objetoAprendizaje);
+        return nombre;
+    }
+
+    @Override
     public Map<String, Object> lista(Map<String, Object> params) {
-        log.debug("Buscando lista de cursos con params {}", params);
+        log.debug("Buscando lista de objetoAprendizajes con params {}", params);
         if (params == null) {
             params = new HashMap<>();
         }
@@ -83,8 +116,8 @@ public class CursoDaoHibernate implements CursoDao {
             offset = (Integer) params.get("offset");
         }
 
-        Criteria criteria = currentSession().createCriteria(Curso.class);
-        Criteria countCriteria = currentSession().createCriteria(Curso.class);
+        Criteria criteria = currentSession().createCriteria(ObjetoAprendizaje.class);
+        Criteria countCriteria = currentSession().createCriteria(ObjetoAprendizaje.class);
 
         if (params.containsKey("comunidades")) {
             criteria.add(Restrictions.in("comunidadId", (Set<Integer>) params.get("comunidades")));
@@ -112,7 +145,7 @@ public class CursoDaoHibernate implements CursoDao {
 
         criteria.setFirstResult(offset);
         criteria.setMaxResults(max);
-        params.put("cursos", criteria.list());
+        params.put("objetoAprendizajes", criteria.list());
 
         countCriteria.setProjection(Projections.rowCount());
         List cantidades = countCriteria.list();
@@ -126,45 +159,9 @@ public class CursoDaoHibernate implements CursoDao {
     }
 
     @Override
-    public Curso obtiene(Long cursoId) {
-        log.debug("Obteniendo curso {}", cursoId);
-        return (Curso) currentSession().get(Curso.class, cursoId);
+    public ObjetoAprendizaje obtiene(Long objetoAprendizajeId) {
+        log.debug("Obteniendo objetoAprendizaje {}", objetoAprendizajeId);
+        return (ObjetoAprendizaje) currentSession().get(ObjetoAprendizaje.class, objetoAprendizajeId);
     }
-
-    @Override
-    public Curso crea(Curso curso, User creador) {
-        log.debug("Creando curso {} por usuario", curso, creador);
-        Date fecha = new Date();
-        curso.setFechaCreacion(fecha);
-        curso.setFechaModificacion(fecha);
-        if (creador != null) {
-            curso.setCreador(creador.getScreenName());
-        } else {
-            curso.setCreador("admin");
-        }
-        currentSession().save(curso);
-        return curso;
-    }
-
-    @Override
-    public Curso actualiza(Curso curso, User creador) {
-        log.debug("Actualizando curso {} por usuario {}", curso, creador);
-        curso.setFechaModificacion(new Date());
-        if (creador != null) {
-            curso.setCreador(creador.getScreenName());
-        } else {
-            curso.setCreador("admin");
-        }
-        currentSession().update(curso);
-        return curso;
-    }
-
-    @Override
-    public String elimina(Long cursoId, User creador) {
-        log.debug("Eliminando curso {} por usuario {}", cursoId, creador);
-        Curso curso = (Curso) currentSession().get(Curso.class, cursoId);
-        String nombre = curso.getNombre();
-        currentSession().delete(curso);
-        return nombre;
-    }
+    
 }
