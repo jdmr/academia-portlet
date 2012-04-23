@@ -5,9 +5,9 @@
 
 <div class="well">
     <form name="<portlet:namespace />filtrarContenido" method="post" action="${actionUrl}" class="form-search" >
-        <a class="btn btn-primary" href='<portlet:renderURL windowState="<%= WindowState.MAXIMIZED.toString() %>" ><portlet:param name="action" value="nuevo"/></portlet:renderURL>'><i class="icon-file icon-white"></i> <liferay-ui:message key="contenido.nuevo" /></a>
+        <a class="btn btn-primary" href='<portlet:renderURL windowState="<%= WindowState.MAXIMIZED.toString() %>" ><portlet:param name="action" value="nuevo"/></portlet:renderURL>'><i class="icon-file icon-white"></i> <s:message code="contenido.nuevo" /></a>
         <input name="<portlet:namespace />filtro" type="text" class="input-medium search-query" value="${param.filtro}">
-        <button type="submit" class="btn" name="<portlet:namespace />_busca"><i class="icon-search"></i><liferay-ui:message key="contenido.buscar" /></button>
+        <button type="submit" class="btn" name="<portlet:namespace />_busca"><i class="icon-search"></i><s:message code="buscar" /></button>
     </form>
 </div>
 <c:if test="${contenidos != null}">
@@ -15,9 +15,11 @@
         <thead>
             <tr>
 
-                <th><liferay-ui:message key="contenido.codigo" /></th>
+                <th><s:message code="codigo" /></th>
 
-                <th><liferay-ui:message key="contenido.nombre" /></th>
+                <th><s:message code="nombre" /></th>
+                
+                <th><s:message code="contenido.tipo" /></th>
 
             </tr>
         </thead>
@@ -32,6 +34,8 @@
                     <td><a href="${verContenido}">${contenido.codigo}</a></td>
 
                     <td>${contenido.nombre}</td>
+
+                    <td><s:message code="${contenido.tipo}" /></td>
 
                 </tr>
             </c:forEach>
@@ -49,20 +53,20 @@
         <portlet:param name="direccion" value="1" />
     </portlet:renderURL>
 
-    <div class="paginateButtons">
+    <div>
         <c:if test="${offset > 0}">
-            <a href="${anterior}"><i class="icon-chevron-left"></i> <liferay-ui:message key="contenido.anterior" /></a>
+            <a href="${anterior}"><i class="icon-chevron-left"></i> <s:message code="anterior" /></a>
         </c:if>
         <c:if test="${cantidad > max}">
-            <a href="${siguiente}"><liferay-ui:message key="contenido.siguiente" /> <i class="icon-chevron-right"></i></a>
+            <a href="${siguiente}"><s:message code="siguiente" /> <i class="icon-chevron-right"></i></a>
         </c:if>
     </div>
 </c:if>
 <div>
     
 </div>
-<c:if test="${cursos != null}">
+<c:if test="${contenidos != null}">
     <script type="text/javascript">
-        highlightTableRows("<portlet:namespace />cursos")
+        highlightTableRows("<portlet:namespace />contenidos")
     </script>
 </c:if>

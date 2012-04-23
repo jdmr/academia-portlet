@@ -64,6 +64,7 @@ public class ContenidoDaoHibernate implements ContenidoDao {
         contenido.setVersion(otro.getVersion());
         contenido.setCodigo(otro.getCodigo());
         contenido.setNombre(otro.getNombre());
+        contenido.setTipo(otro.getTipo());
         contenido.setComunidadId(otro.getComunidadId());
         contenido.setFechaModificacion(new Date());
         if (creador != null) {

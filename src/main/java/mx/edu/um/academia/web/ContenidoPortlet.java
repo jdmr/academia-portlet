@@ -27,8 +27,11 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.model.User;
 import com.liferay.portal.util.PortalUtil;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -37,8 +40,10 @@ import javax.validation.Valid;
 import mx.edu.um.academia.dao.ContenidoDao;
 import mx.edu.um.academia.model.Contenido;
 import mx.edu.um.academia.utils.ComunidadUtil;
+import mx.edu.um.academia.utils.Constantes;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -55,6 +60,8 @@ public class ContenidoPortlet extends BaseController {
 
     @Autowired
     private ContenidoDao contenidoDao;
+    @Autowired
+    private ResourceBundleMessageSource messages;
 
     public ContenidoPortlet() {
         log.info("Nueva instancia de Contenido Portlet");
@@ -108,6 +115,7 @@ public class ContenidoPortlet extends BaseController {
         Contenido contenido = new Contenido();
         modelo.addAttribute("contenido", contenido);
         modelo.addAttribute("comunidades", ComunidadUtil.obtieneComunidades(request));
+        modelo.addAttribute("tipos", obtieneTiposDeContenido(getThemeDisplay(request).getLocale()));
         return "contenido/nuevo";
     }
 
@@ -115,6 +123,7 @@ public class ContenidoPortlet extends BaseController {
     public String nuevoError(RenderRequest request, Model modelo) throws SystemException, PortalException {
         log.debug("Nuevo contenido despues de error");
         modelo.addAttribute("comunidades", ComunidadUtil.obtieneComunidades(request));
+        modelo.addAttribute("tipos", obtieneTiposDeContenido(getThemeDisplay(request).getLocale()));
         return "contenido/nuevo";
     }
 
@@ -149,6 +158,7 @@ public class ContenidoPortlet extends BaseController {
         Contenido contenido = contenidoDao.obtiene(id);
         modelo.addAttribute("contenido", contenido);
         modelo.addAttribute("comunidades", ComunidadUtil.obtieneComunidades(request));
+        modelo.addAttribute("tipos", obtieneTiposDeContenido(getThemeDisplay(request).getLocale()));
         return "contenido/edita";
     }
 
@@ -156,6 +166,7 @@ public class ContenidoPortlet extends BaseController {
     public String editaError(RenderRequest request, Model modelo) throws SystemException, PortalException {
         log.debug("Edita contenido despues de error");
         modelo.addAttribute("comunidades", ComunidadUtil.obtieneComunidades(request));
+        modelo.addAttribute("tipos", obtieneTiposDeContenido(getThemeDisplay(request).getLocale()));
         return "contenido/edita";
     }
 
@@ -174,5 +185,15 @@ public class ContenidoPortlet extends BaseController {
 
         response.setRenderParameter("action", "ver");
         response.setRenderParameter("id", contenido.getId().toString());
+    }
+
+    private Map<String, String> obtieneTiposDeContenido(Locale locale) {
+        Map<String, String> tipos = new LinkedHashMap<>();
+        tipos.put(Constantes.TEXTO, messages.getMessage(Constantes.TEXTO, null, locale));
+        tipos.put(Constantes.VIDEO, messages.getMessage(Constantes.VIDEO, null, locale));
+        tipos.put(Constantes.IMAGEN, messages.getMessage(Constantes.IMAGEN, null, locale));
+        tipos.put(Constantes.URL, messages.getMessage(Constantes.URL, null, locale));
+        tipos.put(Constantes.EXAMEN, messages.getMessage(Constantes.EXAMEN, null, locale));
+        return tipos;
     }
 }
