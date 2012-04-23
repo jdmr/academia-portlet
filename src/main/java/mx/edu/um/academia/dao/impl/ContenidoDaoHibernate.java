@@ -58,8 +58,13 @@ public class ContenidoDaoHibernate implements ContenidoDao {
     }
 
     @Override
-    public Contenido actualiza(Contenido contenido, User creador) {
-        log.debug("Actualizando contenido {} por usuario {}", contenido, creador);
+    public Contenido actualiza(Contenido otro, User creador) {
+        log.debug("Actualizando contenido {} por usuario {}", otro, creador);
+        Contenido contenido = (Contenido) currentSession().get(Contenido.class, otro.getId());
+        contenido.setVersion(otro.getVersion());
+        contenido.setCodigo(otro.getCodigo());
+        contenido.setNombre(otro.getNombre());
+        contenido.setComunidadId(otro.getComunidadId());
         contenido.setFechaModificacion(new Date());
         if (creador != null) {
             contenido.setCreador(creador.getScreenName());

@@ -34,18 +34,19 @@ import org.springframework.web.multipart.MultipartFile;
  * @author J. David Mendoza <jdmendoza@um.edu.mx>
  */
 @Entity
-@Table(name="aca_contenidos")
+@Table(name = "aca_contenidos")
 public class Contenido implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Version
     private Integer version;
-    @Column(length=32, nullable = false)
+    @Column(length = 32, nullable = false)
     private String codigo;
-    @Column(length=128, nullable = false)
+    @Column(length = 128, nullable = false)
     private String nombre;
-    @Column(nullable = false)
+    @Column(name = "contenido_id")
     private Long contenidoId;
     @Column(length = 32, nullable = false)
     private String tipo = Constantes.TEXTO;
@@ -61,7 +62,7 @@ public class Contenido implements Serializable {
     private String creador;
     @Transient
     private MultipartFile archivo;
-    
+
     public Contenido() {
     }
 
@@ -224,5 +225,4 @@ public class Contenido implements Serializable {
     public void setArchivo(MultipartFile archivo) {
         this.archivo = archivo;
     }
-
 }

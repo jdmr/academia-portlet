@@ -3,6 +3,6 @@
 
 <display>
     <category name="Academia">
-        <portlet id="CursosAdmin" />
+        <portlet id="Contenido" />
     </category>
 </display>

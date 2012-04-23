@@ -3,7 +3,7 @@
 
 <liferay-portlet-app>
     <portlet>
-        <portlet-name>CursosAdmin</portlet-name>
+        <portlet-name>Contenido</portlet-name>
         <instanceable>false</instanceable>
         <header-portlet-css>/css/main.css</header-portlet-css>
         <header-portlet-javascript>/js/main.js</header-portlet-javascript>
@@ -11,17 +11,5 @@
     <role-mapper>
         <role-name>administrator</role-name>
         <role-link>Administrator</role-link>
-    </role-mapper>
-    <role-mapper>
-        <role-name>guest</role-name>
-        <role-link>Guest</role-link>
-    </role-mapper>
-    <role-mapper>
-        <role-name>power-user</role-name>
-        <role-link>Power User</role-link>
-    </role-mapper>
-    <role-mapper>
-        <role-name>user</role-name>
-        <role-link>User</role-link>
     </role-mapper>
 </liferay-portlet-app>
