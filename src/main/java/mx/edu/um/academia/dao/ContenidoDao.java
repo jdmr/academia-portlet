@@ -25,6 +25,7 @@ package mx.edu.um.academia.dao;
 
 import com.liferay.portal.model.User;
 import java.util.Map;
+import java.util.Set;
 import mx.edu.um.academia.model.Contenido;
 
 /**
@@ -42,7 +43,6 @@ public interface ContenidoDao {
     public Map<String, Object> lista(Map<String, Object> params);
 
     public Contenido obtiene(Long contenidoId);
-    
+
     public Contenido actualizaContenidoId(Contenido contenido, User creador);
-    
 }

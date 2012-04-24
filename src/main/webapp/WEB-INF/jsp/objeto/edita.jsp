@@ -29,8 +29,12 @@
             <form:errors cssClass="errors" path="comunidadId" />
         </div>
         <div>
+            <portlet:renderURL var="verObjeto" >
+                <portlet:param name="action" value="ver" />
+                <portlet:param name="id" value="${objeto.id}" />
+            </portlet:renderURL>
             <button type="submit" name="<portlet:namespace />_crea" class="btn btn-primary btn-large" id="<portlet:namespace />_crea" ><i class="icon-ok icon-white"></i>&nbsp;<s:message code='objeto.crea' /></button>
-            <a class="btn btn-large" href="<portlet:renderURL portletMode='view'/>"><i class="icon-remove"></i> <s:message code="regresa" /></a>
+            <a class="btn btn-large" href="${verObjeto}"><i class="icon-remove"></i> <s:message code="regresa" /></a>
         </div>
     </fieldset>
 </form:form>

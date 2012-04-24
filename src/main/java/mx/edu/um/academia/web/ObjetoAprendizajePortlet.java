@@ -27,7 +27,6 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.model.User;
 import com.liferay.portal.util.PortalUtil;
-import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,11 +34,11 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.validation.Valid;
+import mx.edu.um.academia.dao.ContenidoDao;
 import mx.edu.um.academia.dao.ObjetoAprendizajeDao;
 import mx.edu.um.academia.model.Contenido;
 import mx.edu.um.academia.model.ObjetoAprendizaje;
 import mx.edu.um.academia.utils.ComunidadUtil;
-import mx.edu.um.academia.utils.Constantes;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -58,6 +57,8 @@ public class ObjetoAprendizajePortlet extends BaseController {
     
     @Autowired
     private ObjetoAprendizajeDao objetoAprendizajeDao;
+    @Autowired
+    private ContenidoDao contenidoDao;
     
     public ObjetoAprendizajePortlet() {
         log.info("Nueva instancia del portlet de objetos de aprendizaje");
@@ -143,6 +144,12 @@ public class ObjetoAprendizajePortlet extends BaseController {
         log.debug("Mostrando objeto de aprendizaje {}", id);
         ObjetoAprendizaje objeto = objetoAprendizajeDao.obtiene(id);
         modelo.addAttribute("objeto", objeto);
+        
+        Map<Long, String> comunidades = ComunidadUtil.obtieneComunidades(request);
+        Map<String, Object> contenidos = objetoAprendizajeDao.contenidos(id, comunidades.keySet());
+        modelo.addAttribute("disponibles", contenidos.get("disponibles"));
+        modelo.addAttribute("seleccionados", contenidos.get("seleccionados"));
+        
         return "objeto/ver";
     }
 
@@ -187,5 +194,14 @@ public class ObjetoAprendizajePortlet extends BaseController {
         objetoAprendizajeDao.elimina(id, creador);
     }
 
+    @RequestMapping(params = "action=agregaContenido")
+    public void agregaContenido(ActionRequest request, ActionResponse response, @RequestParam Long objetoId, @RequestParam Long[] contenidos) {
+        log.debug("Agregando contenido {} a {}", contenidos, objetoId);
+        
+        objetoAprendizajeDao.agregaContenido(objetoId, contenidos);
+        
+        response.setRenderParameter("action", "ver");
+        response.setRenderParameter("id", objetoId.toString());
+    }
     
 }

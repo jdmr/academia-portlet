@@ -25,6 +25,7 @@ package mx.edu.um.academia.dao;
 
 import com.liferay.portal.model.User;
 import java.util.Map;
+import java.util.Set;
 import mx.edu.um.academia.model.ObjetoAprendizaje;
 
 /**
@@ -33,14 +34,17 @@ import mx.edu.um.academia.model.ObjetoAprendizaje;
  */
 public interface ObjetoAprendizajeDao {
 
-    ObjetoAprendizaje actualiza(ObjetoAprendizaje objetoAprendizaje, User creador);
+    public ObjetoAprendizaje actualiza(ObjetoAprendizaje objetoAprendizaje, User creador);
 
-    ObjetoAprendizaje crea(ObjetoAprendizaje objetoAprendizaje, User creador);
+    public ObjetoAprendizaje crea(ObjetoAprendizaje objetoAprendizaje, User creador);
 
-    String elimina(Long objetoAprendizajeId, User creador);
+    public String elimina(Long objetoAprendizajeId, User creador);
 
-    Map<String, Object> lista(Map<String, Object> params);
+    public Map<String, Object> lista(Map<String, Object> params);
 
-    ObjetoAprendizaje obtiene(Long objetoAprendizajeId);
+    public ObjetoAprendizaje obtiene(Long objetoAprendizajeId);
+
+    public Map<String, Object> contenidos(Long id, Set<Long> comunidades);
     
+    public void agregaContenido(Long objetoId, Long[] contenidos);
 }

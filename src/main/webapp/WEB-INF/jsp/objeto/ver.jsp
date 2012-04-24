@@ -17,7 +17,7 @@
     <a class="btn btn-primary" href="${nuevoUrl}"><i class="icon-file icon-white"></i> <s:message code="objeto.nuevo" /></a>
     <a class="btn btn-primary" href="${editaUrl}"><i class="icon-edit icon-white"></i> <s:message code="objeto.edita" /></a>
     <a class="btn btn-danger"  href="${eliminaUrl}" onclick="return confirm('<s:message code="objeto.elimina.confirma"/>')"><i class="icon-ban-circle icon-white"></i> <s:message code="objeto.elimina" /></a>
-    
+
 </div>
 <div class="row-fluid">
     <div class="span6">
@@ -45,7 +45,31 @@
         <h3>${objeto.fechaCreacion}</h3>
     </div>
     <div class="span6">
-    <h5><s:message code="fechaModificacion" /></h5>
-    <h3>${objeto.fechaModificacion}</h3>
+        <h5><s:message code="fechaModificacion" /></h5>
+        <h3>${objeto.fechaModificacion}</h3>
     </div>
 </div>
+<portlet:actionURL var="agregaContenidoURL">
+    <portlet:param name="action" value="agregaContenido"/>
+</portlet:actionURL>
+<form id="<portlet:namespace />agregaContenidoForm" action="${agregaContenidoURL}" method="post" class="form-vertical">
+    <input type="hidden" id="<portlet:namespace />objetoId" name="<portlet:namespace />objetoId" value="${objeto.id}"/>
+    <div class="row-fluid">
+        <select id="<portlet:namespace />contenidos" name="<portlet:namespace />contenidos" multiple="multiple" data-placeholder="<s:message code="objeto.elija.contenido" />" >
+            <c:forEach items="${seleccionados}" var="contenido">
+                <option value="${contenido.id}" selected="selected">${contenido.codigo} | ${contenido.nombre}</option>
+            </c:forEach>
+            <c:forEach items="${disponibles}" var="contenido">
+                <option value="${contenido.id}">${contenido.codigo} | ${contenido.nombre}</option>
+            </c:forEach>
+        </select>
+    </div>
+    <div class="row-fluid">
+        <button type="submit" class="btn btn-primary"><i class="icon-file icon-white"></i> <s:message code="objeto.agrega.contenido" /></button>
+    </div>
+</form>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("select#<portlet:namespace />contenidos").chosen();
+    });
+</script>

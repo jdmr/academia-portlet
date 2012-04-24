@@ -26,8 +26,10 @@ package mx.edu.um.academia.dao.impl;
 import com.liferay.portal.model.User;
 import java.util.*;
 import mx.edu.um.academia.dao.ObjetoAprendizajeDao;
+import mx.edu.um.academia.model.Contenido;
 import mx.edu.um.academia.model.ObjetoAprendizaje;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.*;
@@ -44,7 +46,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 @Transactional
 public class ObjetoAprendizajeDaoHibernate implements ObjetoAprendizajeDao {
-    
+
     private static final Logger log = LoggerFactory.getLogger(ObjetoAprendizajeDaoHibernate.class);
     @Autowired
     private SessionFactory sessionFactory;
@@ -52,7 +54,7 @@ public class ObjetoAprendizajeDaoHibernate implements ObjetoAprendizajeDao {
     public ObjetoAprendizajeDaoHibernate() {
         log.info("Nueva instancia de ObjetoAprendizajeDaoHibernate");
     }
-    
+
     private Session currentSession() {
         return sessionFactory.getCurrentSession();
     }
@@ -169,5 +171,42 @@ public class ObjetoAprendizajeDaoHibernate implements ObjetoAprendizajeDao {
         log.debug("Obteniendo objetoAprendizaje {}", objetoAprendizajeId);
         return (ObjetoAprendizaje) currentSession().get(ObjetoAprendizaje.class, objetoAprendizajeId);
     }
+
+    @Override
+    public Map<String, Object> contenidos(Long id, Set<Long> comunidades) {
+        log.debug("Buscando los contenidos del objeto de aprendizaje {}", id);
+        Query query = currentSession().createQuery("select contenido from ObjetoAprendizaje oa inner join oa.contenidos as contenido where oa.id = :objetoId");
+        query.setLong("objetoId", id);
+        Map<String, Object> resultado = new HashMap<>();
+        List<Contenido> contenidos = query.list();
+        log.debug("Lista de seleccionados");
+        for (Contenido contenido : contenidos) {
+            log.debug("Seleccionado: " + contenido.getNombre());
+        }
+        resultado.put("seleccionados", contenidos);
+        
+        Criteria criteria = currentSession().createCriteria(Contenido.class);
+        criteria.add(Restrictions.in("comunidadId", (Set<Long>) comunidades));
+        criteria.addOrder(Order.asc("codigo"));
+        log.debug("Lista de disponibles");
+        List<Contenido> disponibles = criteria.list();
+        disponibles.removeAll(contenidos);
+        for (Contenido contenido : disponibles) {
+            log.debug("Disponible: " + contenido.getNombre());
+        }
+        resultado.put("disponibles", disponibles);
+        log.debug("regresando {}", resultado);
+        return resultado;
+    }
     
+    @Override
+    public void agregaContenido(Long objetoId, Long[] contenidosArray) {
+        log.debug("Agregando contenido a objeto {}", objetoId);
+        ObjetoAprendizaje objeto = (ObjetoAprendizaje) currentSession().get(ObjetoAprendizaje.class, objetoId);
+        objeto.getContenidos().clear();
+        for(Long contenidoId : contenidosArray) {
+            objeto.getContenidos().add((Contenido) currentSession().load(Contenido.class, contenidoId));
+        }
+        currentSession().update(objeto);
+    }
 }

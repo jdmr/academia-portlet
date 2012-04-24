@@ -44,7 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 @Transactional
 public class ContenidoDaoHibernate implements ContenidoDao {
-    
+
     private static final Logger log = LoggerFactory.getLogger(ContenidoDaoHibernate.class);
     @Autowired
     private SessionFactory sessionFactory;
@@ -52,7 +52,7 @@ public class ContenidoDaoHibernate implements ContenidoDao {
     public ContenidoDaoHibernate() {
         log.info("Nueva instancia de ContenidoDaoHibernate");
     }
-    
+
     private Session currentSession() {
         return sessionFactory.getCurrentSession();
     }
@@ -184,5 +184,4 @@ public class ContenidoDaoHibernate implements ContenidoDao {
         currentSession().update(contenido);
         return contenido;
     }
-    
 }

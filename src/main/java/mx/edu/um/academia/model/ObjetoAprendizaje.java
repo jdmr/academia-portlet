@@ -57,7 +57,7 @@ public class ObjetoAprendizaje implements Serializable {
     private Long comunidadId;
     @ManyToMany
     @OrderColumn(name = "orden")
-    private List<Contenido> contenido;
+    private List<Contenido> contenidos;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "fecha_creacion", nullable = false)
     private Date fechaCreacion;
@@ -162,17 +162,17 @@ public class ObjetoAprendizaje implements Serializable {
     }
 
     /**
-     * @return the contenido
+     * @return Lista de contenidos
      */
-    public List<Contenido> getContenido() {
-        return contenido;
+    public List<Contenido> getContenidos() {
+        return contenidos;
     }
 
     /**
-     * @param contenido the contenido to set
+     * @param contenidos the contenidos to set
      */
-    public void setContenido(List<Contenido> contenido) {
-        this.contenido = contenido;
+    public void setContenidos(List<Contenido> contenidos) {
+        this.contenidos = contenidos;
     }
 
     /**

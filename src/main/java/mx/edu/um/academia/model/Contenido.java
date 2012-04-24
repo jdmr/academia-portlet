@@ -25,6 +25,7 @@ package mx.edu.um.academia.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import javax.persistence.*;
 import mx.edu.um.academia.utils.Constantes;
 import org.hibernate.validator.constraints.NotBlank;
@@ -65,6 +66,8 @@ public class Contenido implements Serializable {
     private Date fechaModificacion;
     @Column(nullable = false, length = 32)
     private String creador;
+    @ManyToMany(mappedBy="contenidos")
+    private List<ObjetoAprendizaje> objetos;
 
     public Contenido() {
     }
@@ -213,5 +216,48 @@ public class Contenido implements Serializable {
      */
     public void setCreador(String creador) {
         this.creador = creador;
+    }
+
+    /**
+     * @return the objetos
+     */
+    public List<ObjetoAprendizaje> getObjetos() {
+        return objetos;
+    }
+
+    /**
+     * @param objetos the objetos to set
+     */
+    public void setObjetos(List<ObjetoAprendizaje> objetos) {
+        this.objetos = objetos;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Contenido other = (Contenido) obj;
+        if (this.id != other.id && (this.id == null || !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 23 * hash + (this.id != null ? this.id.hashCode() : 0);
+        hash = 23 * hash + (this.version != null ? this.version.hashCode() : 0);
+        hash = 23 * hash + (this.codigo != null ? this.codigo.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public String toString() {
+        return "Contenido{" + "id=" + id + ", codigo=" + codigo + ", nombre=" + nombre + ", contenidoId=" + contenidoId + ", tipo=" + tipo + ", comunidadId=" + comunidadId + '}';
     }
 }
