@@ -33,14 +33,16 @@ import mx.edu.um.academia.model.Contenido;
  */
 public interface ContenidoDao {
 
-    Contenido actualiza(Contenido contenido, User creador);
+    public Contenido actualiza(Contenido contenido, User creador);
 
-    Contenido crea(Contenido contenido, User creador);
+    public Contenido crea(Contenido contenido, User creador);
 
-    String elimina(Long contenidoId, User creador);
+    public String elimina(Long contenidoId, User creador);
 
-    Map<String, Object> lista(Map<String, Object> params);
+    public Map<String, Object> lista(Map<String, Object> params);
 
-    Contenido obtiene(Long contenidoId);
+    public Contenido obtiene(Long contenidoId);
+    
+    public Contenido actualizaContenidoId(Contenido contenido, User creador);
     
 }

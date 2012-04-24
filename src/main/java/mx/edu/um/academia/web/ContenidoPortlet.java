@@ -25,14 +25,18 @@ package mx.edu.um.academia.web;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.util.CalendarFactoryUtil;
+import com.liferay.portal.kernel.util.UnicodeFormatter;
+import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.model.User;
+import com.liferay.portal.service.ServiceContext;
+import com.liferay.portal.service.ServiceContextFactory;
+import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import com.liferay.portlet.journal.model.JournalArticle;
+import com.liferay.portlet.journal.model.JournalArticleConstants;
+import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
+import java.util.*;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
@@ -47,6 +51,7 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -145,9 +150,21 @@ public class ContenidoPortlet extends BaseController {
     }
 
     @RequestMapping(params = "action=ver")
-    public String ver(RenderRequest request, @RequestParam Long id, Model modelo) {
+    public String ver(RenderRequest request, @RequestParam Long id, Model modelo) throws PortalException, SystemException {
         log.debug("Mostrando contenido {}", id);
         Contenido contenido = contenidoDao.obtiene(id);
+        switch (contenido.getTipo()) {
+            case "TEXTO":
+                if (contenido.getContenidoId() != null) {
+                    ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+                    JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(contenido.getContenidoId());
+                    if (ja != null) {
+                        String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+                        modelo.addAttribute("texto", texto);
+                    }
+                }
+                break;
+        }
         modelo.addAttribute("contenido", contenido);
         return "contenido/ver";
     }
@@ -182,6 +199,118 @@ public class ContenidoPortlet extends BaseController {
 
         User creador = PortalUtil.getUser(request);
         contenidoDao.actualiza(contenido, creador);
+
+        response.setRenderParameter("action", "ver");
+        response.setRenderParameter("id", contenido.getId().toString());
+    }
+
+    @RequestMapping(params = "action=nuevoTexto")
+    public String nuevoTexto(RenderRequest request, Model modelo, @RequestParam Long id) throws SystemException, PortalException {
+        log.debug("Nuevo texto para contenido {}", id);
+        Contenido contenido = contenidoDao.obtiene(id);
+        modelo.addAttribute("contenido", contenido);
+        return "contenido/nuevoTexto";
+    }
+
+    @RequestMapping(params = "action=creaTexto")
+    public void creaTexto(ActionRequest request, ActionResponse response,
+            @ModelAttribute Contenido contenido, @RequestParam String texto) throws SystemException, PortalException {
+        log.debug("Creando texto para contenido {}", contenido.getId());
+        contenido = contenidoDao.obtiene(contenido.getId());
+        StringBuilder sb = new StringBuilder();
+        sb.append("<?xml version='1.0' encoding='UTF-8'?><root><static-content><![CDATA[");
+        sb.append(texto);
+        sb.append("]]></static-content></root>");
+        texto = sb.toString();
+
+        ThemeDisplay themeDisplay = getThemeDisplay(request);
+        Calendar displayDate;
+        if (themeDisplay != null) {
+            displayDate = CalendarFactoryUtil.getCalendar(themeDisplay.getTimeZone(), themeDisplay.getLocale());
+        } else {
+            displayDate = CalendarFactoryUtil.getCalendar();
+        }
+        User creador = PortalUtil.getUser(request);
+        ServiceContext serviceContext = ServiceContextFactory.getInstance(JournalArticle.class.getName(), request);
+        if (contenido.getContenidoId() != null) {
+            JournalArticleLocalServiceUtil.deleteJournalArticle(contenido.getContenidoId());
+        }
+        JournalArticle article = JournalArticleLocalServiceUtil.addArticle(
+                creador.getUserId(), // UserId
+                contenido.getComunidadId(), // GroupId
+                "", // ArticleId
+                true, // AutoArticleId
+                JournalArticleConstants.DEFAULT_VERSION, // Version
+                contenido.getNombre(), // Titulo
+                contenido.getNombre(), // Descripcion
+                texto, // Contenido
+                "general", // Tipo
+                "", // Estructura
+                "", // Template
+                displayDate.get(Calendar.MONTH), // displayDateMonth,
+                displayDate.get(Calendar.DAY_OF_MONTH), // displayDateDay,
+                displayDate.get(Calendar.YEAR), // displayDateYear,
+                displayDate.get(Calendar.HOUR_OF_DAY), // displayDateHour,
+                displayDate.get(Calendar.MINUTE), // displayDateMinute,
+                0, // expirationDateMonth, 
+                0, // expirationDateDay, 
+                0, // expirationDateYear, 
+                0, // expirationDateHour, 
+                0, // expirationDateMinute, 
+                true, // neverExpire
+                0, // reviewDateMonth, 
+                0, // reviewDateDay, 
+                0, // reviewDateYear, 
+                0, // reviewDateHour, 
+                0, // reviewDateMinute, 
+                true, // neverReview
+                true, // indexable
+                false, // SmallImage
+                "", // SmallImageUrl
+                null, // SmallFile
+                null, // Images
+                "", // articleURL 
+                serviceContext // serviceContext
+                );
+        contenido.setContenidoId(article.getId());
+        contenido = contenidoDao.actualizaContenidoId(contenido, creador);
+
+        response.setRenderParameter("action", "ver");
+        response.setRenderParameter("id", contenido.getId().toString());
+    }
+
+    @RequestMapping(params = "action=editaTexto")
+    public String editaTexto(RenderRequest request, Model modelo, @RequestParam Long id) throws SystemException, PortalException {
+        log.debug("Nuevo texto para contenido {}", id);
+        Contenido contenido = contenidoDao.obtiene(id);
+        modelo.addAttribute("contenido", contenido);
+        ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+        JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(contenido.getContenidoId());
+        if (ja != null) {
+            String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+            modelo.addAttribute("texto", texto);
+            modelo.addAttribute("textoUnicode", UnicodeFormatter.toString(texto));
+        }
+        return "contenido/editaTexto";
+    }
+
+    @RequestMapping(params = "action=actualizaTexto")
+    public void actualizaTexto(ActionRequest request, ActionResponse response,
+            @ModelAttribute Contenido contenido, @RequestParam String texto) throws SystemException, PortalException {
+        log.debug("Actualizando texto para contenido {}", contenido.getId());
+        contenido = contenidoDao.obtiene(contenido.getId());
+        StringBuilder sb = new StringBuilder();
+        sb.append("<?xml version='1.0' encoding='UTF-8'?><root><static-content><![CDATA[");
+        sb.append(texto);
+        sb.append("]]></static-content></root>");
+        texto = sb.toString();
+
+        User creador = PortalUtil.getUser(request);
+        JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(contenido.getContenidoId());
+        ja.setUserId(creador.getUserId());
+        ja.setContent(texto);
+        ja.setVersion(ja.getVersion()+1);
+        JournalArticleLocalServiceUtil.updateJournalArticle(ja);
 
         response.setRenderParameter("action", "ver");
         response.setRenderParameter("id", contenido.getId().toString());

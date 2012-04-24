@@ -169,5 +169,20 @@ public class ContenidoDaoHibernate implements ContenidoDao {
         log.debug("Obteniendo contenido {}", contenidoId);
         return (Contenido) currentSession().get(Contenido.class, contenidoId);
     }
+
+    @Override
+    public Contenido actualizaContenidoId(Contenido otro, User creador) {
+        Contenido contenido = (Contenido) currentSession().get(Contenido.class, otro.getId());
+        contenido.setVersion(otro.getVersion());
+        contenido.setContenidoId(otro.getContenidoId());
+        contenido.setFechaModificacion(new Date());
+        if (creador != null) {
+            contenido.setCreador(creador.getScreenName());
+        } else {
+            contenido.setCreador("admin");
+        }
+        currentSession().update(contenido);
+        return contenido;
+    }
     
 }

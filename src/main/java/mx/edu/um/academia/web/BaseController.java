@@ -25,6 +25,7 @@ package mx.edu.um.academia.web;
 
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.theme.ThemeDisplay;
+import javax.portlet.ActionRequest;
 import javax.portlet.RenderRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +39,10 @@ public class BaseController {
     protected final transient Logger log = LoggerFactory.getLogger(getClass());
 
     protected ThemeDisplay getThemeDisplay(RenderRequest request) {
+        return (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+    }
+    
+    protected ThemeDisplay getThemeDisplay(ActionRequest request) {
         return (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
     }
 }
