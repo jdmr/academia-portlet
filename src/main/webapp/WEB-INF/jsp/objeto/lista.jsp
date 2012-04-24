@@ -4,14 +4,14 @@
 </portlet:renderURL>
 
 <div class="well">
-    <form name="<portlet:namespace />filtrarContenido" method="post" action="${actionUrl}" class="form-search" >
-        <a class="btn btn-primary" href='<portlet:renderURL windowState="<%= WindowState.MAXIMIZED.toString() %>" ><portlet:param name="action" value="nuevo"/></portlet:renderURL>'><i class="icon-file icon-white"></i> <s:message code="contenido.nuevo" /></a>
+    <form name="<portlet:namespace />filtrarObjetos" method="post" action="${actionUrl}" class="form-search" >
+        <a class="btn btn-primary" href='<portlet:renderURL windowState="<%= WindowState.MAXIMIZED.toString() %>" ><portlet:param name="action" value="nuevo"/></portlet:renderURL>'><i class="icon-file icon-white"></i> <s:message code="objeto.nuevo" /></a>
         <input name="<portlet:namespace />filtro" type="text" class="input-medium search-query" value="${param.filtro}">
         <button type="submit" class="btn" name="<portlet:namespace />_busca"><i class="icon-search"></i><s:message code="buscar" /></button>
     </form>
 </div>
-<c:if test="${contenidos != null}">
-    <table id="<portlet:namespace />contenidos" class="table table-striped">
+<c:if test="${objetos != null}">
+    <table id="<portlet:namespace />objetos" class="table table-striped">
         <thead>
             <tr>
 
@@ -19,23 +19,23 @@
 
                 <th><s:message code="nombre" /></th>
                 
-                <th><s:message code="contenido.tipo" /></th>
+                <th><s:message code="descripcion" /></th>
 
             </tr>
         </thead>
         <tbody>
-            <c:forEach items="${contenidos}" var="contenido">
-                <portlet:renderURL var="verContenido" >
+            <c:forEach items="${objetos}" var="objeto">
+                <portlet:renderURL var="verObjeto" >
                     <portlet:param name="action" value="ver" />
-                    <portlet:param name="id" value="${contenido.id}" />
+                    <portlet:param name="id" value="${objeto.id}" />
                 </portlet:renderURL>
                 <tr>
 
-                    <td><a href="${verContenido}">${contenido.codigo}</a></td>
+                    <td><a href="${verObjeto}">${objeto.codigo}</a></td>
 
-                    <td>${contenido.nombre}</td>
+                    <td>${objeto.nombre}</td>
 
-                    <td><s:message code="${contenido.tipo}" /></td>
+                    <td>${objeto.descripcion}</td>
 
                 </tr>
             </c:forEach>
@@ -65,8 +65,8 @@
 <div>
     
 </div>
-<c:if test="${contenidos != null}">
+<c:if test="${objetos != null}">
     <aui:script>
-        highlightTableRows("<portlet:namespace />contenidos")
+        highlightTableRows("<portlet:namespace />objetos")
     </aui:script>
 </c:if>

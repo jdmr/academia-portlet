@@ -27,14 +27,17 @@ import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.*;
 import mx.edu.um.academia.utils.Constantes;
-import org.springframework.web.multipart.MultipartFile;
+import org.hibernate.validator.constraints.NotBlank;
 
 /**
  *
  * @author J. David Mendoza <jdmendoza@um.edu.mx>
  */
 @Entity
-@Table(name = "aca_contenidos")
+@Table(name = "aca_contenidos", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"comunidad_id", "codigo"}),
+    @UniqueConstraint(columnNames = {"comunidad_id", "nombre"})
+})
 public class Contenido implements Serializable {
 
     @Id
@@ -42,8 +45,10 @@ public class Contenido implements Serializable {
     private Long id;
     @Version
     private Integer version;
+    @NotBlank
     @Column(length = 32, nullable = false)
     private String codigo;
+    @NotBlank
     @Column(length = 128, nullable = false)
     private String nombre;
     @Column(name = "contenido_id")
@@ -60,8 +65,6 @@ public class Contenido implements Serializable {
     private Date fechaModificacion;
     @Column(nullable = false, length = 32)
     private String creador;
-    @Transient
-    private MultipartFile archivo;
 
     public Contenido() {
     }
@@ -210,19 +213,5 @@ public class Contenido implements Serializable {
      */
     public void setCreador(String creador) {
         this.creador = creador;
-    }
-
-    /**
-     * @return the archivo
-     */
-    public MultipartFile getArchivo() {
-        return archivo;
-    }
-
-    /**
-     * @param archivo the archivo to set
-     */
-    public void setArchivo(MultipartFile archivo) {
-        this.archivo = archivo;
     }
 }

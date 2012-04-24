@@ -8,10 +8,10 @@
         <portlet:param name="action" value="edita" />
         <portlet:param name="id" value="${contenido.id}" />
     </portlet:renderURL>
-    <portlet:renderURL var="eliminaUrl" >
+    <portlet:actionURL var="eliminaUrl" >
         <portlet:param name="action" value="elimina" />
         <portlet:param name="id" value="${contenido.id}" />
-    </portlet:renderURL>
+    </portlet:actionURL>
 
     <a class="btn btn-primary" href="<portlet:renderURL portletMode='view'/>"><i class="icon-list icon-white"></i> <s:message code="contenido.lista" /></a>
     <a class="btn btn-primary" href="${nuevoUrl}"><i class="icon-file icon-white"></i> <s:message code="contenido.nuevo" /></a>
@@ -104,15 +104,16 @@
 </c:if>
 <c:if test="${not empty video}">
     <h2>${video}</h2>
-    <div id='mediaspace'>This text will be replaced</div>
-
-    <script type='text/javascript'>
-        jwplayer('mediaspace').setup({
-            file: '${video}',
+    <video id="<portlet:namespace />mediaspace" controls="controls">
+        <source src="${video}" />
+    </video>
+    
+    <aui:script>
+        jwplayer('<portlet:namespace />mediaspace').setup({
             modes : [
                 { type : 'html5' },
                 { type : 'flash', src : '/academia-theme/jwplayer/player.swf'}
-            ]
+            ]        
         });
-    </script>
+    </aui:script>
 </c:if>

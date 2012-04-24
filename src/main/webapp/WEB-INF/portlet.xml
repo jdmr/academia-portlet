@@ -36,4 +36,34 @@
             <role-name>administrator</role-name>
         </security-role-ref>
     </portlet>
+    <portlet>
+        <description>ObjetoAprendizaje</description>
+        <portlet-name>ObjetoAprendizaje</portlet-name>
+        <display-name>ObjetoAprendizaje</display-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+        <init-param>
+            <name>contextConfigLocation</name>
+            <value>/WEB-INF/classes/context/portlet/objeto_aprendizaje.xml</value>
+        </init-param>
+        <init-param>
+            <name>check-auth-token</name>
+            <value>false</value>
+        </init-param>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+        </supports>
+        <supported-locale>en</supported-locale>
+        <supported-locale>es</supported-locale>
+        <resource-bundle>objeto_aprendizaje</resource-bundle>
+        <portlet-info>
+            <title>ObjetoAprendizaje</title>
+            <short-title>ObjetoAprendizaje</short-title>
+            <keywords></keywords>
+        </portlet-info>
+        <security-role-ref>
+            <role-name>administrator</role-name>
+        </security-role-ref>
+    </portlet>
 </portlet-app>

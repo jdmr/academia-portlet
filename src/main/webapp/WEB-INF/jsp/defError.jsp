@@ -17,17 +17,16 @@
 <%@ include file="/WEB-INF/jsp/include.jsp" %>
 
 <div class="academia">
-    <h1><s:message code="exception.generalError.title"/></h1>
 
     <div class="portlet-section-body">
 
-        <p>${exception.localizedMessage == null ? exception : exception.localizedMessage }</p>
+        <div class="alert alert-error">${exception.localizedMessage == null ? exception : exception.localizedMessage }</div>
 
-        <p><s:message code="exception.contactAdmin"/></p>
+        <h5><s:message code="exception.contactAdmin"/></h5>
 
     </div>
 
     <div class="portlet-section-footer">
-        <a href="<portlet:renderURL portletMode="view"/>"><s:message code="button.home"/></a>
+        <a href="<portlet:renderURL portletMode='view'/>" class="btn btn-primary btn-large"><s:message code="button.home"/></a>
     </div>
 </div>

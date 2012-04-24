@@ -27,13 +27,17 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.*;
+import org.hibernate.validator.constraints.NotBlank;
 
 /**
  *
  * @author J. David Mendoza <jdmendoza@um.edu.mx>
  */
 @Entity
-@Table(name = "aca_objetos")
+@Table(name = "aca_objetos", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"comunidad_id", "codigo"}),
+    @UniqueConstraint(columnNames = {"comunidad_id", "nombre"})
+})
 public class ObjetoAprendizaje implements Serializable {
 
     @Id
@@ -41,8 +45,10 @@ public class ObjetoAprendizaje implements Serializable {
     private Long id;
     @Version
     private Integer version;
+    @NotBlank
     @Column(nullable = false, length = 32)
     private String codigo;
+    @NotBlank
     @Column(nullable = false, length = 128)
     private String nombre;
     @Column(nullable = false, length = 2000)
@@ -70,7 +76,7 @@ public class ObjetoAprendizaje implements Serializable {
         this.descripcion = descripcion;
         this.comunidadId = comunidadId;
     }
-    
+
     /**
      * @return the id
      */
@@ -210,5 +216,4 @@ public class ObjetoAprendizaje implements Serializable {
     public void setCreador(String creador) {
         this.creador = creador;
     }
-
 }

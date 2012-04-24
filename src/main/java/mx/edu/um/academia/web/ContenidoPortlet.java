@@ -158,7 +158,7 @@ public class ContenidoPortlet extends BaseController {
         log.debug("Mostrando contenido {}", id);
         Contenido contenido = contenidoDao.obtiene(id);
         switch (contenido.getTipo()) {
-            case Constantes.TEXTO :
+            case Constantes.TEXTO:
                 if (contenido.getContenidoId() != null) {
                     ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
                     JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(contenido.getContenidoId());
@@ -168,7 +168,7 @@ public class ContenidoPortlet extends BaseController {
                     }
                 }
                 break;
-            case Constantes.VIDEO :
+            case Constantes.VIDEO:
                 if (contenido.getContenidoId() != null) {
                     DLFileEntry fileEntry = DLFileEntryLocalServiceUtil.getDLFileEntry(contenido.getContenidoId());
                     StringBuilder videoLink = new StringBuilder();
@@ -219,6 +219,23 @@ public class ContenidoPortlet extends BaseController {
 
         response.setRenderParameter("action", "ver");
         response.setRenderParameter("id", contenido.getId().toString());
+    }
+
+    @RequestMapping(params = "action=elimina")
+    public void elimina(ActionRequest request, @RequestParam Long id) throws PortalException, SystemException {
+        log.debug("eliminando contenido {}", id);
+
+        Contenido contenido = contenidoDao.obtiene(id);
+        switch (contenido.getTipo()) {
+            case Constantes.TEXTO:
+                if (contenido.getContenidoId() != null) {
+                    JournalArticleLocalServiceUtil.deleteJournalArticle(contenido.getContenidoId());
+                }
+                break;
+
+        }
+        User creador = PortalUtil.getUser(request);
+        contenidoDao.elimina(id, creador);
     }
 
     @RequestMapping(params = "action=nuevoTexto")
@@ -326,7 +343,7 @@ public class ContenidoPortlet extends BaseController {
         JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(contenido.getContenidoId());
         ja.setUserId(creador.getUserId());
         ja.setContent(texto);
-        ja.setVersion(ja.getVersion()+1);
+        ja.setVersion(ja.getVersion() + 1);
         JournalArticleLocalServiceUtil.updateJournalArticle(ja);
 
         response.setRenderParameter("action", "ver");

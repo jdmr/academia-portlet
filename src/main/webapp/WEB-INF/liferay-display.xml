@@ -4,5 +4,6 @@
 <display>
     <category name="Academia">
         <portlet id="Contenido" />
+        <portlet id="ObjetoAprendizaje" />
     </category>
 </display>

@@ -145,7 +145,7 @@ public class ObjetoAprendizajeDaoHibernate implements ObjetoAprendizajeDao {
 
         criteria.setFirstResult(offset);
         criteria.setMaxResults(max);
-        params.put("objetoAprendizajes", criteria.list());
+        params.put("objetos", criteria.list());
 
         countCriteria.setProjection(Projections.rowCount());
         List cantidades = countCriteria.list();

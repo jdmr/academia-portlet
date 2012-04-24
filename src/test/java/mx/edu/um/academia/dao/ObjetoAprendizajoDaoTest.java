@@ -136,9 +136,9 @@ public class ObjetoAprendizajoDaoTest {
         params.put("comunidades", comunidades);
         Map<String, Object> result = instance.lista(params);
         assertNotNull(result);
-        assertNotNull(result.get("objetoAprendizajes"));
+        assertNotNull(result.get("objetos"));
         assertNotNull(result.get("cantidad"));
-        List<ObjetoAprendizaje> objetoAprendizajes = (List<ObjetoAprendizaje>) result.get("objetoAprendizajes");
+        List<ObjetoAprendizaje> objetoAprendizajes = (List<ObjetoAprendizaje>) result.get("objetos");
         Long cantidad = (Long) result.get("cantidad");
         assertEquals(10, objetoAprendizajes.size());
         assertTrue(20 <= cantidad);
