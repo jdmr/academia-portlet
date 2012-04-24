@@ -27,6 +27,7 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.model.User;
 import com.liferay.portal.util.PortalUtil;
+import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,8 +36,10 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.validation.Valid;
 import mx.edu.um.academia.dao.ObjetoAprendizajeDao;
+import mx.edu.um.academia.model.Contenido;
 import mx.edu.um.academia.model.ObjetoAprendizaje;
 import mx.edu.um.academia.utils.ComunidadUtil;
+import mx.edu.um.academia.utils.Constantes;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -149,14 +152,14 @@ public class ObjetoAprendizajePortlet extends BaseController {
         ObjetoAprendizaje objeto = objetoAprendizajeDao.obtiene(id);
         modelo.addAttribute("objeto", objeto);
         modelo.addAttribute("comunidades", ComunidadUtil.obtieneComunidades(request));
-        return "contenido/edita";
+        return "objeto/edita";
     }
 
     @RequestMapping(params = "action=editaError")
     public String editaError(RenderRequest request, Model modelo) throws SystemException, PortalException {
         log.debug("Edita objeto de aprendizaje despues de error");
         modelo.addAttribute("comunidades", ComunidadUtil.obtieneComunidades(request));
-        return "contenido/edita";
+        return "objeto/edita";
     }
 
     @RequestMapping(params = "action=actualiza")
@@ -174,6 +177,14 @@ public class ObjetoAprendizajePortlet extends BaseController {
 
         response.setRenderParameter("action", "ver");
         response.setRenderParameter("id", objeto.getId().toString());
+    }
+
+    @RequestMapping(params = "action=elimina")
+    public void elimina(ActionRequest request, @RequestParam Long id) throws PortalException, SystemException {
+        log.debug("eliminando contenido {}", id);
+
+        User creador = PortalUtil.getUser(request);
+        objetoAprendizajeDao.elimina(id, creador);
     }
 
     

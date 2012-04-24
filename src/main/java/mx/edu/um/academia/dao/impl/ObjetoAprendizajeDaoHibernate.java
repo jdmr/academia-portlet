@@ -58,8 +58,14 @@ public class ObjetoAprendizajeDaoHibernate implements ObjetoAprendizajeDao {
     }
 
     @Override
-    public ObjetoAprendizaje actualiza(ObjetoAprendizaje objetoAprendizaje, User creador) {
-        log.debug("Actualizando objetoAprendizaje {} por usuario {}", objetoAprendizaje, creador);
+    public ObjetoAprendizaje actualiza(ObjetoAprendizaje otro, User creador) {
+        log.debug("Actualizando objetoAprendizaje {} por usuario {}", otro, creador);
+        ObjetoAprendizaje objetoAprendizaje = (ObjetoAprendizaje) currentSession().get(ObjetoAprendizaje.class, otro.getId());
+        objetoAprendizaje.setVersion(otro.getVersion());
+        objetoAprendizaje.setCodigo(otro.getCodigo());
+        objetoAprendizaje.setNombre(otro.getNombre());
+        objetoAprendizaje.setDescripcion(otro.getDescripcion());
+        objetoAprendizaje.setComunidadId(otro.getComunidadId());
         objetoAprendizaje.setFechaModificacion(new Date());
         if (creador != null) {
             objetoAprendizaje.setCreador(creador.getScreenName());

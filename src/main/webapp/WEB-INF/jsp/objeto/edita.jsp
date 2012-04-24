@@ -1,10 +1,12 @@
 <%@ include file="/WEB-INF/jsp/include.jsp" %>
 <h1><s:message code="objeto.nuevo" /></h1>
 <portlet:actionURL var="actionUrl">
-    <portlet:param name="action" value="crea"/>
+    <portlet:param name="action" value="actualiza"/>
 </portlet:actionURL>
 
 <form:form name="objetoForm" commandName="objeto" method="post" action="${actionUrl}" >
+    <form:hidden path="id" />
+    <form:hidden path="version" />
     <fieldset>
         <div class="control-group">
             <label for="codigo"><s:message code="codigo" /></label>

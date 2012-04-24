@@ -8,10 +8,10 @@
         <portlet:param name="action" value="edita" />
         <portlet:param name="id" value="${objeto.id}" />
     </portlet:renderURL>
-    <portlet:renderURL var="eliminaUrl" >
+    <portlet:actionURL var="eliminaUrl" >
         <portlet:param name="action" value="elimina" />
         <portlet:param name="id" value="${objeto.id}" />
-    </portlet:renderURL>
+    </portlet:actionURL>
 
     <a class="btn btn-primary" href="<portlet:renderURL portletMode='view'/>"><i class="icon-list icon-white"></i> <s:message code="objeto.lista" /></a>
     <a class="btn btn-primary" href="${nuevoUrl}"><i class="icon-file icon-white"></i> <s:message code="objeto.nuevo" /></a>
