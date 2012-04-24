@@ -102,4 +102,17 @@
         <div>${texto}</div>
     </div>
 </c:if>
-    
+<c:if test="${not empty video}">
+    <h2>${video}</h2>
+    <div id='mediaspace'>This text will be replaced</div>
+
+    <script type='text/javascript'>
+        jwplayer('mediaspace').setup({
+            file: '${video}',
+            modes : [
+                { type : 'html5' },
+                { type : 'flash', src : '/academia-theme/jwplayer/player.swf'}
+            ]
+        });
+    </script>
+</c:if>

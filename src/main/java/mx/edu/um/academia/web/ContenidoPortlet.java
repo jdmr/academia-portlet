@@ -33,9 +33,12 @@ import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextFactory;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
+import com.liferay.portlet.documentlibrary.model.DLFileEntry;
+import com.liferay.portlet.documentlibrary.service.DLFileEntryLocalServiceUtil;
 import com.liferay.portlet.journal.model.JournalArticle;
 import com.liferay.portlet.journal.model.JournalArticleConstants;
 import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
+import java.io.IOException;
 import java.util.*;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -54,6 +57,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -154,7 +158,7 @@ public class ContenidoPortlet extends BaseController {
         log.debug("Mostrando contenido {}", id);
         Contenido contenido = contenidoDao.obtiene(id);
         switch (contenido.getTipo()) {
-            case "TEXTO":
+            case Constantes.TEXTO :
                 if (contenido.getContenidoId() != null) {
                     ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
                     JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(contenido.getContenidoId());
@@ -162,6 +166,19 @@ public class ContenidoPortlet extends BaseController {
                         String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
                         modelo.addAttribute("texto", texto);
                     }
+                }
+                break;
+            case Constantes.VIDEO :
+                if (contenido.getContenidoId() != null) {
+                    DLFileEntry fileEntry = DLFileEntryLocalServiceUtil.getDLFileEntry(contenido.getContenidoId());
+                    StringBuilder videoLink = new StringBuilder();
+                    videoLink.append("/documents/");
+                    videoLink.append(fileEntry.getGroupId());
+                    videoLink.append("/");
+                    videoLink.append(fileEntry.getFolderId());
+                    videoLink.append("/");
+                    videoLink.append(fileEntry.getTitle());
+                    modelo.addAttribute("video", videoLink);
                 }
                 break;
         }
@@ -311,6 +328,33 @@ public class ContenidoPortlet extends BaseController {
         ja.setContent(texto);
         ja.setVersion(ja.getVersion()+1);
         JournalArticleLocalServiceUtil.updateJournalArticle(ja);
+
+        response.setRenderParameter("action", "ver");
+        response.setRenderParameter("id", contenido.getId().toString());
+    }
+
+    @RequestMapping(params = "action=nuevoVideo")
+    public String nuevoVideo(RenderRequest request, Model modelo, @RequestParam Long id) throws SystemException, PortalException {
+        log.debug("Nuevo documento para contenido {}", id);
+        Contenido contenido = contenidoDao.obtiene(id);
+        modelo.addAttribute("contenido", contenido);
+        return "contenido/nuevoVideo";
+    }
+
+    @RequestMapping(params = "action=creaVideo")
+    public void creaVideo(ActionRequest request, ActionResponse response,
+            @ModelAttribute Contenido contenido, @RequestParam MultipartFile archivo) throws SystemException, PortalException, IOException {
+        log.debug("Creando documento para contenido {}", contenido.getId());
+        contenido = contenidoDao.obtiene(contenido.getId());
+
+        User creador = PortalUtil.getUser(request);
+        if (contenido.getContenidoId() != null) {
+            DLFileEntryLocalServiceUtil.deleteDLFileEntry(contenido.getContenidoId());
+        }
+        ServiceContext serviceContext = ServiceContextFactory.getInstance(DLFileEntry.class.getName(), request);
+        DLFileEntry fileEntry = DLFileEntryLocalServiceUtil.addFileEntry(creador.getUserId(), contenido.getComunidadId(), 0, archivo.getOriginalFilename(), archivo.getOriginalFilename(), contenido.getNombre(), "", "", archivo.getBytes(), serviceContext);
+        contenido.setContenidoId(fileEntry.getPrimaryKey());
+        contenido = contenidoDao.actualizaContenidoId(contenido, creador);
 
         response.setRenderParameter("action", "ver");
         response.setRenderParameter("id", contenido.getId().toString());
