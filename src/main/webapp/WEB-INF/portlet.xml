@@ -66,4 +66,34 @@
             <role-name>administrator</role-name>
         </security-role-ref>
     </portlet>
+    <portlet>
+        <description>CursosAdmin</description>
+        <portlet-name>CursosAdmin</portlet-name>
+        <display-name>CursosAdmin</display-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+        <init-param>
+            <name>contextConfigLocation</name>
+            <value>/WEB-INF/classes/context/portlet/cursos_admin.xml</value>
+        </init-param>
+        <init-param>
+            <name>check-auth-token</name>
+            <value>false</value>
+        </init-param>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+        </supports>
+        <supported-locale>en</supported-locale>
+        <supported-locale>es</supported-locale>
+        <resource-bundle>cursos_admin</resource-bundle>
+        <portlet-info>
+            <title>CursosAdmin</title>
+            <short-title>CursosAdmin</short-title>
+            <keywords></keywords>
+        </portlet-info>
+        <security-role-ref>
+            <role-name>administrator</role-name>
+        </security-role-ref>
+    </portlet>
 </portlet-app>

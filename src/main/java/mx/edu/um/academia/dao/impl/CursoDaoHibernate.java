@@ -24,11 +24,7 @@
 package mx.edu.um.academia.dao.impl;
 
 import com.liferay.portal.model.User;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import mx.edu.um.academia.dao.CursoDao;
 import mx.edu.um.academia.model.Curso;
 import org.hibernate.Criteria;
@@ -147,8 +143,13 @@ public class CursoDaoHibernate implements CursoDao {
     }
 
     @Override
-    public Curso actualiza(Curso curso, User creador) {
-        log.debug("Actualizando curso {} por usuario {}", curso, creador);
+    public Curso actualiza(Curso otro, User creador) {
+        log.debug("Actualizando curso {} por usuario {}", otro, creador);
+        Curso curso = (Curso) currentSession().get(Curso.class, otro.getId());
+        curso.setVersion(otro.getVersion());
+        curso.setCodigo(otro.getCodigo());
+        curso.setNombre(otro.getNombre());
+        curso.setComunidadId(otro.getComunidadId());
         curso.setFechaModificacion(new Date());
         if (creador != null) {
             curso.setCreador(creador.getScreenName());

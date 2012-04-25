@@ -27,13 +27,17 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.*;
+import org.hibernate.validator.constraints.NotBlank;
 
 /**
  *
  * @author J. David Mendoza <jdmendoza@um.edu.mx>
  */
 @Entity
-@Table(name = "aca_cursos")
+@Table(name = "aca_cursos", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"comunidad_id", "codigo"}),
+    @UniqueConstraint(columnNames = {"comunidad_id", "nombre"})
+})
 public class Curso implements Serializable {
 
     @Id
@@ -41,9 +45,11 @@ public class Curso implements Serializable {
     private Long id;
     @Version
     private Integer version;
+    @NotBlank
     @Column(length = 32, nullable = false)
     private String codigo;
     @Column(length = 128, nullable = false)
+    @NotBlank
     private String nombre;
     @Column(name = "comunidad_id", nullable = false)
     private Long comunidadId;

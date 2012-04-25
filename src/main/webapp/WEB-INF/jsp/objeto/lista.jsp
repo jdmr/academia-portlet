@@ -62,9 +62,6 @@
         </c:if>
     </div>
 </c:if>
-<div>
-    
-</div>
 <c:if test="${objetos != null}">
     <aui:script>
         highlightTableRows("<portlet:namespace />objetos")

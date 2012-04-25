@@ -34,9 +34,7 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.validation.Valid;
-import mx.edu.um.academia.dao.ContenidoDao;
 import mx.edu.um.academia.dao.ObjetoAprendizajeDao;
-import mx.edu.um.academia.model.Contenido;
 import mx.edu.um.academia.model.ObjetoAprendizaje;
 import mx.edu.um.academia.utils.ComunidadUtil;
 import org.apache.commons.lang.StringUtils;
@@ -57,8 +55,6 @@ public class ObjetoAprendizajePortlet extends BaseController {
     
     @Autowired
     private ObjetoAprendizajeDao objetoAprendizajeDao;
-    @Autowired
-    private ContenidoDao contenidoDao;
     
     public ObjetoAprendizajePortlet() {
         log.info("Nueva instancia del portlet de objetos de aprendizaje");
@@ -188,7 +184,7 @@ public class ObjetoAprendizajePortlet extends BaseController {
 
     @RequestMapping(params = "action=elimina")
     public void elimina(ActionRequest request, @RequestParam Long id) throws PortalException, SystemException {
-        log.debug("eliminando contenido {}", id);
+        log.debug("eliminando objeto de aprendizaje {}", id);
 
         User creador = PortalUtil.getUser(request);
         objetoAprendizajeDao.elimina(id, creador);
