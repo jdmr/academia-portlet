@@ -24,6 +24,7 @@
 package mx.edu.um.academia.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.*;
@@ -63,7 +64,7 @@ public class Curso implements Serializable {
     private String creador;
     @ManyToMany
     @OrderColumn(name = "orden")
-    private List<ObjetoAprendizaje> objetos;
+    private List<ObjetoAprendizaje> objetos = new ArrayList<>();
     private Long intro;
 
     public Curso() {
@@ -188,6 +189,20 @@ public class Curso implements Serializable {
     }
 
     /**
+     * @return the objetos
+     */
+    public List<ObjetoAprendizaje> getObjetos() {
+        return objetos;
+    }
+
+    /**
+     * @param objetos the objetos to set
+     */
+    public void setObjetos(List<ObjetoAprendizaje> objetos) {
+        this.objetos = objetos;
+    }
+
+    /**
      * @return the intro
      */
     public Long getIntro() {
@@ -210,7 +225,7 @@ public class Curso implements Serializable {
             return false;
         }
         final Curso other = (Curso) obj;
-        if ((this.codigo == null) ? (other.codigo != null) : !this.codigo.equals(other.codigo)) {
+        if (this.id != other.id && (this.id == null || !this.id.equals(other.id))) {
             return false;
         }
         return true;
@@ -218,16 +233,16 @@ public class Curso implements Serializable {
 
     @Override
     public int hashCode() {
-        int hash = 7;
+        int hash = 5;
         hash = 97 * hash + (this.id != null ? this.id.hashCode() : 0);
         hash = 97 * hash + (this.version != null ? this.version.hashCode() : 0);
         hash = 97 * hash + (this.codigo != null ? this.codigo.hashCode() : 0);
-        hash = 97 * hash + (this.comunidadId != null ? this.comunidadId.hashCode() : 0);
         return hash;
     }
 
     @Override
     public String toString() {
-        return codigo + " | " + nombre;
+        return "Curso{" + "id=" + id + ", codigo=" + codigo + ", nombre=" + nombre + ", comunidadId=" + comunidadId + '}';
     }
+
 }

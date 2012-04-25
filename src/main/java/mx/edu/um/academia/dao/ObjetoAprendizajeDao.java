@@ -45,6 +45,6 @@ public interface ObjetoAprendizajeDao {
     public ObjetoAprendizaje obtiene(Long objetoAprendizajeId);
 
     public Map<String, Object> contenidos(Long id, Set<Long> comunidades);
-    
+
     public void agregaContenido(Long objetoId, Long[] contenidos);
 }

@@ -208,5 +208,6 @@ public class ObjetoAprendizajeDaoHibernate implements ObjetoAprendizajeDao {
             objeto.getContenidos().add((Contenido) currentSession().load(Contenido.class, contenidoId));
         }
         currentSession().update(objeto);
+        currentSession().flush();
     }
 }

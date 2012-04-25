@@ -23,17 +23,13 @@
  */
 package mx.edu.um.academia.dao;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import mx.edu.um.academia.model.Curso;
+import mx.edu.um.academia.model.ObjetoAprendizaje;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.junit.*;
 import static org.junit.Assert.*;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -157,6 +153,28 @@ public class CursoDaoTest {
         assertEquals("TEST--1", result.getNombre());
     }
 
+    @Test
+    public void debieraAgregarObjetosDeAprendizaje() {
+        log.debug("debiera agregar objetos de aprendizaje");
+        ObjetoAprendizaje objeto1 = creaObjetoAprendizaje("OBJETO--1");
+        assertNotNull(objeto1.getId());
+        ObjetoAprendizaje objeto2 = creaObjetoAprendizaje("OBJETO--2");
+        assertNotNull(objeto2.getId());
+
+        Curso curso = creaCurso("TEST--1");
+        assertNotNull(curso.getId());
+        Long cursoId = curso.getId();
+        Long[] objetos = new Long[]{objeto1.getId(), objeto2.getId()};
+        
+        instance.agregaObjetos(cursoId, objetos);
+        
+        Curso prueba = instance.obtiene(cursoId);
+        assertNotNull(prueba);
+        assertNotNull(prueba.getObjetos());
+        assertEquals(2, prueba.getObjetos().size());
+        assertEquals(objeto1, prueba.getObjetos().get(0));
+    }
+
     private Curso creaCurso(String nombre) {
         Curso curso = new Curso(nombre, nombre, 1l);
         Date fecha = new Date();
@@ -167,5 +185,16 @@ public class CursoDaoTest {
         currentSession().save(curso);
         currentSession().flush();
         return curso;
+    }
+
+    private ObjetoAprendizaje creaObjetoAprendizaje(String nombre) {
+        ObjetoAprendizaje objetoAprendizaje = new ObjetoAprendizaje(nombre, nombre, nombre, 1l);
+        Date fecha = new Date();
+        objetoAprendizaje.setFechaCreacion(fecha);
+        objetoAprendizaje.setFechaModificacion(fecha);
+        objetoAprendizaje.setCreador("tests");
+        currentSession().save(objetoAprendizaje);
+        currentSession().flush();
+        return objetoAprendizaje;
     }
 }

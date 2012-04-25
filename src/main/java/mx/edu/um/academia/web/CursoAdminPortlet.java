@@ -151,10 +151,16 @@ public class CursoAdminPortlet extends BaseController {
     }
 
     @RequestMapping(params = "action=ver")
-    public String ver(RenderRequest request, @RequestParam Long id, Model modelo) {
+    public String ver(RenderRequest request, @RequestParam Long id, Model modelo) throws SystemException, PortalException {
         log.debug("Mostrando curso {}", id);
         Curso curso = cursoDao.obtiene(id);
         modelo.addAttribute("curso", curso);
+        
+        Map<Long, String> comunidades = ComunidadUtil.obtieneComunidades(request);
+        Map<String, Object> objetos = cursoDao.objetos(id, comunidades.keySet());
+        modelo.addAttribute("disponibles", objetos.get("disponibles"));
+        modelo.addAttribute("seleccionados", objetos.get("seleccionados"));
+        
         return "cursoAdmin/ver";
     }
     
@@ -282,6 +288,16 @@ public class CursoAdminPortlet extends BaseController {
         response.setRenderParameter("id", cursoId.toString());
     }
 
+    @RequestMapping(params = "action=agregaObjetos")
+    public void agregaObjetos(ActionRequest request, ActionResponse response, @RequestParam Long cursoId, @RequestParam Long[] objetos) {
+        log.debug("Agregando objetos {} a {}", objetos, cursoId);
+        
+        cursoDao.agregaObjetos(cursoId, objetos);
+        
+        response.setRenderParameter("action", "ver");
+        response.setRenderParameter("id", cursoId.toString());
+    }
+    
     private Session currentSession() {
         return sessionFactory.getCurrentSession();
     }

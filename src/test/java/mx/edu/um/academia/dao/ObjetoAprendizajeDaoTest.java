@@ -23,17 +23,12 @@
  */
 package mx.edu.um.academia.dao;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import mx.edu.um.academia.model.ObjetoAprendizaje;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.junit.*;
 import static org.junit.Assert.*;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,9 +44,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:context/academia.xml"})
 @Transactional
-public class ObjetoAprendizajoDaoTest {
+public class ObjetoAprendizajeDaoTest {
 
-    private static final Logger log = LoggerFactory.getLogger(ObjetoAprendizajoDaoTest.class);
+    private static final Logger log = LoggerFactory.getLogger(ObjetoAprendizajeDaoTest.class);
     @Autowired
     private ObjetoAprendizajeDao instance;
     @Autowired
@@ -61,7 +56,7 @@ public class ObjetoAprendizajoDaoTest {
         return sessionFactory.getCurrentSession();
     }
 
-    public ObjetoAprendizajoDaoTest() {
+    public ObjetoAprendizajeDaoTest() {
     }
 
     @BeforeClass

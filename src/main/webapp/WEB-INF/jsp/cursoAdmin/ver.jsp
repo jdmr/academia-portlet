@@ -43,3 +43,28 @@
         <h3>${curso.fechaModificacion}</h3>
     </div>
 </div>
+<portlet:actionURL var="agregaObjetosURL">
+    <portlet:param name="action" value="agregaObjetos"/>
+</portlet:actionURL>
+<form id="<portlet:namespace />agregaObjetosForm" action="${agregaObjetosURL}" method="post" class="form-vertical">
+    <input type="hidden" id="<portlet:namespace />cursoId" name="<portlet:namespace />cursoId" value="${curso.id}"/>
+    <div class="row-fluid">
+        <select id="<portlet:namespace />objetos" name="<portlet:namespace />objetos" multiple="multiple" data-placeholder="<s:message code="curso.elija.objeto" />" class="span4" >
+            <c:forEach items="${seleccionados}" var="objeto">
+                <option value="${objeto.id}" selected="selected">${objeto.codigo} | ${objeto.nombre}</option>
+            </c:forEach>
+            <c:forEach items="${disponibles}" var="objeto">
+                <option value="${objeto.id}">${objeto.codigo} | ${objeto.nombre}</option>
+            </c:forEach>
+        </select>
+    </div>
+    <div class="row-fluid">
+        <button type="submit" class="btn btn-primary"><i class="icon-file icon-white"></i> <s:message code="curso.agrega.objeto" /></button>
+    </div>
+</form>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("select#<portlet:namespace />objetos").chosen();
+    });
+</script>
+    

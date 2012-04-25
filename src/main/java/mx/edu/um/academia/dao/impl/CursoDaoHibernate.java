@@ -27,7 +27,9 @@ import com.liferay.portal.model.User;
 import java.util.*;
 import mx.edu.um.academia.dao.CursoDao;
 import mx.edu.um.academia.model.Curso;
+import mx.edu.um.academia.model.ObjetoAprendizaje;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.*;
@@ -167,5 +169,45 @@ public class CursoDaoHibernate implements CursoDao {
         String nombre = curso.getNombre();
         currentSession().delete(curso);
         return nombre;
+    }
+
+    @Override
+    public Map<String, Object> objetos(Long id, Set<Long> comunidades) {
+        log.debug("Buscando los objetos del curso {}", id);
+        Query query = currentSession().createQuery("select objeto from Curso c inner join c.objetos as objeto where c.id = :cursoId");
+        query.setLong("cursoId", id);
+        Map<String, Object> resultado = new HashMap<>();
+        List<ObjetoAprendizaje> objetos = query.list();
+        log.debug("Lista de seleccionados");
+        for (ObjetoAprendizaje objeto : objetos) {
+            log.debug("Seleccionado: " + objeto.getNombre());
+        }
+        resultado.put("seleccionados", objetos);
+        
+        Criteria criteria = currentSession().createCriteria(ObjetoAprendizaje.class);
+        criteria.add(Restrictions.in("comunidadId", (Set<Long>) comunidades));
+        criteria.addOrder(Order.asc("codigo"));
+        log.debug("Lista de disponibles");
+        List<ObjetoAprendizaje> disponibles = criteria.list();
+        disponibles.removeAll(objetos);
+        for (ObjetoAprendizaje objeto : disponibles) {
+            log.debug("Disponible: " + objeto.getNombre());
+        }
+        resultado.put("disponibles", disponibles);
+        log.debug("regresando {}", resultado);
+        return resultado;
+    }
+
+    @Override
+    public void agregaObjetos(Long cursoId, Long[] objetosArray) {
+        log.debug("Agregando objetos {} a curso {}", objetosArray, cursoId);
+        Curso curso = (Curso) currentSession().get(Curso.class, cursoId);
+        curso.getObjetos().clear();
+        for(Long objetoId : objetosArray) {
+            curso.getObjetos().add((ObjetoAprendizaje) currentSession().load(ObjetoAprendizaje.class, objetoId));
+        }
+        log.debug("Actualizando curso {}", curso);
+        currentSession().update(curso);
+        currentSession().flush();
     }
 }

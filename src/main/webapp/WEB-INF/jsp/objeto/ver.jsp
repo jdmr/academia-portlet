@@ -1,17 +1,17 @@
 <%@ include file="/WEB-INF/jsp/include.jsp" %>
+<portlet:renderURL var="nuevoUrl" >
+    <portlet:param name="action" value="nuevo" />
+</portlet:renderURL>
+<portlet:renderURL var="editaUrl" >
+    <portlet:param name="action" value="edita" />
+    <portlet:param name="id" value="${objeto.id}" />
+</portlet:renderURL>
+<portlet:actionURL var="eliminaUrl" >
+    <portlet:param name="action" value="elimina" />
+    <portlet:param name="id" value="${objeto.id}" />
+</portlet:actionURL>
 
 <div class="well">
-    <portlet:renderURL var="nuevoUrl" >
-        <portlet:param name="action" value="nuevo" />
-    </portlet:renderURL>
-    <portlet:renderURL var="editaUrl" >
-        <portlet:param name="action" value="edita" />
-        <portlet:param name="id" value="${objeto.id}" />
-    </portlet:renderURL>
-    <portlet:actionURL var="eliminaUrl" >
-        <portlet:param name="action" value="elimina" />
-        <portlet:param name="id" value="${objeto.id}" />
-    </portlet:actionURL>
 
     <a class="btn btn-primary" href="<portlet:renderURL portletMode='view'/>"><i class="icon-list icon-white"></i> <s:message code="objeto.lista" /></a>
     <a class="btn btn-primary" href="${nuevoUrl}"><i class="icon-file icon-white"></i> <s:message code="objeto.nuevo" /></a>
@@ -55,7 +55,7 @@
 <form id="<portlet:namespace />agregaContenidoForm" action="${agregaContenidoURL}" method="post" class="form-vertical">
     <input type="hidden" id="<portlet:namespace />objetoId" name="<portlet:namespace />objetoId" value="${objeto.id}"/>
     <div class="row-fluid">
-        <select id="<portlet:namespace />contenidos" name="<portlet:namespace />contenidos" multiple="multiple" data-placeholder="<s:message code="objeto.elija.contenido" />" >
+        <select id="<portlet:namespace />contenidos" name="<portlet:namespace />contenidos" multiple="multiple" data-placeholder="<s:message code="objeto.elija.contenido" />" class="span4">
             <c:forEach items="${seleccionados}" var="contenido">
                 <option value="${contenido.id}" selected="selected">${contenido.codigo} | ${contenido.nombre}</option>
             </c:forEach>
