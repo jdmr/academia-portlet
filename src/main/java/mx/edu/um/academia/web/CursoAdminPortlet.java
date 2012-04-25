@@ -52,14 +52,12 @@ import mx.edu.um.academia.model.ObjetoAprendizaje;
 import mx.edu.um.academia.utils.ComunidadUtil;
 import mx.edu.um.academia.utils.Constantes;
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -73,8 +71,6 @@ public class CursoAdminPortlet extends BaseController {
 
     @Autowired
     private CursoDao cursoDao;
-    @Autowired
-    private SessionFactory sessionFactory;
 
     public CursoAdminPortlet() {
         log.info("Nueva instancia de Curso Admin Portlet creada");
@@ -166,6 +162,15 @@ public class CursoAdminPortlet extends BaseController {
         modelo.addAttribute("disponibles", objetos.get("disponibles"));
         modelo.addAttribute("seleccionados", objetos.get("seleccionados"));
 
+        if (curso.getIntro() != null) {
+            ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+            JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(curso.getIntro());
+            if (ja != null) {
+                String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+                modelo.addAttribute("texto", texto);
+            }
+        }
+
         return "cursoAdmin/ver";
     }
 
@@ -211,15 +216,16 @@ public class CursoAdminPortlet extends BaseController {
     }
 
     @RequestMapping(params = "action=intro")
-    public String intro(RenderRequest request, @RequestParam Long cursoId, Model modelo) {
+    public String intro(RenderRequest request, @RequestParam Long id, Model modelo) {
         log.debug("Intro");
-        modelo.addAttribute("cursoId", cursoId);
+        Curso curso = cursoDao.obtiene(id);
+        modelo.addAttribute("curso", curso);
         return "cursoAdmin/intro";
     }
 
     @RequestMapping(params = "action=creaIntro")
-    public void creaIntro(ActionRequest request, ActionResponse response, @RequestParam Long cursoId, @RequestParam String texto) {
-        Curso curso = cursoDao.obtiene(cursoId);
+    public void creaIntro(ActionRequest request, ActionResponse response, @ModelAttribute Curso curso, @RequestParam String texto) {
+        curso = cursoDao.obtiene(curso.getId());
 
         log.debug("Creando intro");
         StringBuilder sb = new StringBuilder();
@@ -228,7 +234,6 @@ public class CursoAdminPortlet extends BaseController {
         sb.append("]]></static-content></root>");
         texto = sb.toString();
 
-        Transaction tx = null;
         try {
             User creador = PortalUtil.getUser(request);
             ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
@@ -239,7 +244,10 @@ public class CursoAdminPortlet extends BaseController {
                 displayDate = CalendarFactoryUtil.getCalendar();
             }
 
-            tx = currentSession().beginTransaction();
+            if (curso.getIntro() != null) {
+                JournalArticleLocalServiceUtil.deleteJournalArticle(curso.getIntro());
+            }
+
             ServiceContext serviceContext = ServiceContextFactory.getInstance(JournalArticle.class.getName(), request);
 
             JournalArticle article = JournalArticleLocalServiceUtil.addArticle(
@@ -280,17 +288,16 @@ public class CursoAdminPortlet extends BaseController {
                     serviceContext // serviceContext
                     );
 
+            log.debug("Asignando intro {} a curso {}", article.getId(), curso);
             curso.setIntro(article.getId());
             cursoDao.actualiza(curso, creador);
 
-            tx.commit();
         } catch (PortalException | SystemException | DataAccessException e) {
             log.error("No se pudo crear la intro", e);
-            tx.rollback();
         }
 
         response.setRenderParameter("action", "ver");
-        response.setRenderParameter("id", cursoId.toString());
+        response.setRenderParameter("id", curso.getId().toString());
     }
 
     @RequestMapping(params = "action=agregaObjetos")
@@ -328,9 +335,9 @@ public class CursoAdminPortlet extends BaseController {
                 sb.append("<a href='#' onclick='cargaContenido(\"");
                 StringBuilder urlsb = new StringBuilder(url);
                 int pos = urlsb.indexOf("posicionObjeto=");
-                urlsb.replace(pos+16, pos+16, new Integer(i).toString());
+                urlsb.replace(pos + 16, pos + 16, new Integer(i).toString());
                 pos = urlsb.indexOf("posicionContenido=");
-                urlsb.replace(pos+19, pos+19, new Integer(j).toString());
+                urlsb.replace(pos + 19, pos + 19, new Integer(j).toString());
                 sb.append(urlsb.toString());
                 sb.append("\");return false;'><i class='icon-ok-circle icon-white'></i> ");
                 sb.append(contenido.getNombre());
@@ -373,7 +380,20 @@ public class CursoAdminPortlet extends BaseController {
         writer.write(sb.toString());
     }
 
-    private Session currentSession() {
-        return sessionFactory.getCurrentSession();
+    @RequestMapping(params = "action=vistaPreviaIntro")
+    public void vistaPreviaIntro(ResourceRequest request, ResourceResponse response, @RequestParam Long cursoId) throws IOException, PortalException, SystemException {
+        log.debug("Vista previa del contenido del curso {} ", cursoId);
+        Curso curso = cursoDao.obtiene(cursoId);
+        if (curso.getIntro() != null) {
+            ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+            JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(curso.getIntro());
+            if (ja != null) {
+                String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+                StringBuilder sb = new StringBuilder();
+                sb.append("<div>").append(texto).append("</div>");
+                PrintWriter writer = response.getWriter();
+                writer.write(sb.toString());
+            }
+        }
     }
 }

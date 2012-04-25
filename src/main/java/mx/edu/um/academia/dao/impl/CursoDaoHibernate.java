@@ -153,6 +153,7 @@ public class CursoDaoHibernate implements CursoDao {
         curso.setCodigo(otro.getCodigo());
         curso.setNombre(otro.getNombre());
         curso.setComunidadId(otro.getComunidadId());
+        curso.setIntro(otro.getIntro());
         curso.setFechaModificacion(new Date());
         if (creador != null) {
             curso.setCreador(creador.getScreenName());

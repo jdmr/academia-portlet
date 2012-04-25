@@ -6,6 +6,10 @@
     <portlet:param name="action" value="edita" />
     <portlet:param name="id" value="${curso.id}" />
 </portlet:renderURL>
+<portlet:renderURL var="introUrl" >
+    <portlet:param name="action" value="intro" />
+    <portlet:param name="id" value="${curso.id}" />
+</portlet:renderURL>
 <portlet:actionURL var="eliminaUrl" >
     <portlet:param name="action" value="elimina" />
     <portlet:param name="id" value="${curso.id}" />
@@ -15,6 +19,7 @@
     <a class="btn btn-primary" href="<portlet:renderURL portletMode='view'/>"><i class="icon-list icon-white"></i> <s:message code="curso.lista" /></a>
     <a class="btn btn-primary" href="${nuevoUrl}"><i class="icon-file icon-white"></i> <s:message code="curso.nuevo" /></a>
     <a class="btn btn-primary" href="${editaUrl}"><i class="icon-edit icon-white"></i> <s:message code="curso.edita" /></a>
+    <a class="btn btn-primary" href="${introUrl}"><i class="icon-edit icon-white"></i> <s:message code="curso.intro.nueva" /></a>
     <a class="btn btn-danger"  href="${eliminaUrl}" onclick="return confirm('<s:message code="curso.elimina.confirma"/>')"><i class="icon-ban-circle icon-white"></i> <s:message code="curso.elimina" /></a>
 </div>
 <div class="row-fluid">
@@ -69,10 +74,16 @@
     <portlet:param name="posicionObjeto" value="0" />
     <portlet:param name="posicionContenido" value="0" />
 </portlet:resourceURL>
+<portlet:resourceURL var="vistaPreviaIntroUrl" >
+    <portlet:param name="action" value="vistaPreviaIntro" />
+    <portlet:param name="cursoId" value="${curso.id}" />
+</portlet:resourceURL>
 <div class="well" style="margin-top: 10px;">
     <a id="vistaPreviaLink" class="btn btn-primary" href="${vistaPreviaUrl}"><i class="icon-eye-open icon-white"></i> <s:message code="curso.vista.previa" /></a>
+    <a id="vistaPreviaIntroLink" class="btn btn-primary" href="${vistaPreviaIntroUrl}"><i class="icon-eye-open icon-white"></i> <s:message code="curso.vista.previa.intro" /></a>
 </div>
 <div id="vistaPrevia" class="row-fluid">
+    <div>${texto}</div>
 </div>
     
 <script type="text/javascript">
@@ -85,6 +96,14 @@
             e.preventDefault();
             container.hide("slide",{direction:"up"});
             container.load('${vistaPreviaUrl}', {url:'${vistaPreviaUrl}'}, function() {
+                container.show("slide",{direction:"up"});
+            });
+        });
+        
+        $("a#vistaPreviaIntroLink").click(function(e) {
+            e.preventDefault();
+            container.hide("slide",{direction:"up"});
+            container.load('${vistaPreviaIntroUrl}', {}, function() {
                 container.show("slide",{direction:"up"});
             });
         });
