@@ -62,9 +62,39 @@
         <button type="submit" class="btn btn-primary"><i class="icon-file icon-white"></i> <s:message code="curso.agrega.objeto" /></button>
     </div>
 </form>
+    
+<portlet:resourceURL var="vistaPreviaUrl" >
+    <portlet:param name="action" value="vistaPrevia" />
+    <portlet:param name="cursoId" value="${curso.id}" />
+    <portlet:param name="posicionObjeto" value="0" />
+    <portlet:param name="posicionContenido" value="0" />
+</portlet:resourceURL>
+<div class="well" style="margin-top: 10px;">
+    <a id="vistaPreviaLink" class="btn btn-primary" href="${vistaPreviaUrl}"><i class="icon-eye-open icon-white"></i> <s:message code="curso.vista.previa" /></a>
+</div>
+<div id="vistaPrevia" class="row-fluid">
+</div>
+    
 <script type="text/javascript">
     $(document).ready(function() {
         $("select#<portlet:namespace />objetos").chosen();
-    });
-</script>
+        
+        var container = $("div#vistaPrevia");
     
+        $("a#vistaPreviaLink").click(function(e) {
+            e.preventDefault();
+            container.hide("slide",{direction:"up"});
+            container.load('${vistaPreviaUrl}', {url:'${vistaPreviaUrl}'}, function() {
+                container.show("slide",{direction:"up"});
+            });
+        });
+    });
+    
+    function cargaContenido(contenidoUrl) {
+        var container = $("div#vistaPrevia");
+        //container.hide("slide",{direction:"up"});
+        container.load(contenidoUrl, {url:'${vistaPreviaUrl}'}, function() {
+            //container.show("slide",{direction:"up"});
+        });
+    }
+</script>

@@ -26,6 +26,7 @@ package mx.edu.um.academia.dao.impl;
 import com.liferay.portal.model.User;
 import java.util.*;
 import mx.edu.um.academia.dao.CursoDao;
+import mx.edu.um.academia.model.Contenido;
 import mx.edu.um.academia.model.Curso;
 import mx.edu.um.academia.model.ObjetoAprendizaje;
 import org.hibernate.Criteria;
@@ -209,5 +210,20 @@ public class CursoDaoHibernate implements CursoDao {
         log.debug("Actualizando curso {}", curso);
         currentSession().update(curso);
         currentSession().flush();
+    }
+
+    @Override
+    public Map<String, Object> verContenido(Long cursoId) {
+        Curso curso = (Curso) currentSession().get(Curso.class, cursoId);
+        List<ObjetoAprendizaje> objetos = curso.getObjetos();
+        for(ObjetoAprendizaje objeto : objetos) {
+            for(Contenido contenido : objeto.getContenidos()) {
+                log.debug("{} : {} : {}", new Object[] {curso.getCodigo(), objeto.getCodigo(), contenido.getCodigo()});
+            }
+        }
+        
+        Map<String, Object> resultado = new HashMap<>();
+        resultado.put("objetos", objetos);
+        return resultado;
     }
 }

@@ -47,4 +47,6 @@ public interface CursoDao {
     public Map<String, Object> objetos(Long id, Set<Long> comunidades);
 
     public void agregaObjetos(Long cursoId, Long[] objetos);
+
+    public Map<String, Object> verContenido(Long cursoId);
 }

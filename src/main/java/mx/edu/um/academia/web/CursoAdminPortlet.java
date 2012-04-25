@@ -32,20 +32,25 @@ import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextFactory;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
+import com.liferay.portlet.documentlibrary.model.DLFileEntry;
+import com.liferay.portlet.documentlibrary.service.DLFileEntryLocalServiceUtil;
 import com.liferay.portlet.journal.model.JournalArticle;
 import com.liferay.portlet.journal.model.JournalArticleConstants;
 import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
-import javax.portlet.RenderRequest;
+import javax.portlet.*;
 import javax.validation.Valid;
 import mx.edu.um.academia.dao.CursoDao;
+import mx.edu.um.academia.model.Contenido;
 import mx.edu.um.academia.model.Curso;
+import mx.edu.um.academia.model.ObjetoAprendizaje;
 import mx.edu.um.academia.utils.ComunidadUtil;
+import mx.edu.um.academia.utils.Constantes;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -155,15 +160,15 @@ public class CursoAdminPortlet extends BaseController {
         log.debug("Mostrando curso {}", id);
         Curso curso = cursoDao.obtiene(id);
         modelo.addAttribute("curso", curso);
-        
+
         Map<Long, String> comunidades = ComunidadUtil.obtieneComunidades(request);
         Map<String, Object> objetos = cursoDao.objetos(id, comunidades.keySet());
         modelo.addAttribute("disponibles", objetos.get("disponibles"));
         modelo.addAttribute("seleccionados", objetos.get("seleccionados"));
-        
+
         return "cursoAdmin/ver";
     }
-    
+
     @RequestMapping(params = "action=edita")
     public String edita(RenderRequest request, Model modelo, @RequestParam Long id) throws SystemException, PortalException {
         log.debug("Edita objeto de aprendizaje");
@@ -277,7 +282,7 @@ public class CursoAdminPortlet extends BaseController {
 
             curso.setIntro(article.getId());
             cursoDao.actualiza(curso, creador);
-            
+
             tx.commit();
         } catch (PortalException | SystemException | DataAccessException e) {
             log.error("No se pudo crear la intro", e);
@@ -291,13 +296,83 @@ public class CursoAdminPortlet extends BaseController {
     @RequestMapping(params = "action=agregaObjetos")
     public void agregaObjetos(ActionRequest request, ActionResponse response, @RequestParam Long cursoId, @RequestParam Long[] objetos) {
         log.debug("Agregando objetos {} a {}", objetos, cursoId);
-        
+
         cursoDao.agregaObjetos(cursoId, objetos);
-        
+
         response.setRenderParameter("action", "ver");
         response.setRenderParameter("id", cursoId.toString());
     }
-    
+
+    @RequestMapping(params = "action=vistaPrevia")
+    public void vistaPrevia(ResourceRequest request, ResourceResponse response, @RequestParam Long cursoId, @RequestParam Integer posicionObjeto, @RequestParam Integer posicionContenido, @RequestParam String url) throws IOException, PortalException, SystemException {
+        log.debug("Vista previa del contenido del curso {} - {} - {} - {}", new Object[]{cursoId, posicionObjeto, posicionContenido, url});
+        Map<String, Object> resultado = cursoDao.verContenido(cursoId);
+        List<ObjetoAprendizaje> objetos = (List<ObjetoAprendizaje>) resultado.get("objetos");
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("<div class='span3'>");
+        sb.append("<div class='well' style='padding: 0; padding-bottom: 15px;'>");
+        sb.append("<ul class='nav nav-list' style='margin-right: 0;'>");
+        for (int i = 0; i < objetos.size(); i++) {
+            ObjetoAprendizaje objeto = objetos.get(i);
+            sb.append("<li class='nav-header'>");
+            sb.append(objeto.getNombre());
+            sb.append("</li>");
+            for (int j = 0; j < objeto.getContenidos().size(); j++) {
+                sb.append("<li");
+                if (j == posicionContenido) {
+                    sb.append(" class='active'");
+                }
+                sb.append(">");
+                Contenido contenido = objeto.getContenidos().get(j);
+                sb.append("<a href='#' onclick='cargaContenido(\"");
+                StringBuilder urlsb = new StringBuilder(url);
+                int pos = urlsb.indexOf("posicionObjeto=");
+                urlsb.replace(pos+16, pos+16, new Integer(i).toString());
+                pos = urlsb.indexOf("posicionContenido=");
+                urlsb.replace(pos+19, pos+19, new Integer(j).toString());
+                sb.append(urlsb.toString());
+                sb.append("\");return false;'><i class='icon-ok-circle icon-white'></i> ");
+                sb.append(contenido.getNombre());
+                sb.append("</a>");
+                sb.append("</li>");
+            }
+        }
+        sb.append("</ul>");
+        sb.append("</div>");
+        sb.append("</div>");
+        Contenido contenido = objetos.get(posicionObjeto).getContenidos().get(posicionContenido);
+        sb.append("<div class='span9'>");
+        switch (contenido.getTipo()) {
+            case Constantes.TEXTO:
+                if (contenido.getContenidoId() != null) {
+                    ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+                    JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(contenido.getContenidoId());
+                    if (ja != null) {
+                        String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+                        sb.append(texto);
+                    }
+                }
+                break;
+            case Constantes.VIDEO:
+                if (contenido.getContenidoId() != null) {
+                    DLFileEntry fileEntry = DLFileEntryLocalServiceUtil.getDLFileEntry(contenido.getContenidoId());
+                    StringBuilder videoLink = new StringBuilder();
+                    videoLink.append("/documents/");
+                    videoLink.append(fileEntry.getGroupId());
+                    videoLink.append("/");
+                    videoLink.append(fileEntry.getFolderId());
+                    videoLink.append("/");
+                    videoLink.append(fileEntry.getTitle());
+                    sb.append("<video controls='controls' src='").append(videoLink.toString()).append("' />");
+                }
+                break;
+        }
+        sb.append("</div>");
+        PrintWriter writer = response.getWriter();
+        writer.write(sb.toString());
+    }
+
     private Session currentSession() {
         return sessionFactory.getCurrentSession();
     }
