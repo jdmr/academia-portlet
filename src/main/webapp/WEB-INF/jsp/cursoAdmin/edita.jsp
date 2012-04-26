@@ -24,6 +24,16 @@
             <form:errors cssClass="errors" path="nombre" cssStyle="color:red;" />
         </div>
         <div class="control-group">
+            <label for="tipo"><s:message code="curso.tipo" /></label>
+            <form:select path="tipo" items="${tipos}" />
+            <form:errors cssClass="errors" path="tipo" />
+        </div>
+        <div class="control-group" id="tipoCursoDiv"<c:if test="${curso.tipo ne 'PAGADO'}"> style="display: none;" </c:if>>
+            <label for="precio"><s:message code="precio" /></label>
+            <form:input path="precio" maxlength="32" cssStyle="text-align: right;"/>
+            <form:errors cssClass="errors" path="precio" cssStyle="color:red;" />
+        </div>
+        <div class="control-group">
             <label for="comunidadId"><s:message code="comunidad" /></label>
             <form:select path="comunidadId" items="${comunidades}" />
             <form:errors cssClass="errors" path="comunidadId" />
@@ -36,6 +46,19 @@
 </form:form>
 <script type="text/javascript">
     $(document).ready(function() {
+        $("select#tipo")
+            .chosen()
+            .change(function() {
+                if ($(this).val() == 'PAGADO') {
+                    $("div#tipoCursoDiv").slideDown(function() {
+                        $("input#precio").focus();
+                    });
+                } else {
+                    $("div#tipoCursoDiv").slideUp(function() {
+                        $("input#precio").val("0");
+                    });
+                }
+            });
         $("select#comunidadId").chosen();
         $("input#codigo").focus();
     });

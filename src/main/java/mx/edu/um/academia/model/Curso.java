@@ -24,6 +24,7 @@
 package mx.edu.um.academia.model;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -66,6 +67,10 @@ public class Curso implements Serializable {
     @OrderColumn(name = "orden")
     private List<ObjetoAprendizaje> objetos = new ArrayList<>();
     private Long intro;
+    @Column(nullable = false, length = 32)
+    private String tipo = "PATROCINADO";
+    @Column(scale = 2, precision = 8)
+    private BigDecimal precio = BigDecimal.ZERO;
 
     public Curso() {
     }
@@ -216,6 +221,34 @@ public class Curso implements Serializable {
         this.intro = intro;
     }
 
+    /**
+     * @return the tipo
+     */
+    public String getTipo() {
+        return tipo;
+    }
+
+    /**
+     * @param tipo the tipo to set
+     */
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    /**
+     * @return the precio
+     */
+    public BigDecimal getPrecio() {
+        return precio;
+    }
+
+    /**
+     * @param precio the precio to set
+     */
+    public void setPrecio(BigDecimal precio) {
+        this.precio = precio;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -244,5 +277,4 @@ public class Curso implements Serializable {
     public String toString() {
         return "Curso{" + "id=" + id + ", codigo=" + codigo + ", nombre=" + nombre + ", comunidadId=" + comunidadId + '}';
     }
-
 }

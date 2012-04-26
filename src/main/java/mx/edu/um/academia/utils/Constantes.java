@@ -33,4 +33,6 @@ public class Constantes {
     public static final String IMAGEN = "IMAGEN";
     public static final String URL = "URL";
     public static final String EXAMEN = "EXAMEN";
+    public static final String PATROCINADO = "PATROCINADO";
+    public static final String PAGADO = "PAGADO";
 }

@@ -24,6 +24,7 @@
 package mx.edu.um.academia.dao.impl;
 
 import com.liferay.portal.model.User;
+import java.math.BigDecimal;
 import java.util.*;
 import mx.edu.um.academia.dao.CursoDao;
 import mx.edu.um.academia.model.Contenido;
@@ -152,6 +153,8 @@ public class CursoDaoHibernate implements CursoDao {
         curso.setVersion(otro.getVersion());
         curso.setCodigo(otro.getCodigo());
         curso.setNombre(otro.getNombre());
+        curso.setTipo(otro.getTipo());
+        curso.setPrecio(otro.getPrecio());
         curso.setComunidadId(otro.getComunidadId());
         curso.setIntro(otro.getIntro());
         curso.setFechaModificacion(new Date());

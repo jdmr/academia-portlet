@@ -34,6 +34,16 @@
 </div>
 <div class="row-fluid">
     <div class="span6">
+        <h5><s:message code="curso.tipo" /></h5>
+        <h3><s:message code="${curso.tipo}" /></h3>
+    </div>
+    <div class="span6">
+        <h5><s:message code="precio" /></h5>
+        <h3>${curso.precio}</h3>
+    </div>
+</div>
+<div class="row-fluid">
+    <div class="span6">
         <h5><s:message code="creador" /></h5>
         <h3>${curso.creador}</h3>
     </div>

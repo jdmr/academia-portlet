@@ -39,10 +39,7 @@ import com.liferay.portlet.journal.model.JournalArticleConstants;
 import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.portlet.*;
 import javax.validation.Valid;
 import mx.edu.um.academia.dao.CursoDao;
@@ -53,6 +50,7 @@ import mx.edu.um.academia.utils.ComunidadUtil;
 import mx.edu.um.academia.utils.Constantes;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -71,6 +69,8 @@ public class CursoAdminPortlet extends BaseController {
 
     @Autowired
     private CursoDao cursoDao;
+    @Autowired
+    private ResourceBundleMessageSource messages;
 
     public CursoAdminPortlet() {
         log.info("Nueva instancia de Curso Admin Portlet creada");
@@ -124,6 +124,7 @@ public class CursoAdminPortlet extends BaseController {
         Curso curso = new Curso();
         modelo.addAttribute("curso", curso);
         modelo.addAttribute("comunidades", ComunidadUtil.obtieneComunidades(request));
+        modelo.addAttribute("tipos", obtieneTiposDeCurso(getThemeDisplay(request).getLocale()));
         return "cursoAdmin/nuevo";
     }
 
@@ -131,6 +132,7 @@ public class CursoAdminPortlet extends BaseController {
     public String nuevoError(RenderRequest request, Model modelo) throws SystemException, PortalException {
         log.debug("Nuevo curso despues de error");
         modelo.addAttribute("comunidades", ComunidadUtil.obtieneComunidades(request));
+        modelo.addAttribute("tipos", obtieneTiposDeCurso(getThemeDisplay(request).getLocale()));
         return "cursoAdmin/nuevo";
     }
 
@@ -180,6 +182,7 @@ public class CursoAdminPortlet extends BaseController {
         Curso curso = cursoDao.obtiene(id);
         modelo.addAttribute("curso", curso);
         modelo.addAttribute("comunidades", ComunidadUtil.obtieneComunidades(request));
+        modelo.addAttribute("tipos", obtieneTiposDeCurso(getThemeDisplay(request).getLocale()));
         return "cursoAdmin/edita";
     }
 
@@ -187,6 +190,7 @@ public class CursoAdminPortlet extends BaseController {
     public String editaError(RenderRequest request, Model modelo) throws SystemException, PortalException {
         log.debug("Edita curso despues de error");
         modelo.addAttribute("comunidades", ComunidadUtil.obtieneComunidades(request));
+        modelo.addAttribute("tipos", obtieneTiposDeCurso(getThemeDisplay(request).getLocale()));
         return "cursoAdmin/edita";
     }
 
@@ -395,5 +399,12 @@ public class CursoAdminPortlet extends BaseController {
                 writer.write(sb.toString());
             }
         }
+    }
+    
+    private Map<String, String> obtieneTiposDeCurso(Locale locale) {
+        Map<String, String> tipos = new LinkedHashMap<>();
+        tipos.put(Constantes.PATROCINADO, messages.getMessage(Constantes.PATROCINADO, null, locale));
+        tipos.put(Constantes.PAGADO, messages.getMessage(Constantes.PAGADO, null, locale));
+        return tipos;
     }
 }
