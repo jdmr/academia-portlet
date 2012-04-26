@@ -24,7 +24,6 @@
 package mx.edu.um.academia.dao.impl;
 
 import com.liferay.portal.model.User;
-import java.math.BigDecimal;
 import java.util.*;
 import mx.edu.um.academia.dao.CursoDao;
 import mx.edu.um.academia.model.Contenido;
