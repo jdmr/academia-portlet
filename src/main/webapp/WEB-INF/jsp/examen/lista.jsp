@@ -7,7 +7,7 @@
     <form name="<portlet:namespace />filtrarExamen" method="post" action="${actionUrl}" class="form-search" >
         <a class="btn btn-primary" href='<portlet:renderURL windowState="<%= WindowState.MAXIMIZED.toString() %>" ><portlet:param name="action" value="nuevo"/></portlet:renderURL>'><i class="icon-file icon-white"></i> <s:message code="examen.nuevo" /></a>
         <input name="<portlet:namespace />filtro" type="text" class="input-medium search-query" value="${param.filtro}">
-        <button type="submit" class="btn" name="<portlet:namespace />_busca"><i class="icon-search"></i><s:message code="buscar" /></button>
+        <button type="submit" class="btn" name="<portlet:namespace />_busca"><i class="icon-search"></i> <s:message code="buscar" /></button>
     </form>
 </div>
 <c:if test="${examenes != null}">

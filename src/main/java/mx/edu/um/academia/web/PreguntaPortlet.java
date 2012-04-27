@@ -25,12 +25,18 @@ package mx.edu.um.academia.web;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.util.CalendarFactoryUtil;
+import com.liferay.portal.kernel.util.UnicodeFormatter;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.model.User;
+import com.liferay.portal.service.ServiceContext;
+import com.liferay.portal.service.ServiceContextFactory;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.journal.model.JournalArticle;
+import com.liferay.portlet.journal.model.JournalArticleConstants;
 import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,11 +47,13 @@ import javax.validation.Valid;
 import mx.edu.um.academia.dao.PreguntaDao;
 import mx.edu.um.academia.model.Pregunta;
 import mx.edu.um.academia.utils.ComunidadUtil;
+import mx.edu.um.academia.utils.TextoUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -56,14 +64,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequestMapping("VIEW")
 public class PreguntaPortlet extends BaseController {
-    
+
     @Autowired
     private PreguntaDao preguntaDao;
-    
+    @Autowired
+    private TextoUtil textoUtil;
+
     public PreguntaPortlet() {
         log.info("Nueva instancia del Controlador de Preguntas");
     }
-    
+
     @RequestMapping
     public String lista(RenderRequest request,
             @RequestParam(required = false) String filtro,
@@ -152,6 +162,13 @@ public class PreguntaPortlet extends BaseController {
             }
         }
         modelo.addAttribute("pregunta", pregunta);
+
+        Map<Long, String> comunidades = ComunidadUtil.obtieneComunidades(request);
+        Map<String, Object> respuestas = preguntaDao.respuestas(id, comunidades.keySet());
+        modelo.addAttribute("correctas", respuestas.get("correctas"));
+        modelo.addAttribute("incorrectas", respuestas.get("incorrectas"));
+        modelo.addAttribute("disponibles", respuestas.get("disponibles"));
+
         return "pregunta/ver";
     }
 
@@ -199,5 +216,99 @@ public class PreguntaPortlet extends BaseController {
         User creador = PortalUtil.getUser(request);
         preguntaDao.elimina(id, creador);
     }
-    
+
+    @RequestMapping(params = "action=nuevoTexto")
+    public String nuevoTexto(RenderRequest request, Model modelo, @RequestParam Long id) throws SystemException, PortalException {
+        log.debug("Nuevo texto para pregunta {}", id);
+        Pregunta pregunta = preguntaDao.obtiene(id);
+        modelo.addAttribute("pregunta", pregunta);
+        return "pregunta/nuevoTexto";
+    }
+
+    @RequestMapping(params = "action=creaTexto")
+    public void creaTexto(ActionRequest request, ActionResponse response,
+            @ModelAttribute Pregunta pregunta, @RequestParam String texto) throws SystemException, PortalException {
+        log.debug("Creando texto para pregunta {}", pregunta.getId());
+        pregunta = preguntaDao.obtiene(pregunta.getId());
+        StringBuilder sb = new StringBuilder();
+        sb.append("<?xml version='1.0' encoding='UTF-8'?><root><static-content><![CDATA[");
+        sb.append(texto);
+        sb.append("]]></static-content></root>");
+        texto = sb.toString();
+
+        ThemeDisplay themeDisplay = getThemeDisplay(request);
+        Calendar displayDate;
+        if (themeDisplay != null) {
+            displayDate = CalendarFactoryUtil.getCalendar(themeDisplay.getTimeZone(), themeDisplay.getLocale());
+        } else {
+            displayDate = CalendarFactoryUtil.getCalendar();
+        }
+        User creador = PortalUtil.getUser(request);
+        ServiceContext serviceContext = ServiceContextFactory.getInstance(JournalArticle.class.getName(), request);
+        if (pregunta.getContenido() != null) {
+            JournalArticleLocalServiceUtil.deleteJournalArticle(pregunta.getContenido());
+        }
+
+        JournalArticle article = textoUtil.crea(
+                pregunta.getNombre(),
+                pregunta.getNombre(),
+                texto,
+                displayDate,
+                creador.getUserId(),
+                pregunta.getComunidadId(),
+                serviceContext);
+        pregunta.setContenido(article.getId());
+        pregunta = preguntaDao.actualizaContenido(pregunta, creador);
+
+        response.setRenderParameter("action", "ver");
+        response.setRenderParameter("id", pregunta.getId().toString());
+    }
+
+    @RequestMapping(params = "action=editaTexto")
+    public String editaTexto(RenderRequest request, Model modelo, @RequestParam Long id) throws SystemException, PortalException {
+        log.debug("Edita texto para pregunta {}", id);
+        Pregunta pregunta = preguntaDao.obtiene(id);
+        modelo.addAttribute("pregunta", pregunta);
+        ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+        String texto = textoUtil.obtieneTexto(pregunta.getContenido(), themeDisplay);
+        if (texto != null) {
+            modelo.addAttribute("texto", texto);
+            modelo.addAttribute("textoUnicode", UnicodeFormatter.toString(texto));
+        }
+        return "pregunta/editaTexto";
+    }
+
+    @RequestMapping(params = "action=actualizaTexto")
+    public void actualizaTexto(ActionRequest request, ActionResponse response,
+            @ModelAttribute Pregunta pregunta, @RequestParam String texto) throws SystemException, PortalException {
+        log.debug("Actualizando texto para pregunta {}", pregunta.getId());
+        pregunta = preguntaDao.obtiene(pregunta.getId());
+        StringBuilder sb = new StringBuilder();
+        sb.append("<?xml version='1.0' encoding='UTF-8'?><root><static-content><![CDATA[");
+        sb.append(texto);
+        sb.append("]]></static-content></root>");
+        texto = sb.toString();
+
+        User creador = PortalUtil.getUser(request);
+        JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(pregunta.getContenido());
+        ja.setUserId(creador.getUserId());
+        ja.setTitle(pregunta.getNombre());
+        ja.setDescription(pregunta.getNombre());
+        ja.setContent(texto);
+        ja.setVersion(ja.getVersion() + 1);
+        JournalArticleLocalServiceUtil.updateJournalArticle(ja);
+
+        response.setRenderParameter("action", "ver");
+        response.setRenderParameter("id", pregunta.getId().toString());
+    }
+
+    @RequestMapping(params = "action=agregaRespuestas")
+    public void agregaRespuestas(ActionRequest request, ActionResponse response, @RequestParam Long preguntaId, @RequestParam Long[] correctas, @RequestParam Long[] incorrectas) {
+        log.debug("Agregando respuestas correctas {} e incorrectas {} a {}", new Object[] {correctas, incorrectas, preguntaId});
+
+        preguntaDao.asignaRespuestas(preguntaId, correctas, incorrectas);
+
+        response.setRenderParameter("action", "ver");
+        response.setRenderParameter("id", preguntaId.toString());
+    }
 }

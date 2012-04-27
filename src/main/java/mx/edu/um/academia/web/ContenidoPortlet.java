@@ -342,6 +342,8 @@ public class ContenidoPortlet extends BaseController {
         User creador = PortalUtil.getUser(request);
         JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(contenido.getContenidoId());
         ja.setUserId(creador.getUserId());
+        ja.setTitle(contenido.getNombre());
+        ja.setDescription(contenido.getNombre());
         ja.setContent(texto);
         ja.setVersion(ja.getVersion() + 1);
         JournalArticleLocalServiceUtil.updateJournalArticle(ja);

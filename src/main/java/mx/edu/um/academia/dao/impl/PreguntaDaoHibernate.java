@@ -26,6 +26,7 @@ package mx.edu.um.academia.dao.impl;
 import com.liferay.portal.model.User;
 import java.util.*;
 import mx.edu.um.academia.dao.PreguntaDao;
+import mx.edu.um.academia.model.Contenido;
 import mx.edu.um.academia.model.Pregunta;
 import mx.edu.um.academia.model.Respuesta;
 import org.hibernate.Criteria;
@@ -192,6 +193,40 @@ public class PreguntaDaoHibernate implements PreguntaDao {
         }
         currentSession().update(pregunta);
         currentSession().flush();
+    }
+
+    @Override
+    public Pregunta actualizaContenido(Pregunta otro, User creador) {
+        Pregunta pregunta = (Pregunta) currentSession().get(Pregunta.class, otro.getId());
+        pregunta.setVersion(otro.getVersion());
+        pregunta.setContenido(otro.getContenido());
+        pregunta.setFechaModificacion(new Date());
+        if (creador != null) {
+            pregunta.setCreador(creador.getScreenName());
+        } else {
+            pregunta.setCreador("admin");
+        }
+        currentSession().update(pregunta);
+        return pregunta;
+    }
+
+    @Override
+    public Map<String, Object> respuestas(Long preguntaId, Set<Long> comunidades) {
+        Pregunta pregunta = (Pregunta) currentSession().get(Pregunta.class, preguntaId);
+        Set<Respuesta> correctas = pregunta.getCorrectas();
+        Set<Respuesta> incorrectas = pregunta.getIncorrectas();
+        
+        Criteria criteria = currentSession().createCriteria(Respuesta.class);
+        criteria.add(Restrictions.in("comunidadId", (Set<Long>) comunidades));
+        criteria.addOrder(Order.asc("nombre"));
+        List<Respuesta> disponibles = criteria.list();
+        disponibles.removeAll(correctas);
+        disponibles.removeAll(incorrectas);
+        Map<String, Object> resultado = new HashMap<>();
+        resultado.put("correctas", correctas);
+        resultado.put("incorrectas", incorrectas);
+        resultado.put("disponibles", disponibles);
+        return resultado;
     }
     
 }
