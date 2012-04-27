@@ -42,4 +42,6 @@ public interface RespuestaDao {
     public Map<String, Object> lista(Map<String, Object> params);
 
     public Respuesta obtiene(Long respuestaId);
+    
+    public Respuesta actualizaContenido(Respuesta respuesta, User creador);
 }

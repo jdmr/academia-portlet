@@ -16,6 +16,22 @@
     <a class="btn btn-primary" href="<portlet:renderURL portletMode='view'/>"><i class="icon-list icon-white"></i> <s:message code="respuesta.lista" /></a>
     <a class="btn btn-primary" href="${nuevoUrl}"><i class="icon-file icon-white"></i> <s:message code="respuesta.nuevo" /></a>
     <a class="btn btn-primary" href="${editaUrl}"><i class="icon-edit icon-white"></i> <s:message code="respuesta.edita" /></a>
+    <c:choose>
+        <c:when test="${not empty respuesta.contenido}">
+            <portlet:renderURL var="editaTexto" >
+                <portlet:param name="action" value="editaTexto" />
+                <portlet:param name="id" value="${respuesta.id}" />
+            </portlet:renderURL>
+            <a class="btn btn-primary" href="${editaTexto}"><i class="icon-file icon-white"></i> <s:message code="edita.texto" /></a>
+        </c:when>
+        <c:otherwise>
+            <portlet:renderURL var="nuevoTexto" >
+                <portlet:param name="action" value="nuevoTexto" />
+                <portlet:param name="id" value="${respuesta.id}" />
+            </portlet:renderURL>
+            <a class="btn btn-primary" href="${nuevoTexto}"><i class="icon-file icon-white"></i> <s:message code="nuevo.texto" /></a>
+        </c:otherwise>
+    </c:choose>
     <a class="btn btn-danger"  href="${eliminaUrl}" onclick="return confirm('<s:message code="respuesta.elimina.confirma"/>')"><i class="icon-ban-circle icon-white"></i> <s:message code="respuesta.elimina" /></a>
     
 </div>

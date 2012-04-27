@@ -88,10 +88,12 @@ public class TextoUtil {
     }
     
     public String obtieneTexto(Long textoId, ThemeDisplay themeDisplay) throws PortalException, SystemException {
-        JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(textoId);
         String texto = null;
-        if (ja != null) {
-            texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+        if (textoId != null) {
+            JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(textoId);
+            if (ja != null) {
+                texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+            }
         }
 
         return texto;

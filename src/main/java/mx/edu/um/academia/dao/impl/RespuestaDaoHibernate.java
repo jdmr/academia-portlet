@@ -26,6 +26,7 @@ package mx.edu.um.academia.dao.impl;
 import com.liferay.portal.model.User;
 import java.util.*;
 import mx.edu.um.academia.dao.RespuestaDao;
+import mx.edu.um.academia.model.Pregunta;
 import mx.edu.um.academia.model.Respuesta;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -168,6 +169,21 @@ public class RespuestaDaoHibernate implements RespuestaDao {
     public Respuesta obtiene(Long respuestaId) {
         log.debug("Obteniendo respuesta {}", respuestaId);
         Respuesta respuesta = (Respuesta) currentSession().get(Respuesta.class, respuestaId);
+        return respuesta;
+    }
+
+    @Override
+    public Respuesta actualizaContenido(Respuesta otro, User creador) {
+        Respuesta respuesta = (Respuesta) currentSession().get(Respuesta.class, otro.getId());
+        respuesta.setVersion(otro.getVersion());
+        respuesta.setContenido(otro.getContenido());
+        respuesta.setFechaModificacion(new Date());
+        if (creador != null) {
+            respuesta.setCreador(creador.getScreenName());
+        } else {
+            respuesta.setCreador("admin");
+        }
+        currentSession().update(respuesta);
         return respuesta;
     }
 }
