@@ -26,7 +26,6 @@ package mx.edu.um.academia.dao.impl;
 import com.liferay.portal.model.User;
 import java.util.*;
 import mx.edu.um.academia.dao.RespuestaDao;
-import mx.edu.um.academia.model.Curso;
 import mx.edu.um.academia.model.Respuesta;
 import org.hibernate.Criteria;
 import org.hibernate.Session;

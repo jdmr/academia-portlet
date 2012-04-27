@@ -26,5 +26,8 @@
                 <goal>package</goal>
                 <goal>liferay:deploy</goal>
             </goals>
+            <properties>
+                <skipTests>true</skipTests>
+            </properties>
         </action>
     </actions>

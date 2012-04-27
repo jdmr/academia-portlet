@@ -6,5 +6,6 @@
         <portlet id="Contenido" />
         <portlet id="ObjetoAprendizaje" />
         <portlet id="CursosAdmin" />
+        <portlet id="Respuestas" />
     </category>
 </display>

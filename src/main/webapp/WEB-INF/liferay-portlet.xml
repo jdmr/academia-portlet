@@ -20,6 +20,12 @@
         <header-portlet-css>/css/cursos_admin.css</header-portlet-css>
         <header-portlet-javascript>/js/cursos_admin.js</header-portlet-javascript>
     </portlet>
+    <portlet>
+        <portlet-name>Respuestas</portlet-name>
+        <instanceable>false</instanceable>
+        <header-portlet-css>/css/respuestas.css</header-portlet-css>
+        <header-portlet-javascript>/js/respuestas.js</header-portlet-javascript>
+    </portlet>
     <role-mapper>
         <role-name>administrator</role-name>
         <role-link>Administrator</role-link>
