@@ -17,6 +17,8 @@
 
                 <th><s:message code="nombre" /></th>
                 
+                <th style="text-align: center;"><s:message code="es.multiple" /></th>
+                
             </tr>
         </thead>
         <tbody>
@@ -28,6 +30,8 @@
                 <tr>
 
                     <td><a href="${verPregunta}">${pregunta.nombre}</a></td>
+
+                    <td style="text-align: center;"><input type="checkbox" disabled="true" <c:if test="${pregunta.esMultiple}">checked="checked"</c:if> /></td>
 
                 </tr>
             </c:forEach>

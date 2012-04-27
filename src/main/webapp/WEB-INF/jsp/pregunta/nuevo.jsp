@@ -12,6 +12,11 @@
             <form:errors cssClass="errors" path="nombre" cssStyle="color:red;" />
         </div>
         <div class="control-group">
+            <label for="esMultiple"><s:message code="es.multiple" /></label>
+            <form:checkbox path="esMultiple" />
+            <form:errors cssClass="errors" path="esMultiple" cssStyle="color:red;" />
+        </div>
+        <div class="control-group">
             <label for="comunidadId"><s:message code="comunidad" /></label>
             <form:select path="comunidadId" items="${comunidades}" />
             <form:errors cssClass="errors" path="comunidadId" />

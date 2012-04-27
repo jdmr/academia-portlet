@@ -67,6 +67,7 @@ public class PreguntaDaoHibernate implements PreguntaDao {
         pregunta.setComunidadId(otra.getComunidadId());
         pregunta.setContenido(otra.getContenido());
         pregunta.setFechaModificacion(new Date());
+        log.debug("{} : {} : {}", new Object[] {pregunta.getEsMultiple(), otra.getEsMultiple(), (pregunta.getEsMultiple() != otra.getEsMultiple())});
         if (pregunta.getEsMultiple() != otra.getEsMultiple()) {
             pregunta.getCorrectas().clear();
             pregunta.getIncorrectas().clear();

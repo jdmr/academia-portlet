@@ -31,6 +31,7 @@ import mx.edu.um.academia.model.Pregunta;
 import mx.edu.um.academia.model.Respuesta;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -39,7 +40,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-import static org.junit.Assert.*;
 
 /**
  *

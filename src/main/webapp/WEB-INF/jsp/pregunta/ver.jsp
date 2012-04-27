@@ -31,6 +31,12 @@
 </div>
 <div class="row-fluid">
     <div class="span6">
+        <h5><s:message code="es.multiple" /></h5>
+        <h3><input type="checkbox" disabled="true" <c:if test="${pregunta.esMultiple}">checked="checked"</c:if> /></h3>
+    </div>
+</div>
+<div class="row-fluid">
+    <div class="span6">
         <h5><s:message code="fechaCreacion" /></h5>
         <h3>${pregunta.fechaCreacion}</h3>
     </div>
