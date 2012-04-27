@@ -8,5 +8,6 @@
         <portlet id="CursosAdmin" />
         <portlet id="Respuestas" />
         <portlet id="Preguntas" />
+        <portlet id="Examenes" />
     </category>
 </display>

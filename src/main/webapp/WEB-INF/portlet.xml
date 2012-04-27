@@ -156,4 +156,34 @@
             <role-name>administrator</role-name>
         </security-role-ref>
     </portlet>
+    <portlet>
+        <description>Examenes</description>
+        <portlet-name>Examenes</portlet-name>
+        <display-name>Examenes</display-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+        <init-param>
+            <name>contextConfigLocation</name>
+            <value>/WEB-INF/classes/context/portlet/examenes.xml</value>
+        </init-param>
+        <init-param>
+            <name>check-auth-token</name>
+            <value>false</value>
+        </init-param>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+        </supports>
+        <supported-locale>en</supported-locale>
+        <supported-locale>es</supported-locale>
+        <resource-bundle>examenes</resource-bundle>
+        <portlet-info>
+            <title>Examenes</title>
+            <short-title>Examenes</short-title>
+            <keywords></keywords>
+        </portlet-info>
+        <security-role-ref>
+            <role-name>administrator</role-name>
+        </security-role-ref>
+    </portlet>
 </portlet-app>

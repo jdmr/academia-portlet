@@ -38,8 +38,8 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.validation.Valid;
-import mx.edu.um.academia.dao.RespuestaDao;
-import mx.edu.um.academia.model.Respuesta;
+import mx.edu.um.academia.dao.ExamenDao;
+import mx.edu.um.academia.model.Examen;
 import mx.edu.um.academia.utils.ComunidadUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,13 +55,13 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @Controller
 @RequestMapping("VIEW")
-public class RespuestaPortlet extends BaseController {
+public class ExamenPortlet extends BaseController {
     
     @Autowired
-    private RespuestaDao respuestaDao;
+    private ExamenDao examenDao;
     
-    public RespuestaPortlet() {
-        log.info("Nueva instancia del Controlador de Respuestas");
+    public ExamenPortlet() {
+        log.info("Nueva instancia del Controlador de Examenes");
     }
     
     @RequestMapping
@@ -73,7 +73,7 @@ public class RespuestaPortlet extends BaseController {
             @RequestParam(required = false) String order,
             @RequestParam(required = false) String sort,
             Model modelo) throws SystemException, PortalException {
-        log.debug("Lista de respuestas");
+        log.debug("Lista de examenes");
         Map<Long, String> comunidades = ComunidadUtil.obtieneComunidades(request);
         Map<String, Object> params = new HashMap<>();
         params.put("comunidades", comunidades.keySet());
@@ -97,107 +97,107 @@ public class RespuestaPortlet extends BaseController {
         params.put("max", max);
         params.put("offset", offset);
 
-        params = respuestaDao.lista(params);
-        List<Respuesta> respuestas = (List<Respuesta>) params.get("respuestas");
-        if (respuestas != null && respuestas.size() > 0) {
-            modelo.addAttribute("respuestas", respuestas);
+        params = examenDao.lista(params);
+        List<Examen> examenes = (List<Examen>) params.get("examenes");
+        if (examenes != null && examenes.size() > 0) {
+            modelo.addAttribute("examenes", examenes);
         }
 
-        return "respuesta/lista";
+        return "examen/lista";
     }
 
     @RequestMapping(params = "action=nuevo")
     public String nuevo(RenderRequest request, Model modelo) throws SystemException, PortalException {
-        log.debug("Nuevo respuesta");
-        Respuesta respuesta = new Respuesta();
-        modelo.addAttribute("respuesta", respuesta);
+        log.debug("Nuevo examen");
+        Examen examen = new Examen();
+        modelo.addAttribute("examen", examen);
         modelo.addAttribute("comunidades", ComunidadUtil.obtieneComunidades(request));
-        return "respuesta/nuevo";
+        return "examen/nuevo";
     }
 
     @RequestMapping(params = "action=nuevoError")
     public String nuevoError(RenderRequest request, Model modelo) throws SystemException, PortalException {
-        log.debug("Nuevo respuesta despues de error");
+        log.debug("Nuevo examen despues de error");
         modelo.addAttribute("comunidades", ComunidadUtil.obtieneComunidades(request));
-        return "respuesta/nuevo";
+        return "examen/nuevo";
     }
 
     @RequestMapping(params = "action=crea")
     public void crea(ActionRequest request, ActionResponse response,
-            @Valid Respuesta respuesta,
+            @Valid Examen examen,
             BindingResult result) throws SystemException, PortalException {
-        log.debug("Creando respuesta {}", respuesta);
+        log.debug("Creando examen {}", examen);
         if (result.hasErrors()) {
             log.debug("Hubo algun error en la forma, regresando");
             response.setRenderParameter("action", "nuevoError");
         }
 
         User creador = PortalUtil.getUser(request);
-        respuestaDao.crea(respuesta, creador);
+        examenDao.crea(examen, creador);
 
         response.setRenderParameter("action", "ver");
-        response.setRenderParameter("id", respuesta.getId().toString());
+        response.setRenderParameter("id", examen.getId().toString());
     }
 
     @RequestMapping(params = "action=ver")
     public String ver(RenderRequest request, @RequestParam Long id, Model modelo) throws PortalException, SystemException {
-        log.debug("Mostrando respuesta {}", id);
-        Respuesta respuesta = respuestaDao.obtiene(id);
-        if (respuesta.getContenido() != null) {
+        log.debug("Mostrando examen {}", id);
+        Examen examen = examenDao.obtiene(id);
+        if (examen.getContenido() != null) {
             ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
-            JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(respuesta.getContenido());
+            JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(examen.getContenido());
             if (ja != null) {
                 String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
                 modelo.addAttribute("texto", texto);
             }
         }
-        modelo.addAttribute("respuesta", respuesta);
-        return "respuesta/ver";
+        modelo.addAttribute("examen", examen);
+        return "examen/ver";
     }
 
     @RequestMapping(params = "action=edita")
     public String edita(RenderRequest request, Model modelo, @RequestParam Long id) throws SystemException, PortalException {
-        log.debug("Edita respuesta");
-        Respuesta respuesta = respuestaDao.obtiene(id);
-        modelo.addAttribute("respuesta", respuesta);
+        log.debug("Edita examen");
+        Examen examen = examenDao.obtiene(id);
+        modelo.addAttribute("examen", examen);
         modelo.addAttribute("comunidades", ComunidadUtil.obtieneComunidades(request));
-        return "respuesta/edita";
+        return "examen/edita";
     }
 
     @RequestMapping(params = "action=editaError")
     public String editaError(RenderRequest request, Model modelo) throws SystemException, PortalException {
-        log.debug("Edita respuesta despues de error");
+        log.debug("Edita examen despues de error");
         modelo.addAttribute("comunidades", ComunidadUtil.obtieneComunidades(request));
-        return "respuesta/edita";
+        return "examen/edita";
     }
 
     @RequestMapping(params = "action=actualiza")
     public void actualiza(ActionRequest request, ActionResponse response,
-            @Valid Respuesta respuesta,
+            @Valid Examen examen,
             BindingResult result) throws SystemException, PortalException {
-        log.debug("Actualizando respuesta {}", respuesta);
+        log.debug("Actualizando examen {}", examen);
         if (result.hasErrors()) {
             log.debug("Hubo algun error en la forma, regresando");
             response.setRenderParameter("action", "editaError");
         }
 
         User creador = PortalUtil.getUser(request);
-        respuestaDao.actualiza(respuesta, creador);
+        examenDao.actualiza(examen, creador);
 
         response.setRenderParameter("action", "ver");
-        response.setRenderParameter("id", respuesta.getId().toString());
+        response.setRenderParameter("id", examen.getId().toString());
     }
 
     @RequestMapping(params = "action=elimina")
     public void elimina(ActionRequest request, @RequestParam Long id) throws PortalException, SystemException {
-        log.debug("eliminando respuesta {}", id);
+        log.debug("eliminando examen {}", id);
 
-        Respuesta respuesta = respuestaDao.obtiene(id);
-        if (respuesta.getContenido() != null) {
-            JournalArticleLocalServiceUtil.deleteJournalArticle(respuesta.getContenido());
+        Examen examen = examenDao.obtiene(id);
+        if (examen.getContenido() != null) {
+            JournalArticleLocalServiceUtil.deleteJournalArticle(examen.getContenido());
         }
         User creador = PortalUtil.getUser(request);
-        respuestaDao.elimina(id, creador);
+        examenDao.elimina(id, creador);
     }
     
 }
