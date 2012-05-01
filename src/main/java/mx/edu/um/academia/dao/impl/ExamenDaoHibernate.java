@@ -207,4 +207,14 @@ public class ExamenDaoHibernate implements ExamenDao {
         currentSession().flush();
         return nombres;
     }
+
+    @Override
+    public Examen actualizaContenido(Examen examen, User creador) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Map<String, Object> preguntas(Long examenId, Set<Long> comunidades) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

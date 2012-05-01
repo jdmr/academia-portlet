@@ -38,6 +38,12 @@
         <header-portlet-css>/css/examenes.css</header-portlet-css>
         <header-portlet-javascript>/js/examenes.js</header-portlet-javascript>
     </portlet>
+    <portlet>
+        <portlet-name>Cursos</portlet-name>
+        <instanceable>true</instanceable>
+        <header-portlet-css>/css/cursos.css</header-portlet-css>
+        <header-portlet-javascript>/js/cursos.js</header-portlet-javascript>
+    </portlet>
     <role-mapper>
         <role-name>administrator</role-name>
         <role-link>Administrator</role-link>

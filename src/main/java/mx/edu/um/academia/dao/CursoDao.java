@@ -24,9 +24,11 @@
 package mx.edu.um.academia.dao;
 
 import com.liferay.portal.model.User;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import mx.edu.um.academia.model.Curso;
+import mx.edu.um.academia.model.PortletCurso;
 
 /**
  *
@@ -43,10 +45,16 @@ public interface CursoDao {
     public Map<String, Object> lista(Map<String, Object> params);
 
     public Curso obtiene(Long cursoId);
-    
+
     public Map<String, Object> objetos(Long id, Set<Long> comunidades);
 
     public void agregaObjetos(Long cursoId, Long[] objetos);
 
     public Map<String, Object> verContenido(Long cursoId);
+
+    public List<Curso> todos(Set<Long> comunidades);
+    
+    public PortletCurso guardaPortlet(Long cursoId, String portletId);
+    
+    public PortletCurso obtienePortlet(String portletId);
 }

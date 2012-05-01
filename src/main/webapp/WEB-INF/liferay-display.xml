@@ -9,5 +9,6 @@
         <portlet id="Respuestas" />
         <portlet id="Preguntas" />
         <portlet id="Examenes" />
+        <portlet id="Cursos" />
     </category>
 </display>

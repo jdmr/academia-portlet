@@ -28,6 +28,7 @@ import java.util.*;
 import mx.edu.um.academia.dao.CursoDao;
 import mx.edu.um.academia.model.Contenido;
 import mx.edu.um.academia.model.Curso;
+import mx.edu.um.academia.model.PortletCurso;
 import mx.edu.um.academia.model.ObjetoAprendizaje;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
@@ -187,7 +188,7 @@ public class CursoDaoHibernate implements CursoDao {
             log.debug("Seleccionado: " + objeto.getNombre());
         }
         resultado.put("seleccionados", objetos);
-        
+
         Criteria criteria = currentSession().createCriteria(ObjetoAprendizaje.class);
         criteria.add(Restrictions.in("comunidadId", (Set<Long>) comunidades));
         criteria.addOrder(Order.asc("codigo"));
@@ -207,7 +208,7 @@ public class CursoDaoHibernate implements CursoDao {
         log.debug("Agregando objetos {} a curso {}", objetosArray, cursoId);
         Curso curso = (Curso) currentSession().get(Curso.class, cursoId);
         curso.getObjetos().clear();
-        for(Long objetoId : objetosArray) {
+        for (Long objetoId : objetosArray) {
             curso.getObjetos().add((ObjetoAprendizaje) currentSession().load(ObjetoAprendizaje.class, objetoId));
         }
         log.debug("Actualizando curso {}", curso);
@@ -219,14 +220,45 @@ public class CursoDaoHibernate implements CursoDao {
     public Map<String, Object> verContenido(Long cursoId) {
         Curso curso = (Curso) currentSession().get(Curso.class, cursoId);
         List<ObjetoAprendizaje> objetos = curso.getObjetos();
-        for(ObjetoAprendizaje objeto : objetos) {
-            for(Contenido contenido : objeto.getContenidos()) {
-                log.debug("{} : {} : {}", new Object[] {curso.getCodigo(), objeto.getCodigo(), contenido.getCodigo()});
+        for (ObjetoAprendizaje objeto : objetos) {
+            for (Contenido contenido : objeto.getContenidos()) {
+                log.debug("{} : {} : {}", new Object[]{curso.getCodigo(), objeto.getCodigo(), contenido.getCodigo()});
             }
         }
-        
+
         Map<String, Object> resultado = new HashMap<>();
         resultado.put("objetos", objetos);
         return resultado;
+    }
+
+    @Override
+    public List<Curso> todos(Set<Long> comunidades) {
+        log.debug("Buscando lista de cursos en las comunidades {}", comunidades);
+        Criteria criteria = currentSession().createCriteria(Curso.class);
+
+        criteria.add(Restrictions.in("comunidadId", comunidades));
+
+        criteria.addOrder(Order.desc("codigo"));
+
+        return criteria.list();
+    }
+
+    @Override
+    public PortletCurso guardaPortlet(Long cursoId, String portletId) {
+        Curso curso = (Curso) currentSession().get(Curso.class, cursoId);
+        PortletCurso portlet = (PortletCurso) currentSession().get(PortletCurso.class, portletId);
+        if (portlet == null) {
+            portlet = new PortletCurso(portletId, curso);
+            currentSession().save(portlet);
+        } else {
+            portlet.setCurso(curso);
+            currentSession().update(portlet);
+        }
+        return portlet;
+    }
+
+    @Override
+    public PortletCurso obtienePortlet(String portletId) {
+        return (PortletCurso) currentSession().get(PortletCurso.class, portletId);
     }
 }

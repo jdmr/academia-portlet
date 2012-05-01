@@ -25,12 +25,17 @@ package mx.edu.um.academia.web;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.util.CalendarFactoryUtil;
+import com.liferay.portal.kernel.util.UnicodeFormatter;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.model.User;
+import com.liferay.portal.service.ServiceContext;
+import com.liferay.portal.service.ServiceContextFactory;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.journal.model.JournalArticle;
 import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,11 +46,13 @@ import javax.validation.Valid;
 import mx.edu.um.academia.dao.ExamenDao;
 import mx.edu.um.academia.model.Examen;
 import mx.edu.um.academia.utils.ComunidadUtil;
+import mx.edu.um.academia.utils.TextoUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -59,6 +66,8 @@ public class ExamenPortlet extends BaseController {
     
     @Autowired
     private ExamenDao examenDao;
+    @Autowired
+    private TextoUtil textoUtil;
     
     public ExamenPortlet() {
         log.info("Nueva instancia del Controlador de Examenes");
@@ -200,4 +209,99 @@ public class ExamenPortlet extends BaseController {
         examenDao.elimina(id, creador);
     }
     
+    @RequestMapping(params = "action=nuevoTexto")
+    public String nuevoTexto(RenderRequest request, Model modelo, @RequestParam Long id) throws SystemException, PortalException {
+        log.debug("Nuevo texto para examen {}", id);
+        Examen examen = examenDao.obtiene(id);
+        modelo.addAttribute("examen", examen);
+        return "examen/nuevoTexto";
+    }
+
+    @RequestMapping(params = "action=creaTexto")
+    public void creaTexto(ActionRequest request, ActionResponse response,
+            @ModelAttribute Examen examen, @RequestParam String texto) throws SystemException, PortalException {
+        log.debug("Creando texto para examen {}", examen.getId());
+        examen = examenDao.obtiene(examen.getId());
+        StringBuilder sb = new StringBuilder();
+        sb.append("<?xml version='1.0' encoding='UTF-8'?><root><static-content><![CDATA[");
+        sb.append(texto);
+        sb.append("]]></static-content></root>");
+        texto = sb.toString();
+
+        ThemeDisplay themeDisplay = getThemeDisplay(request);
+        Calendar displayDate;
+        if (themeDisplay != null) {
+            displayDate = CalendarFactoryUtil.getCalendar(themeDisplay.getTimeZone(), themeDisplay.getLocale());
+        } else {
+            displayDate = CalendarFactoryUtil.getCalendar();
+        }
+        User creador = PortalUtil.getUser(request);
+        ServiceContext serviceContext = ServiceContextFactory.getInstance(JournalArticle.class.getName(), request);
+        if (examen.getContenido() != null) {
+            JournalArticleLocalServiceUtil.deleteJournalArticle(examen.getContenido());
+        }
+
+        JournalArticle article = textoUtil.crea(
+                examen.getNombre(),
+                examen.getNombre(),
+                texto,
+                displayDate,
+                creador.getUserId(),
+                examen.getComunidadId(),
+                serviceContext);
+        examen.setContenido(article.getId());
+        examen = examenDao.actualizaContenido(examen, creador);
+
+        response.setRenderParameter("action", "ver");
+        response.setRenderParameter("id", examen.getId().toString());
+    }
+
+    @RequestMapping(params = "action=editaTexto")
+    public String editaTexto(RenderRequest request, Model modelo, @RequestParam Long id) throws SystemException, PortalException {
+        log.debug("Edita texto para examen {}", id);
+        Examen examen = examenDao.obtiene(id);
+        modelo.addAttribute("examen", examen);
+        ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+        String texto = textoUtil.obtieneTexto(examen.getContenido(), themeDisplay);
+        if (texto != null) {
+            modelo.addAttribute("texto", texto);
+            modelo.addAttribute("textoUnicode", UnicodeFormatter.toString(texto));
+        }
+        return "examen/editaTexto";
+    }
+
+    @RequestMapping(params = "action=actualizaTexto")
+    public void actualizaTexto(ActionRequest request, ActionResponse response,
+            @ModelAttribute Examen examen, @RequestParam String texto) throws SystemException, PortalException {
+        log.debug("Actualizando texto para examen {}", examen.getId());
+        examen = examenDao.obtiene(examen.getId());
+        StringBuilder sb = new StringBuilder();
+        sb.append("<?xml version='1.0' encoding='UTF-8'?><root><static-content><![CDATA[");
+        sb.append(texto);
+        sb.append("]]></static-content></root>");
+        texto = sb.toString();
+
+        User creador = PortalUtil.getUser(request);
+        JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(examen.getContenido());
+        ja.setUserId(creador.getUserId());
+        ja.setTitle(examen.getNombre());
+        ja.setDescription(examen.getNombre());
+        ja.setContent(texto);
+        ja.setVersion(ja.getVersion() + 1);
+        JournalArticleLocalServiceUtil.updateJournalArticle(ja);
+
+        response.setRenderParameter("action", "ver");
+        response.setRenderParameter("id", examen.getId().toString());
+    }
+
+//    @RequestMapping(params = "action=agregaPreguntas")
+//    public void agregaPreguntas(ActionRequest request, ActionResponse response, @RequestParam Long examenId, @RequestParam Long[] correctas, @RequestParam Long[] incorrectas) {
+//        log.debug("Agregando preguntas correctas {} e incorrectas {} a {}", new Object[] {correctas, incorrectas, examenId});
+//
+//        //examenDao.asignaPreguntas(examenId, correctas, incorrectas);
+//        examenDao.asignaPregunta(examenId, examenId, Integer.SIZE, Boolean.TRUE, examenId, null)
+//
+//        response.setRenderParameter("action", "ver");
+//        response.setRenderParameter("id", examenId.toString());
+//    }
 }
