@@ -209,8 +209,18 @@ public class ExamenDaoHibernate implements ExamenDao {
     }
 
     @Override
-    public Examen actualizaContenido(Examen examen, User creador) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Examen actualizaContenido(Examen otro, User creador) {
+        Examen examen = (Examen) currentSession().get(Examen.class, otro.getId());
+        examen.setVersion(otro.getVersion());
+        examen.setContenido(otro.getContenido());
+        examen.setFechaModificacion(new Date());
+        if (creador != null) {
+            examen.setCreador(creador.getScreenName());
+        } else {
+            examen.setCreador("admin");
+        }
+        currentSession().update(examen);
+        return examen;
     }
 
     @Override
