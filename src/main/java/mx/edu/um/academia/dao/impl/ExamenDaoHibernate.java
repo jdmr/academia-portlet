@@ -26,10 +26,7 @@ package mx.edu.um.academia.dao.impl;
 import com.liferay.portal.model.User;
 import java.util.*;
 import mx.edu.um.academia.dao.ExamenDao;
-import mx.edu.um.academia.model.Examen;
-import mx.edu.um.academia.model.ExamenPregunta;
-import mx.edu.um.academia.model.ExamenPreguntaPK;
-import mx.edu.um.academia.model.Pregunta;
+import mx.edu.um.academia.model.*;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -179,7 +176,7 @@ public class ExamenDaoHibernate implements ExamenDao {
         log.debug("Asignando pregunta {} a examen {}", preguntaId, examenId);
         Examen examen = (Examen) currentSession().load(Examen.class, examenId);
         Pregunta pregunta = (Pregunta) currentSession().load(Pregunta.class, preguntaId);
-        ExamenPregunta examenPregunta = new ExamenPregunta(examen, pregunta, puntos, porPregunta, comunidadId);
+        ExamenPregunta examenPregunta = new ExamenPregunta(examen, pregunta, puntos, porPregunta, examen.getComunidadId());
         Date fecha = new Date();
         examenPregunta.setFechaCreacion(fecha);
         examenPregunta.setFechaModificacion(fecha);
@@ -224,7 +221,24 @@ public class ExamenDaoHibernate implements ExamenDao {
     }
 
     @Override
-    public Map<String, Object> preguntas(Long examenId, Set<Long> comunidades) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public List<Pregunta> preguntas(Long examenId) {
+        Examen examen = (Examen) currentSession().get(Examen.class, examenId);
+        List<Pregunta> preguntas = new ArrayList<>();
+        for(ExamenPregunta examenPregunta : examen.getPreguntas()) {
+            Map<Integer, Respuesta> respuestas = new TreeMap<>();
+            Pregunta pregunta  = examenPregunta.getId().getPregunta();
+            for(Respuesta respuesta : pregunta.getCorrectas()) {
+                log.debug("Agregando correcta {} a pregunta {}", respuesta, pregunta);
+                respuestas.put(new Double(Math.random() * 100000).intValue(), respuesta);
+            }
+            for(Respuesta respuesta : pregunta.getIncorrectas()) {
+                log.debug("Agregando incorrecta {} a pregunta {}", respuesta, pregunta);
+                respuestas.put(new Double(Math.random() * 100000).intValue(), respuesta);
+            }
+            pregunta.getRespuestas().clear();
+            pregunta.getRespuestas().addAll(respuestas.values());
+            preguntas.add(pregunta);
+        }
+        return preguntas;
     }
 }

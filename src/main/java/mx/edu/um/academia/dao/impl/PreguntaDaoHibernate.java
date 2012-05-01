@@ -228,4 +228,12 @@ public class PreguntaDaoHibernate implements PreguntaDao {
         return resultado;
     }
     
+    @Override
+    public List<Pregunta> todas(Set<Long> comunidades) {
+        Criteria criteria = currentSession().createCriteria(Pregunta.class);
+        criteria.add(Restrictions.in("comunidadId", (Set<Long>) comunidades));
+        criteria.addOrder(Order.asc("nombre"));
+        return criteria.list();
+    }
+    
 }

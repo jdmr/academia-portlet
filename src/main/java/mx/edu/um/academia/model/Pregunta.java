@@ -24,10 +24,7 @@
 package mx.edu.um.academia.model;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import javax.persistence.*;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -68,6 +65,10 @@ public class Pregunta implements Serializable {
     @ManyToMany
     @JoinTable(name = "aca_respuestas_incorrectas")
     private Set<Respuesta> incorrectas = new HashSet<>();
+    @Transient
+    private String texto;
+    @Transient
+    private List<Respuesta> respuestas = new ArrayList<>();
 
     public Pregunta() {
     }
@@ -229,6 +230,34 @@ public class Pregunta implements Serializable {
      */
     public void setIncorrectas(Set<Respuesta> incorrectas) {
         this.incorrectas = incorrectas;
+    }
+
+    /**
+     * @return the texto
+     */
+    public String getTexto() {
+        return texto;
+    }
+
+    /**
+     * @param texto the texto to set
+     */
+    public void setTexto(String texto) {
+        this.texto = texto;
+    }
+
+    /**
+     * @return the respuestas
+     */
+    public List<Respuesta> getRespuestas() {
+        return respuestas;
+    }
+
+    /**
+     * @param respuestas the respuestas to set
+     */
+    public void setRespuestas(List<Respuesta> respuestas) {
+        this.respuestas = respuestas;
     }
 
     @Override

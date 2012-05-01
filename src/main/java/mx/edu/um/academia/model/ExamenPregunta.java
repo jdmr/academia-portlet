@@ -65,6 +65,10 @@ public class ExamenPregunta implements Serializable {
         this.comunidadId = comunidadId;
     }
 
+    public ExamenPregunta(ExamenPreguntaPK id) {
+        this.id = id;
+    }
+
     /**
      * @return the id
      */

@@ -8,6 +8,10 @@
         <portlet:param name="action" value="edita" />
         <portlet:param name="id" value="${examen.id}" />
     </portlet:renderURL>
+    <portlet:renderURL var="preguntaUrl" >
+        <portlet:param name="action" value="pregunta" />
+        <portlet:param name="id" value="${examen.id}" />
+    </portlet:renderURL>
     <portlet:actionURL var="eliminaUrl" >
         <portlet:param name="action" value="elimina" />
         <portlet:param name="id" value="${examen.id}" />
@@ -16,6 +20,7 @@
     <a class="btn btn-primary" href="<portlet:renderURL portletMode='view'/>"><i class="icon-list icon-white"></i> <s:message code="examen.lista" /></a>
     <a class="btn btn-primary" href="${nuevoUrl}"><i class="icon-file icon-white"></i> <s:message code="examen.nuevo" /></a>
     <a class="btn btn-primary" href="${editaUrl}"><i class="icon-edit icon-white"></i> <s:message code="examen.edita" /></a>
+    <a class="btn btn-primary" href="${preguntaUrl}"><i class="icon-edit icon-white"></i> <s:message code="examen.pregunta.nueva" /></a>
     <c:choose>
         <c:when test="${not empty examen.contenido}">
             <portlet:renderURL var="editaTexto" >
@@ -59,4 +64,28 @@
     <div class="row-fluid">
         <div>${texto}</div>
     </div>
+</c:if>
+<c:if test="${preguntas != null}">
+    <form name="preguntasForm" action="#" class="well">
+        <c:forEach items="${preguntas}" var="pregunta">
+            <h3>${pregunta.nombre}</h3>
+            <h5>${pregunta.texto}</h5>
+            <c:forEach items="${pregunta.respuestas}" var="respuesta">
+                <c:choose>
+                    <c:when test="${pregunta.esMultiple}">
+                        <label class="checkbox">
+                            <input type="checkbox" name="${pregunta.id}" value="${respuesta.id}" />
+                            ${respuesta.texto}
+                        </label>
+                    </c:when>
+                    <c:otherwise>
+                        <label class="radio">
+                            <input type="radio" name="${pregunta.id}" value="${respuesta.id}" />
+                            ${respuesta.texto}
+                        </label>
+                    </c:otherwise>
+                </c:choose>
+            </c:forEach>
+        </c:forEach>
+    </form>
 </c:if>

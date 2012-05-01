@@ -24,6 +24,7 @@
 package mx.edu.um.academia.dao;
 
 import com.liferay.portal.model.User;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import mx.edu.um.academia.model.Pregunta;
@@ -49,4 +50,6 @@ public interface PreguntaDao {
     public Pregunta actualizaContenido(Pregunta pregunta, User creador);
     
     public Map<String, Object> respuestas(Long preguntaId, Set<Long> comunidades);
+    
+    public List<Pregunta> todas(Set<Long> comunidades);
 }

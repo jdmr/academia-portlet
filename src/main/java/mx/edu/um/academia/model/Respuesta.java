@@ -58,6 +58,8 @@ public class Respuesta implements Serializable {
     private Date fechaModificacion;
     @Column(nullable = false, length = 32)
     private String creador;
+    @Transient
+    private String texto;
 
     public Respuesta() {
     }
@@ -177,6 +179,20 @@ public class Respuesta implements Serializable {
      */
     public void setCreador(String creador) {
         this.creador = creador;
+    }
+
+    /**
+     * @return the texto
+     */
+    public String getTexto() {
+        return texto;
+    }
+
+    /**
+     * @param texto the texto to set
+     */
+    public void setTexto(String texto) {
+        this.texto = texto;
     }
 
     @Override
