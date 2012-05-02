@@ -241,4 +241,12 @@ public class ExamenDaoHibernate implements ExamenDao {
         }
         return preguntas;
     }
+
+    @Override
+    public List<Examen> todos(Set<Long> comunidades) {
+        Criteria criteria = currentSession().createCriteria(Examen.class);
+        criteria.add(Restrictions.in("comunidadId", comunidades));
+        criteria.addOrder(Order.asc("nombre"));
+        return criteria.list();
+    }
 }

@@ -56,13 +56,6 @@
             </portlet:renderURL>
             <a class="btn btn-primary" href="${nuevaImagen}"><i class="icon-file icon-white"></i> <s:message code="contenido.nuevo.imagen" /></a>
         </c:when>
-        <c:when test="${'EXAMEN' == contenido.tipo}">
-            <portlet:renderURL var="nuevoExamen" >
-                <portlet:param name="action" value="nuevoExamen" />
-                <portlet:param name="id" value="${contenido.id}" />
-            </portlet:renderURL>
-            <a class="btn btn-primary" href="${nuevoExamen}"><i class="icon-file icon-white"></i> <s:message code="contenido.nuevo.examen" /></a>
-        </c:when>
     </c:choose>
     <a class="btn btn-danger"  href="${eliminaUrl}" onclick="return confirm('<s:message code="contenido.elimina.confirma"/>')"><i class="icon-ban-circle icon-white"></i> <s:message code="contenido.elimina" /></a>
     
@@ -116,4 +109,30 @@
             ]        
         });
     </aui:script>
+</c:if>
+<c:if test="${'EXAMEN' == contenido.tipo}">
+    <portlet:actionURL var="asignaExamenURL">
+        <portlet:param name="action" value="asignaExamen"/>
+    </portlet:actionURL>
+    <form id="<portlet:namespace />asignaExamenForm" action="${asignaExamenURL}" method="post" class="well">
+        <input type="hidden" id="<portlet:namespace />contenidoId" name="<portlet:namespace />contenidoId" value="${contenido.id}"/>
+        <div class="row-fluid">
+            <select id="<portlet:namespace />examenId" name="<portlet:namespace />examenId" class="span4">
+                <option value=""><s:message code="contenido.elija.examen" /></option>
+                <c:forEach items="${examenes}" var="examen">
+                    <option value="${examen.id}" 
+                            <c:if test="${contenido.examen.id == examen.id}">selected="selected"</c:if>
+                            >${examen.nombre}</option>
+                </c:forEach>
+            </select>
+        </div>
+        <div class="row-fluid">
+            <button type="submit" class="btn btn-primary"><i class="icon-file icon-white"></i> <s:message code="contenido.elija.examen" /></button>
+        </div>
+    </form>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("select#<portlet:namespace />contenidos").chosen();
+        });
+    </script>
 </c:if>

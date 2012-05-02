@@ -45,7 +45,9 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.validation.Valid;
 import mx.edu.um.academia.dao.ContenidoDao;
+import mx.edu.um.academia.dao.ExamenDao;
 import mx.edu.um.academia.model.Contenido;
+import mx.edu.um.academia.model.Examen;
 import mx.edu.um.academia.utils.ComunidadUtil;
 import mx.edu.um.academia.utils.Constantes;
 import org.apache.commons.lang.StringUtils;
@@ -69,6 +71,8 @@ public class ContenidoPortlet extends BaseController {
 
     @Autowired
     private ContenidoDao contenidoDao;
+    @Autowired
+    private ExamenDao examenDao;
     @Autowired
     private ResourceBundleMessageSource messages;
 
@@ -181,6 +185,12 @@ public class ContenidoPortlet extends BaseController {
                     modelo.addAttribute("video", videoLink);
                 }
                 break;
+            case Constantes.EXAMEN:
+                List<Examen> examenes = examenDao.todos(ComunidadUtil.obtieneComunidades(request).keySet());
+                modelo.addAttribute("examenes", examenes);
+                if (contenido.getExamen() != null) {
+                    modelo.addAttribute("examen", contenido.getExamen());
+                }
         }
         modelo.addAttribute("contenido", contenido);
         return "contenido/ver";
@@ -388,4 +398,16 @@ public class ContenidoPortlet extends BaseController {
         tipos.put(Constantes.EXAMEN, messages.getMessage(Constantes.EXAMEN, null, locale));
         return tipos;
     }
+    
+    @RequestMapping(params = "action=asignaExamen")
+    public void asignaExamen(ActionRequest request, ActionResponse response, 
+            @RequestParam Long contenidoId,
+            @RequestParam Long examenId) throws SystemException, PortalException {
+        log.debug("Asignando examen {} a contenido {}", examenId, contenidoId);
+        contenidoDao.asignaExamen(examenId, contenidoId);
+
+        response.setRenderParameter("action", "ver");
+        response.setRenderParameter("id", contenidoId.toString());
+    }
+
 }

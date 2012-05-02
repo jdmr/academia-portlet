@@ -68,6 +68,8 @@ public class Contenido implements Serializable {
     private String creador;
     @ManyToMany(mappedBy="contenidos")
     private List<ObjetoAprendizaje> objetos;
+    @ManyToOne
+    private Examen examen;
 
     public Contenido() {
     }
@@ -230,6 +232,20 @@ public class Contenido implements Serializable {
      */
     public void setObjetos(List<ObjetoAprendizaje> objetos) {
         this.objetos = objetos;
+    }
+
+    /**
+     * @return the examen
+     */
+    public Examen getExamen() {
+        return examen;
+    }
+
+    /**
+     * @param examen the examen to set
+     */
+    public void setExamen(Examen examen) {
+        this.examen = examen;
     }
 
     @Override

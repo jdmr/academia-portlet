@@ -27,6 +27,7 @@ import com.liferay.portal.model.User;
 import java.util.*;
 import mx.edu.um.academia.dao.ContenidoDao;
 import mx.edu.um.academia.model.Contenido;
+import mx.edu.um.academia.model.Examen;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -183,5 +184,13 @@ public class ContenidoDaoHibernate implements ContenidoDao {
         }
         currentSession().update(contenido);
         return contenido;
+    }
+
+    @Override
+    public void asignaExamen(Long examenId, Long contenidoId) {
+        Examen examen = (Examen) currentSession().load(Examen.class, examenId);
+        Contenido contenido = (Contenido) currentSession().get(Contenido.class, contenidoId);
+        contenido.setExamen(examen);
+        currentSession().update(contenido);
     }
 }

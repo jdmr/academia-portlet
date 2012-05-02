@@ -26,6 +26,7 @@ package mx.edu.um.academia.dao;
 import com.liferay.portal.model.User;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import mx.edu.um.academia.model.Examen;
 import mx.edu.um.academia.model.ExamenPregunta;
 import mx.edu.um.academia.model.Pregunta;
@@ -53,4 +54,6 @@ public interface ExamenDao {
     public Examen actualizaContenido(Examen examen, User creador);
 
     public List<Pregunta> preguntas(Long examenId);
+
+    public List<Examen> todos(Set<Long> comunidades);
 }
