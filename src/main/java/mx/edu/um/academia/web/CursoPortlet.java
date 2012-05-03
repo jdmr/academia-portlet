@@ -25,23 +25,22 @@ package mx.edu.um.academia.web;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.model.User;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
-import com.liferay.portlet.PortletPreferencesFactoryUtil;
 import com.liferay.portlet.journal.model.JournalArticle;
 import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
 import javax.portlet.*;
 import mx.edu.um.academia.dao.CursoDao;
-import mx.edu.um.academia.model.Curso;
-import mx.edu.um.academia.model.PortletCurso;
+import mx.edu.um.academia.model.*;
 import mx.edu.um.academia.utils.ComunidadUtil;
+import mx.edu.um.academia.utils.Constantes;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,6 +55,8 @@ public class CursoPortlet extends BaseController {
 
     @Autowired
     private CursoDao cursoDao;
+    @Autowired
+    private ResourceBundleMessageSource messageSource;
 
     public CursoPortlet() {
         log.info("Nueva instancia de Curso Portlet");
@@ -67,19 +68,61 @@ public class CursoPortlet extends BaseController {
 
         PortletCurso portletCurso = cursoDao.obtienePortlet(PortalUtil.getPortletId(request));
 
+        ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
         if (portletCurso != null) {
             Curso curso = portletCurso.getCurso();
-            if (curso.getIntro() != null) {
-                ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
-                JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(curso.getIntro());
-                if (ja != null) {
-                    String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+            User usuario = PortalUtil.getUser(request);
+            if (usuario == null) {
+                // Necesitamos firmar al usuario
+                model.addAttribute("sign_in", Boolean.TRUE);
+                model.addAttribute("sign_in_url", themeDisplay.getURLSignIn());
+
+                if (curso.getIntro() != null) {
+                    JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(curso.getIntro());
+                    if (ja != null) {
+                        String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+                        model.addAttribute("texto", texto);
+                    }
+                } else {
+                    String texto = messageSource.getMessage("curso.necesita.intro", null, themeDisplay.getLocale());
                     model.addAttribute("texto", texto);
                 }
-            }
 
+            } else {
+                model.addAttribute("cursoId", curso.getId());
+                if (cursoDao.estaInscrito(curso.getId(), usuario.getUserId())) {
+                    List<ObjetoAprendizaje> objetos = cursoDao.objetosAlumno(curso.getId(), usuario.getUserId());
+                    for (ObjetoAprendizaje objeto : objetos) {
+                        boolean bandera = true;
+                        for (Contenido contenido : objeto.getContenidos()) {
+                            AlumnoContenido alumnoContenido = contenido.getAlumno();
+                            if (alumnoContenido.getIniciado() == null && bandera) {
+                                JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(contenido.getContenidoId());
+                                if (ja != null) {
+                                    String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+                                    model.addAttribute("texto", texto);
+                                }
+                                contenido.setActivo(true);
+                                bandera = false;
+                            }
+                        }
+                    }
+                    model.addAttribute("objetos", objetos);
+                } else {
+                    if (curso.getIntro() != null) {
+                        JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(curso.getIntro());
+                        if (ja != null) {
+                            String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+                            model.addAttribute("texto", texto);
+                        }
+                    } else {
+                        String texto = messageSource.getMessage("curso.necesita.intro", null, themeDisplay.getLocale());
+                        model.addAttribute("texto", texto);
+                    }
+                }
+            }
         } else {
-            log.debug("Preferencias no encontradas");
+            log.warn("Preferencias no encontradas");
             model.addAttribute("message", "curso.no.configurado");
         }
 
@@ -109,5 +152,29 @@ public class CursoPortlet extends BaseController {
 
         String portletId = PortalUtil.getPortletId(request);
         cursoDao.guardaPortlet(cursoId, portletId);
+    }
+
+    @RequestMapping(value = "VIEW", params = "action=inscribeAlumno")
+    public void inscribeAlumno(ActionRequest request, ActionResponse response, @RequestParam Long cursoId) throws SystemException, PortalException {
+        log.debug("Inscribiendo alumno a curso {}", cursoId);
+
+        Curso curso = cursoDao.obtiene(cursoId);
+        User usuario = PortalUtil.getUser(request);
+        if (usuario != null) {
+            Alumno alumno = cursoDao.obtieneAlumno(usuario.getUserId());
+            boolean creaUsuario = false;
+            if (alumno == null) {
+                alumno = new Alumno(usuario);
+                creaUsuario = true;
+            }
+            switch (curso.getTipo()) {
+                case Constantes.PATROCINADO:
+                    cursoDao.inscribe(curso, alumno, creaUsuario, Constantes.INSCRITO);
+                    break;
+                case Constantes.PAGADO:
+                    cursoDao.inscribe(curso, alumno, creaUsuario, Constantes.PENDIENTE);
+                    break;
+            }
+        }
     }
 }

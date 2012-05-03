@@ -26,12 +26,8 @@ package mx.edu.um.academia.dao.impl;
 import com.liferay.portal.model.User;
 import java.util.*;
 import mx.edu.um.academia.dao.CursoDao;
-import mx.edu.um.academia.model.Contenido;
-import mx.edu.um.academia.model.Curso;
-import mx.edu.um.academia.model.PortletCurso;
-import mx.edu.um.academia.model.ObjetoAprendizaje;
+import mx.edu.um.academia.model.*;
 import org.hibernate.Criteria;
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.*;
@@ -179,14 +175,13 @@ public class CursoDaoHibernate implements CursoDao {
     @Override
     public Map<String, Object> objetos(Long id, Set<Long> comunidades) {
         log.debug("Buscando los objetos del curso {}", id);
-        Query query = currentSession().createQuery("select objeto from Curso c inner join c.objetos as objeto where c.id = :cursoId");
-        query.setLong("cursoId", id);
-        Map<String, Object> resultado = new HashMap<>();
-        List<ObjetoAprendizaje> objetos = query.list();
+        Curso curso = (Curso) currentSession().get(Curso.class, id);
+        List<ObjetoAprendizaje> objetos = curso.getObjetos();
         log.debug("Lista de seleccionados");
         for (ObjetoAprendizaje objeto : objetos) {
             log.debug("Seleccionado: " + objeto.getNombre());
         }
+        Map<String, Object> resultado = new HashMap<>();
         resultado.put("seleccionados", objetos);
 
         Criteria criteria = currentSession().createCriteria(ObjetoAprendizaje.class);
@@ -201,6 +196,17 @@ public class CursoDaoHibernate implements CursoDao {
         resultado.put("disponibles", disponibles);
         log.debug("regresando {}", resultado);
         return resultado;
+    }
+
+    @Override
+    public List<ObjetoAprendizaje> objetos(Long id) {
+        log.debug("Buscando los objetos del curso {}", id);
+        Curso curso = (Curso) currentSession().get(Curso.class, id);
+        List<ObjetoAprendizaje> objetos = curso.getObjetos();
+        for (ObjetoAprendizaje objeto : objetos) {
+            log.debug("Seleccionado: " + objeto.getNombre());
+        }
+        return objetos;
     }
 
     @Override
@@ -261,4 +267,72 @@ public class CursoDaoHibernate implements CursoDao {
     public PortletCurso obtienePortlet(String portletId) {
         return (PortletCurso) currentSession().get(PortletCurso.class, portletId);
     }
+
+    @Override
+    public Alumno obtieneAlumno(Long id) {
+        return (Alumno) currentSession().get(Alumno.class, id);
+    }
+
+    @Override
+    public void inscribe(Curso curso, Alumno alumno, Boolean creaUsuario, String estatus) {
+        log.debug("Inscribiendo a alumno {} en curso {}", alumno, curso);
+        if (creaUsuario) {
+            log.debug("Creando alumno primero");
+            alumno.setComunidad(curso.getComunidadId());
+            currentSession().save(alumno);
+        }
+
+        log.debug("Inscribiendo...");
+        AlumnoCurso alumnoCurso = new AlumnoCurso(alumno, curso, estatus);
+        currentSession().save(alumnoCurso);
+        currentSession().flush();
+    }
+
+    @Override
+    public Boolean estaInscrito(Long cursoId, Long alumnoId) {
+        log.debug("Validando si el alumno {} esta inscrito en {}", alumnoId, cursoId);
+        Curso curso = (Curso) currentSession().load(Curso.class, cursoId);
+        Alumno alumno = (Alumno) currentSession().load(Alumno.class, alumnoId);
+        AlumnoCursoPK pk = new AlumnoCursoPK(alumno, curso);
+        AlumnoCurso alumnoCurso = (AlumnoCurso) currentSession().get(AlumnoCurso.class, pk);
+        boolean resultado = false;
+        if (alumnoCurso != null) {
+            resultado = true;
+        }
+        return resultado;
+    }
+
+    @Override
+    public AlumnoObjetoAprendizaje obtieneAlumnoObjeto(Long objetoId, Long alumnoId) {
+        log.debug("Obtiene objeto {} del alumno {}", objetoId, alumnoId);
+        ObjetoAprendizaje objeto = (ObjetoAprendizaje) currentSession().load(ObjetoAprendizaje.class, objetoId);
+        Alumno alumno = (Alumno) currentSession().load(Alumno.class, alumnoId);
+        AlumnoObjetoAprendizajePK pk = new AlumnoObjetoAprendizajePK(alumno, objeto);
+        return (AlumnoObjetoAprendizaje) currentSession().get(AlumnoObjetoAprendizaje.class, pk);
+    }
+
+    @Override
+    public List<ObjetoAprendizaje> objetosAlumno(Long cursoId, Long alumnoId) {
+        log.debug("Obteniendo objetos de aprendizaje del curso {} para el alumno {}", cursoId, alumnoId);
+        Curso curso = (Curso) currentSession().get(Curso.class, cursoId);
+        log.debug("{}", curso);
+        Alumno alumno = (Alumno) currentSession().load(Alumno.class, alumnoId);
+        log.debug("{}", alumno);
+        List<ObjetoAprendizaje> objetos = curso.getObjetos();
+        for(ObjetoAprendizaje objeto : objetos) {
+            for(Contenido contenido : objeto.getContenidos()) {
+                log.debug("Cargando contenido {} del objeto {}", contenido, objeto);
+                AlumnoContenidoPK pk = new AlumnoContenidoPK(alumno, contenido);
+                AlumnoContenido alumnoContenido = (AlumnoContenido) currentSession().get(AlumnoContenido.class, pk);
+                if (alumnoContenido == null) {
+                    alumnoContenido = new AlumnoContenido(alumno, contenido);
+                    currentSession().save(alumnoContenido);
+                    currentSession().flush();
+                }
+                contenido.setAlumno(alumnoContenido);
+            }
+        }
+        return objetos;
+    }
+
 }

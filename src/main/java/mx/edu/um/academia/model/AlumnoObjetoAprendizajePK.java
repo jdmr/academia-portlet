@@ -21,21 +21,45 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package mx.edu.um.academia.utils;
+package mx.edu.um.academia.model;
+
+import java.io.Serializable;
+import javax.persistence.Embeddable;
+import javax.persistence.ManyToOne;
 
 /**
  *
  * @author J. David Mendoza <jdmendoza@um.edu.mx>
  */
-public class Constantes {
-    public static final String TEXTO = "TEXTO";
-    public static final String VIDEO = "VIDEO";
-    public static final String IMAGEN = "IMAGEN";
-    public static final String URL = "URL";
-    public static final String EXAMEN = "EXAMEN";
-    public static final String PATROCINADO = "PATROCINADO";
-    public static final String PAGADO = "PAGADO";
-    public static final String INSCRITO = "INSCRITO";
-    public static final String PENDIENTE = "PENDIENTE";
-    public static final String RECHAZADO = "RECHAZADO";
+@Embeddable
+public class AlumnoObjetoAprendizajePK implements Serializable {
+
+    @ManyToOne
+    private Alumno alumno;
+    @ManyToOne
+    private ObjetoAprendizaje objeto;
+
+    public AlumnoObjetoAprendizajePK() {
+    }
+
+    public AlumnoObjetoAprendizajePK(Alumno alumno, ObjetoAprendizaje objeto) {
+        this.alumno = alumno;
+        this.objeto = objeto;
+    }
+
+    public Alumno getAlumno() {
+        return alumno;
+    }
+
+    public void setAlumno(Alumno alumno) {
+        this.alumno = alumno;
+    }
+
+    public ObjetoAprendizaje getObjeto() {
+        return objeto;
+    }
+
+    public void setObjeto(ObjetoAprendizaje objeto) {
+        this.objeto = objeto;
+    }
 }

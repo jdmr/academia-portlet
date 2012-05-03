@@ -21,21 +21,57 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package mx.edu.um.academia.utils;
+package mx.edu.um.academia.model;
+
+import java.io.Serializable;
+import javax.persistence.Embeddable;
+import javax.persistence.ManyToOne;
 
 /**
  *
  * @author J. David Mendoza <jdmendoza@um.edu.mx>
  */
-public class Constantes {
-    public static final String TEXTO = "TEXTO";
-    public static final String VIDEO = "VIDEO";
-    public static final String IMAGEN = "IMAGEN";
-    public static final String URL = "URL";
-    public static final String EXAMEN = "EXAMEN";
-    public static final String PATROCINADO = "PATROCINADO";
-    public static final String PAGADO = "PAGADO";
-    public static final String INSCRITO = "INSCRITO";
-    public static final String PENDIENTE = "PENDIENTE";
-    public static final String RECHAZADO = "RECHAZADO";
+@Embeddable
+public class AlumnoCursoPK implements Serializable {
+
+    @ManyToOne
+    private Alumno alumno;
+    @ManyToOne
+    private Curso curso;
+
+    public AlumnoCursoPK() {
+    }
+
+    public AlumnoCursoPK(Alumno alumno, Curso curso) {
+        this.alumno = alumno;
+        this.curso = curso;
+    }
+
+    /**
+     * @return the alumno
+     */
+    public Alumno getAlumno() {
+        return alumno;
+    }
+
+    /**
+     * @param alumno the alumno to set
+     */
+    public void setAlumno(Alumno alumno) {
+        this.alumno = alumno;
+    }
+
+    /**
+     * @return the curso
+     */
+    public Curso getCurso() {
+        return curso;
+    }
+
+    /**
+     * @param curso the curso to set
+     */
+    public void setCurso(Curso curso) {
+        this.curso = curso;
+    }
 }

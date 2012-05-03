@@ -66,10 +66,14 @@ public class Contenido implements Serializable {
     private Date fechaModificacion;
     @Column(nullable = false, length = 32)
     private String creador;
-    @ManyToMany(mappedBy="contenidos")
+    @ManyToMany(mappedBy = "contenidos")
     private List<ObjetoAprendizaje> objetos;
     @ManyToOne
     private Examen examen;
+    @Transient
+    private AlumnoContenido alumno;
+    @Transient
+    private Boolean activo = false;
 
     public Contenido() {
     }
@@ -246,6 +250,34 @@ public class Contenido implements Serializable {
      */
     public void setExamen(Examen examen) {
         this.examen = examen;
+    }
+
+    /**
+     * @return the alumno
+     */
+    public AlumnoContenido getAlumno() {
+        return alumno;
+    }
+
+    /**
+     * @param alumno the alumno to set
+     */
+    public void setAlumno(AlumnoContenido alumno) {
+        this.alumno = alumno;
+    }
+
+    /**
+     * @return the activo
+     */
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    /**
+     * @param activo the activo to set
+     */
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
     }
 
     @Override
