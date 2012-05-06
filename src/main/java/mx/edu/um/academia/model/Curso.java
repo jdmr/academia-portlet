@@ -71,6 +71,10 @@ public class Curso implements Serializable {
     private String tipo = "PATROCINADO";
     @Column(scale = 2, precision = 8)
     private BigDecimal precio = BigDecimal.ZERO;
+    @Column(length = 32)
+    private String comercio = "PAYPAL";
+    @Column(length = 64)
+    private String comercioId;
 
     public Curso() {
     }
@@ -247,6 +251,34 @@ public class Curso implements Serializable {
      */
     public void setPrecio(BigDecimal precio) {
         this.precio = precio;
+    }
+
+    /**
+     * @return the comercio
+     */
+    public String getComercio() {
+        return comercio;
+    }
+
+    /**
+     * @param comercio the comercio to set
+     */
+    public void setComercio(String comercio) {
+        this.comercio = comercio;
+    }
+
+    /**
+     * @return the comercioId
+     */
+    public String getComercioId() {
+        return comercioId;
+    }
+
+    /**
+     * @param comercioId the comercioId to set
+     */
+    public void setComercioId(String comercioId) {
+        this.comercioId = comercioId;
     }
 
     @Override

@@ -27,6 +27,7 @@ import com.liferay.portal.model.User;
 import java.util.*;
 import mx.edu.um.academia.dao.CursoDao;
 import mx.edu.um.academia.model.*;
+import mx.edu.um.academia.utils.Constantes;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -152,7 +153,11 @@ public class CursoDaoHibernate implements CursoDao {
         curso.setTipo(otro.getTipo());
         curso.setPrecio(otro.getPrecio());
         curso.setComunidadId(otro.getComunidadId());
-        curso.setIntro(otro.getIntro());
+        if (otro.getIntro() != null) {
+            curso.setIntro(otro.getIntro());
+        }
+        curso.setComercio(otro.getComercio());
+        curso.setComercioId(otro.getComercioId());
         curso.setFechaModificacion(new Date());
         if (creador != null) {
             curso.setCreador(creador.getScreenName());
@@ -283,8 +288,15 @@ public class CursoDaoHibernate implements CursoDao {
         }
 
         log.debug("Inscribiendo...");
-        AlumnoCurso alumnoCurso = new AlumnoCurso(alumno, curso, estatus);
-        currentSession().save(alumnoCurso);
+        AlumnoCursoPK pk = new AlumnoCursoPK(alumno, curso);
+        AlumnoCurso alumnoCurso = (AlumnoCurso) currentSession().get(AlumnoCurso.class, pk);
+        if (alumnoCurso == null) {
+            alumnoCurso = new AlumnoCurso(alumno, curso, estatus);
+            currentSession().save(alumnoCurso);
+        } else {
+            alumnoCurso.setEstatus(estatus);
+            currentSession().update(alumnoCurso);
+        }
         currentSession().flush();
     }
 
@@ -296,7 +308,7 @@ public class CursoDaoHibernate implements CursoDao {
         AlumnoCursoPK pk = new AlumnoCursoPK(alumno, curso);
         AlumnoCurso alumnoCurso = (AlumnoCurso) currentSession().get(AlumnoCurso.class, pk);
         boolean resultado = false;
-        if (alumnoCurso != null) {
+        if (alumnoCurso != null && Constantes.INSCRITO.equals(alumnoCurso.getEstatus())) {
             resultado = true;
         }
         return resultado;

@@ -42,6 +42,18 @@
         <h3>${curso.precio}</h3>
     </div>
 </div>
+<c:if test="${curso.tipo eq 'PAGADO'}">
+    <div class="row-fluid">
+        <div class="span6">
+            <h5><s:message code="comercio" /></h5>
+            <h3>${curso.comercio}</h3>
+        </div>
+        <div class="span6">
+            <h5><s:message code="comercio.id" /></h5>
+            <h3>${curso.comercioId}</h3>
+        </div>
+    </div>
+</c:if>
 <div class="row-fluid">
     <div class="span6">
         <h5><s:message code="creador" /></h5>

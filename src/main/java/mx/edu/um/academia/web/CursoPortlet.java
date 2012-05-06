@@ -71,6 +71,7 @@ public class CursoPortlet extends BaseController {
         ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
         if (portletCurso != null) {
             Curso curso = portletCurso.getCurso();
+            model.addAttribute("curso", curso);
             User usuario = PortalUtil.getUser(request);
             if (usuario == null) {
                 // Necesitamos firmar al usuario
@@ -89,7 +90,6 @@ public class CursoPortlet extends BaseController {
                 }
 
             } else {
-                model.addAttribute("cursoId", curso.getId());
                 if (cursoDao.estaInscrito(curso.getId(), usuario.getUserId())) {
                     List<ObjetoAprendizaje> objetos = cursoDao.objetosAlumno(curso.getId(), usuario.getUserId());
                     for (ObjetoAprendizaje objeto : objetos) {
@@ -157,6 +157,9 @@ public class CursoPortlet extends BaseController {
     @RequestMapping(value = "VIEW", params = "action=inscribeAlumno")
     public void inscribeAlumno(ActionRequest request, ActionResponse response, @RequestParam Long cursoId) throws SystemException, PortalException {
         log.debug("Inscribiendo alumno a curso {}", cursoId);
+        for(String key : request.getParameterMap().keySet()) {
+            log.debug("{} : {}", key, request.getParameterMap().get(key));
+        }
 
         Curso curso = cursoDao.obtiene(cursoId);
         User usuario = PortalUtil.getUser(request);
@@ -173,8 +176,53 @@ public class CursoPortlet extends BaseController {
                     break;
                 case Constantes.PAGADO:
                     cursoDao.inscribe(curso, alumno, creaUsuario, Constantes.PENDIENTE);
+                    
                     break;
             }
         }
+    }
+    
+    @RequestMapping(value = "VIEW", params = "action=pagoAprobado")
+    public String pagoAprobado(RenderRequest request, RenderResponse response, @RequestParam Long cursoId) throws SystemException, PortalException {
+        log.debug("Pago aprobado para alumno a curso {}", cursoId);
+        for(String key : request.getParameterMap().keySet()) {
+            log.debug("{} : {}", key, request.getParameterMap().get(key));
+        }
+
+        Curso curso = cursoDao.obtiene(cursoId);
+        User usuario = PortalUtil.getUser(request);
+        if (usuario != null) {
+            Alumno alumno = cursoDao.obtieneAlumno(usuario.getUserId());
+            boolean creaUsuario = false;
+            if (alumno == null) {
+                alumno = new Alumno(usuario);
+                creaUsuario = true;
+            }
+            cursoDao.inscribe(curso, alumno, creaUsuario, Constantes.INSCRITO);
+            return "curso/inscrito";
+        }
+        return null;
+    }
+    
+    @RequestMapping(value = "VIEW", params = "action=pagoDenegado")
+    public String pagoDenegado(RenderRequest request, RenderResponse response, @RequestParam Long cursoId) throws SystemException, PortalException {
+        log.debug("Alumno no pago curso {}", cursoId);
+        for(String key : request.getParameterMap().keySet()) {
+            log.debug("{} : {}", key, request.getParameterMap().get(key));
+        }
+
+        Curso curso = cursoDao.obtiene(cursoId);
+        User usuario = PortalUtil.getUser(request);
+        if (usuario != null) {
+            Alumno alumno = cursoDao.obtieneAlumno(usuario.getUserId());
+            boolean creaUsuario = false;
+            if (alumno == null) {
+                alumno = new Alumno(usuario);
+                creaUsuario = true;
+            }
+            cursoDao.inscribe(curso, alumno, creaUsuario, Constantes.PENDIENTE);
+            return "curso/denegado";
+        }
+        return null;
     }
 }

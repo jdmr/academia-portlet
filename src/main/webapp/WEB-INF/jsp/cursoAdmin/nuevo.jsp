@@ -22,10 +22,24 @@
             <form:select path="tipo" items="${tipos}" />
             <form:errors cssClass="errors" path="tipo" />
         </div>
-        <div class="control-group" id="tipoCursoDiv"<c:if test="${curso.tipo ne 'PAGADO'}"> style="display: none;" </c:if>>
-            <label for="precio"><s:message code="precio" /></label>
-            <form:input path="precio" maxlength="32" cssStyle="text-align: right;"/>
-            <form:errors cssClass="errors" path="precio" cssStyle="color:red;" />
+        <div id="tipoCursoDiv"<c:if test="${curso.tipo ne 'PAGADO'}"> style="display: none;" </c:if>>
+            <div class="control-group">
+                <label for="precio"><s:message code="precio" /></label>
+                <form:input path="precio" maxlength="32" cssStyle="text-align: right;"/>
+                <form:errors cssClass="errors" path="precio" cssStyle="color:red;" />
+            </div>
+            <div class="control-group">
+                <label for="comercio"><s:message code="comercio" /></label>
+                <form:select path="comercio" >
+                    <form:options items="${comercios}" />
+                </form:select>
+                <form:errors cssClass="errors" path="comercio" cssStyle="color:red;" />
+            </div>
+            <div class="control-group">
+                <label for="comercioId"><s:message code="comercio.id" /></label>
+                <form:input path="comercioId" maxlength="64" />
+                <form:errors cssClass="errors" path="comercioId" cssStyle="color:red;" />
+            </div>
         </div>
         <div class="control-group">
             <label for="comunidadId"><s:message code="comunidad" /></label>
@@ -40,6 +54,7 @@
 </form:form>
 <script type="text/javascript">
     $(document).ready(function() {
+        $("select#comercio").chosen();
         $("select#tipo")
             .chosen()
             .change(function() {

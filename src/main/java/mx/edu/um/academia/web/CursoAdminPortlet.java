@@ -125,6 +125,7 @@ public class CursoAdminPortlet extends BaseController {
         modelo.addAttribute("curso", curso);
         modelo.addAttribute("comunidades", ComunidadUtil.obtieneComunidades(request));
         modelo.addAttribute("tipos", obtieneTiposDeCurso(getThemeDisplay(request).getLocale()));
+        modelo.addAttribute("comercios", obtieneTiposDeComercio());
         return "cursoAdmin/nuevo";
     }
 
@@ -133,6 +134,7 @@ public class CursoAdminPortlet extends BaseController {
         log.debug("Nuevo curso despues de error");
         modelo.addAttribute("comunidades", ComunidadUtil.obtieneComunidades(request));
         modelo.addAttribute("tipos", obtieneTiposDeCurso(getThemeDisplay(request).getLocale()));
+        modelo.addAttribute("comercios", obtieneTiposDeComercio());
         return "cursoAdmin/nuevo";
     }
 
@@ -183,6 +185,7 @@ public class CursoAdminPortlet extends BaseController {
         modelo.addAttribute("curso", curso);
         modelo.addAttribute("comunidades", ComunidadUtil.obtieneComunidades(request));
         modelo.addAttribute("tipos", obtieneTiposDeCurso(getThemeDisplay(request).getLocale()));
+        modelo.addAttribute("comercios", obtieneTiposDeComercio());
         return "cursoAdmin/edita";
     }
 
@@ -191,6 +194,7 @@ public class CursoAdminPortlet extends BaseController {
         log.debug("Edita curso despues de error");
         modelo.addAttribute("comunidades", ComunidadUtil.obtieneComunidades(request));
         modelo.addAttribute("tipos", obtieneTiposDeCurso(getThemeDisplay(request).getLocale()));
+        modelo.addAttribute("comercios", obtieneTiposDeComercio());
         return "cursoAdmin/edita";
     }
 
@@ -406,5 +410,12 @@ public class CursoAdminPortlet extends BaseController {
         tipos.put(Constantes.PATROCINADO, messages.getMessage(Constantes.PATROCINADO, null, locale));
         tipos.put(Constantes.PAGADO, messages.getMessage(Constantes.PAGADO, null, locale));
         return tipos;
+    }
+    
+    private List<String> obtieneTiposDeComercio() {
+        List<String> comercios = new ArrayList<>();
+        comercios.add("PAYPAL");
+        comercios.add("DINEROMAIL");
+        return comercios;
     }
 }
