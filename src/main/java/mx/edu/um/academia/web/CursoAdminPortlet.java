@@ -322,9 +322,13 @@ public class CursoAdminPortlet extends BaseController {
     @RequestMapping(params = "action=alumnos")
     public String alumnos(RenderRequest request, RenderResponse response, Model modelo, @RequestParam Long cursoId) {
         log.debug("List de alumnos del curso {}", cursoId);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("cursoId", cursoId);
+        params.put("companyId", getThemeDisplay(request).getCompanyId());
+        params = cursoDao.alumnos(params);
         
-        List<AlumnoCurso> alumnos = cursoDao.alumnos(cursoId);
-        modelo.addAttribute("alumnos", alumnos);
+        modelo.addAllAttributes(params);
         
         return "cursoAdmin/alumnos";
     }

@@ -65,6 +65,7 @@ public class AlumnoCurso implements Serializable {
 
     public AlumnoCurso(AlumnoCursoPK id, String estatus) {
         this.id = id;
+        this.estatus = estatus;
         this.fecha = new Date();
     }
 

@@ -23,8 +23,14 @@
  */
 package mx.edu.um.academia.dao.impl;
 
+import com.liferay.portal.kernel.dao.orm.QueryUtil;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.model.User;
+import com.liferay.portal.service.UserLocalServiceUtil;
 import java.util.*;
+import java.util.logging.Level;
 import mx.edu.um.academia.dao.CursoDao;
 import mx.edu.um.academia.model.*;
 import mx.edu.um.academia.utils.Constantes;
@@ -361,8 +367,19 @@ public class CursoDaoHibernate implements CursoDao {
     public void inscribe(Long cursoId, Long alumnoId) {
         log.debug("Inscribe alumno {} a curso {}", alumnoId, cursoId);
         
-        Curso curso = (Curso) currentSession().load(Curso.class, cursoId);
-        Alumno alumno = (Alumno) currentSession().load(Alumno.class, alumnoId);
+        Curso curso = (Curso) currentSession().get(Curso.class, cursoId);
+        Alumno alumno = (Alumno) currentSession().get(Alumno.class, alumnoId);
+        if (alumno == null) {
+            try {
+                User usuario = UserLocalServiceUtil.getUser(alumnoId);
+                alumno = new Alumno(usuario);
+                alumno.setComunidad(curso.getComunidadId());
+                currentSession().save(alumno);
+                currentSession().flush();
+            } catch (PortalException | SystemException ex) {
+                log.error("No se pudo obtener el usuario", ex);
+            }
+        }
         AlumnoCursoPK pk = new AlumnoCursoPK(alumno, curso);
         AlumnoCurso alumnoCurso = (AlumnoCurso) currentSession().get(AlumnoCurso.class, pk);
         if (alumnoCurso == null) {
@@ -373,6 +390,32 @@ public class CursoDaoHibernate implements CursoDao {
             alumnoCurso.setFecha(new Date());
             currentSession().update(alumnoCurso);
         }
+    }
+
+    @Override
+    public Map<String, Object> alumnos(Map<String, Object> params) {
+        Long cursoId = (Long) params.get("cursoId");
+        Query query = currentSession().createQuery("select a from AlumnoCurso a where a.id.curso.id = :cursoId");
+        query.setLong("cursoId", cursoId);
+        params.put("alumnos", query.list());
+        
+        Curso curso = (Curso) currentSession().get(Curso.class, cursoId);
+        params.put("curso", curso);
+        try {
+            log.debug("Buscando usuarios en la empresa {}", params.get("companyId"));
+            List<User> usuarios = UserLocalServiceUtil.getCompanyUsers((Long) params.get("companyId"), QueryUtil.ALL_POS, QueryUtil.ALL_POS);
+            for(User user : usuarios) {
+                if (user.isDefaultUser()) {
+                    usuarios.remove(user);
+                    break;
+                }
+            }
+            params.put("disponibles", usuarios);
+        } catch (SystemException e) {
+            log.error("No se pudo obtener lista de usuarios", e);
+        }
+        
+        return params;
     }
 
 }
