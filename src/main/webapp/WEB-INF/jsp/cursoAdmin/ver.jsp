@@ -10,6 +10,10 @@
     <portlet:param name="action" value="intro" />
     <portlet:param name="id" value="${curso.id}" />
 </portlet:renderURL>
+<portlet:renderURL var="alumnosUrl" >
+    <portlet:param name="action" value="alumnos" />
+    <portlet:param name="cursoId" value="${curso.id}" />
+</portlet:renderURL>
 <portlet:actionURL var="eliminaUrl" >
     <portlet:param name="action" value="elimina" />
     <portlet:param name="id" value="${curso.id}" />
@@ -20,6 +24,7 @@
     <a class="btn btn-primary" href="${nuevoUrl}"><i class="icon-file icon-white"></i> <s:message code="curso.nuevo" /></a>
     <a class="btn btn-primary" href="${editaUrl}"><i class="icon-edit icon-white"></i> <s:message code="curso.edita" /></a>
     <a class="btn btn-primary" href="${introUrl}"><i class="icon-edit icon-white"></i> <s:message code="curso.intro.nueva" /></a>
+    <a class="btn btn-primary" href="${alumnosUrl}"><i class="icon-edit icon-white"></i> <s:message code="curso.alumnos" /></a>
     <a class="btn btn-danger"  href="${eliminaUrl}" onclick="return confirm('<s:message code="curso.elimina.confirma"/>')"><i class="icon-ban-circle icon-white"></i> <s:message code="curso.elimina" /></a>
 </div>
 <div class="row-fluid">

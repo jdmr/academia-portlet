@@ -68,4 +68,8 @@ public interface CursoDao {
     public AlumnoObjetoAprendizaje obtieneAlumnoObjeto(Long objetoId, Long alumnoId);
 
     public List<ObjetoAprendizaje> objetosAlumno(Long cursoId, Long alumnoId);
+
+    public List<AlumnoCurso> alumnos(Long cursoId);
+
+    public void inscribe(Long cursoId, Long alumnoId);
 }

@@ -29,6 +29,7 @@ import mx.edu.um.academia.dao.CursoDao;
 import mx.edu.um.academia.model.*;
 import mx.edu.um.academia.utils.Constantes;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.*;
@@ -345,6 +346,33 @@ public class CursoDaoHibernate implements CursoDao {
             }
         }
         return objetos;
+    }
+
+    @Override
+    public List<AlumnoCurso> alumnos(Long cursoId) {
+        log.debug("Lista de alumnos del curso {}", cursoId);
+        
+        Query query = currentSession().createQuery("select a from AlumnoCurso a where a.id.curso.id = :cursoId");
+        query.setLong("cursoId", cursoId);
+        return query.list();
+    }
+
+    @Override
+    public void inscribe(Long cursoId, Long alumnoId) {
+        log.debug("Inscribe alumno {} a curso {}", alumnoId, cursoId);
+        
+        Curso curso = (Curso) currentSession().load(Curso.class, cursoId);
+        Alumno alumno = (Alumno) currentSession().load(Alumno.class, alumnoId);
+        AlumnoCursoPK pk = new AlumnoCursoPK(alumno, curso);
+        AlumnoCurso alumnoCurso = (AlumnoCurso) currentSession().get(AlumnoCurso.class, pk);
+        if (alumnoCurso == null) {
+            alumnoCurso = new AlumnoCurso(pk, Constantes.INSCRITO);
+            currentSession().save(alumnoCurso);
+        } else {
+            alumnoCurso.setEstatus(Constantes.INSCRITO);
+            alumnoCurso.setFecha(new Date());
+            currentSession().update(alumnoCurso);
+        }
     }
 
 }

@@ -43,6 +43,7 @@ import java.util.*;
 import javax.portlet.*;
 import javax.validation.Valid;
 import mx.edu.um.academia.dao.CursoDao;
+import mx.edu.um.academia.model.AlumnoCurso;
 import mx.edu.um.academia.model.Contenido;
 import mx.edu.um.academia.model.Curso;
 import mx.edu.um.academia.model.ObjetoAprendizaje;
@@ -316,6 +317,26 @@ public class CursoAdminPortlet extends BaseController {
 
         response.setRenderParameter("action", "ver");
         response.setRenderParameter("id", cursoId.toString());
+    }
+    
+    @RequestMapping(params = "action=alumnos")
+    public String alumnos(RenderRequest request, RenderResponse response, Model modelo, @RequestParam Long cursoId) {
+        log.debug("List de alumnos del curso {}", cursoId);
+        
+        List<AlumnoCurso> alumnos = cursoDao.alumnos(cursoId);
+        modelo.addAttribute("alumnos", alumnos);
+        
+        return "cursoAdmin/alumnos";
+    }
+
+    @RequestMapping(params = "action=inscribeAlumno")
+    public void inscribeAlumno(ActionRequest request, ActionResponse response, @RequestParam Long cursoId, @RequestParam Long alumnoId) {
+        log.debug("Inscribe alumno {} a {}", alumnoId, cursoId);
+
+        cursoDao.inscribe(cursoId, alumnoId);
+
+        response.setRenderParameter("action", "alumnos");
+        response.setRenderParameter("cursoId", cursoId.toString());
     }
 
     @RequestMapping(params = "action=vistaPrevia")
