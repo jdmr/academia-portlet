@@ -15,17 +15,51 @@
                         <c:forEach items="${objetos}" var="objeto">
                             <li class="nav-header"><h5>${objeto.nombre}</h5></li>
                             <c:forEach items="${objeto.contenidos}" var="contenido">
-                                <portlet:actionURL var="verContenidoUrl" >
+                                <portlet:renderURL var="verContenidoUrl" >
                                     <portlet:param name="action" value="verContenido" />
+                                    <portlet:param name="cursoId" value="${curso.id}" />
                                     <portlet:param name="contenidoId" value="${contenido.id}" />
-                                </portlet:actionURL>
-                                <li<c:if test="${contenido.activo}"> class="active"</c:if> style="font-size: 0.8em;"><a href="${verContenidoUrl}">${contenido.nombre}</a></li>
+                                </portlet:renderURL>
+                                <li<c:if test="${contenido.activo}"> class="active"</c:if> style="font-size: 0.8em;">
+                                    <a href="${verContenidoUrl}">
+                                        <c:choose>
+                                            <c:when test="${contenido.alumno.iniciado != null && contenido.alumno.terminado == null}">
+                                                <i class="icon-eye-open"></i>
+                                            </c:when>
+                                            <c:when test="${contenido.alumno.terminado == null}">
+                                                <i class="icon-ban-circle"></i>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <i class="icon-ok-circle"></i>
+                                            </c:otherwise>
+                                        </c:choose>
+                                        ${contenido.nombre}
+                                    </a>
+                                </li>
                             </c:forEach>
                         </c:forEach>
                     </ul>
                 </div>
             </div>
-            <div class="span9">${texto}</div>
+            <div class="span9">
+                <c:choose>
+                    <c:when test="${not empty video}">
+                        <video id="<portlet:namespace />mediaspace" controls="controls">
+                            <source src="${video}" />
+                        </video>
+
+                        <aui:script>
+                            jwplayer('<portlet:namespace />mediaspace').setup({
+                                modes : [
+                                    { type : 'html5' },
+                                    { type : 'flash', src : '/academia-theme/jwplayer/player.swf'}
+                                ]        
+                            });
+                        </aui:script>
+                    </c:when>
+                    <c:otherwise>${texto}</c:otherwise>
+                </c:choose>
+            </div>
         </div>
     </c:when>
     <c:otherwise>

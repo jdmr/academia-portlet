@@ -43,7 +43,6 @@ import java.util.*;
 import javax.portlet.*;
 import javax.validation.Valid;
 import mx.edu.um.academia.dao.CursoDao;
-import mx.edu.um.academia.model.AlumnoCurso;
 import mx.edu.um.academia.model.Contenido;
 import mx.edu.um.academia.model.Curso;
 import mx.edu.um.academia.model.ObjetoAprendizaje;

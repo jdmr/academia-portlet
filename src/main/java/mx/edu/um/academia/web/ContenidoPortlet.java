@@ -381,6 +381,7 @@ public class ContenidoPortlet extends BaseController {
             DLFileEntryLocalServiceUtil.deleteDLFileEntry(contenido.getContenidoId());
         }
         ServiceContext serviceContext = ServiceContextFactory.getInstance(DLFileEntry.class.getName(), request);
+        serviceContext.setAddCommunityPermissions(true);
         DLFileEntry fileEntry = DLFileEntryLocalServiceUtil.addFileEntry(creador.getUserId(), contenido.getComunidadId(), 0, archivo.getOriginalFilename(), archivo.getOriginalFilename(), contenido.getNombre(), "", "", archivo.getBytes(), serviceContext);
         contenido.setContenidoId(fileEntry.getPrimaryKey());
         contenido = contenidoDao.actualizaContenidoId(contenido, creador);

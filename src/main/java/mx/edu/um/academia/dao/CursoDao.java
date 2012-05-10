@@ -24,6 +24,7 @@
 package mx.edu.um.academia.dao;
 
 import com.liferay.portal.model.User;
+import com.liferay.portal.theme.ThemeDisplay;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -68,6 +69,10 @@ public interface CursoDao {
     public AlumnoObjetoAprendizaje obtieneAlumnoObjeto(Long objetoId, Long alumnoId);
 
     public List<ObjetoAprendizaje> objetosAlumno(Long cursoId, Long alumnoId);
+
+    public List<ObjetoAprendizaje> objetosAlumno(Long cursoId, Long alumnoId, ThemeDisplay themeDisplay);
+    
+    public List<ObjetoAprendizaje> objetosAlumno(Long cursoId, Long contenidoId, Long alumnoId, ThemeDisplay themeDisplay);
 
     public void inscribe(Long cursoId, Long alumnoId);
 

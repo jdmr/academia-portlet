@@ -26,9 +26,13 @@ package mx.edu.um.academia.dao.impl;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.UserLocalServiceUtil;
+import com.liferay.portal.theme.ThemeDisplay;
+import com.liferay.portlet.documentlibrary.model.DLFileEntry;
+import com.liferay.portlet.documentlibrary.service.DLFileEntryLocalServiceUtil;
+import com.liferay.portlet.journal.model.JournalArticle;
+import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
 import java.util.*;
 import java.util.logging.Level;
 import mx.edu.um.academia.dao.CursoDao;
@@ -338,8 +342,8 @@ public class CursoDaoHibernate implements CursoDao {
         Alumno alumno = (Alumno) currentSession().load(Alumno.class, alumnoId);
         log.debug("{}", alumno);
         List<ObjetoAprendizaje> objetos = curso.getObjetos();
-        for(ObjetoAprendizaje objeto : objetos) {
-            for(Contenido contenido : objeto.getContenidos()) {
+        for (ObjetoAprendizaje objeto : objetos) {
+            for (Contenido contenido : objeto.getContenidos()) {
                 log.debug("Cargando contenido {} del objeto {}", contenido, objeto);
                 AlumnoContenidoPK pk = new AlumnoContenidoPK(alumno, contenido);
                 AlumnoContenido alumnoContenido = (AlumnoContenido) currentSession().get(AlumnoContenido.class, pk);
@@ -355,9 +359,109 @@ public class CursoDaoHibernate implements CursoDao {
     }
 
     @Override
+    public List<ObjetoAprendizaje> objetosAlumno(Long cursoId, Long alumnoId, ThemeDisplay themeDisplay) {
+        log.debug("Obteniendo objetos de aprendizaje del curso {} para el alumno {}", cursoId, alumnoId);
+
+        Curso curso = (Curso) currentSession().get(Curso.class, cursoId);
+        log.debug("{}", curso);
+        Alumno alumno = (Alumno) currentSession().load(Alumno.class, alumnoId);
+        log.debug("{}", alumno);
+        List<ObjetoAprendizaje> objetos = curso.getObjetos();
+        for (ObjetoAprendizaje objeto : objetos) {
+            boolean bandera = true;
+            for (Contenido contenido : objeto.getContenidos()) {
+                log.debug("Cargando contenido {} del objeto {}", contenido, objeto);
+                AlumnoContenidoPK pk = new AlumnoContenidoPK(alumno, contenido);
+                AlumnoContenido alumnoContenido = (AlumnoContenido) currentSession().get(AlumnoContenido.class, pk);
+                if (alumnoContenido == null) {
+                    alumnoContenido = new AlumnoContenido(alumno, contenido);
+                    currentSession().save(alumnoContenido);
+                    currentSession().flush();
+                }
+                if (bandera) {
+                    try {
+                        JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(contenido.getContenidoId());
+                        if (ja != null) {
+                            String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+                            contenido.setTexto(texto);
+                        }
+                    } catch (PortalException | SystemException e) {
+                        log.error("No se pudo obtener el texto del contenido", e);
+                    }
+                    contenido.setActivo(bandera);
+                    alumnoContenido.setIniciado(new Date());
+                    currentSession().update(alumnoContenido);
+                    currentSession().flush();
+                    bandera = false;
+                }
+                contenido.setAlumno(alumnoContenido);
+            }
+        }
+        return objetos;
+    }
+
+    @Override
+    public List<ObjetoAprendizaje> objetosAlumno(Long cursoId, Long contenidoId, Long alumnoId, ThemeDisplay themeDisplay) {
+        log.debug("Obteniendo objetos de aprendizaje del curso {} para el alumno {}", cursoId, alumnoId);
+
+        Curso curso = (Curso) currentSession().get(Curso.class, cursoId);
+        log.debug("{}", curso);
+        Alumno alumno = (Alumno) currentSession().load(Alumno.class, alumnoId);
+        log.debug("{}", alumno);
+        List<ObjetoAprendizaje> objetos = curso.getObjetos();
+        for (ObjetoAprendizaje objeto : objetos) {
+            for (Contenido contenido : objeto.getContenidos()) {
+                log.debug("Cargando contenido {} del objeto {}", contenido, objeto);
+                AlumnoContenidoPK pk = new AlumnoContenidoPK(alumno, contenido);
+                AlumnoContenido alumnoContenido = (AlumnoContenido) currentSession().get(AlumnoContenido.class, pk);
+                if (alumnoContenido == null) {
+                    alumnoContenido = new AlumnoContenido(alumno, contenido);
+                    currentSession().save(alumnoContenido);
+                    currentSession().flush();
+                }
+                if (contenidoId == contenido.getId()) {
+                    try {
+                        switch (contenido.getTipo()) {
+                            case Constantes.TEXTO:
+                                JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(contenido.getContenidoId());
+                                if (ja != null) {
+                                    String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+                                    contenido.setTexto(texto);
+                                }
+                                break;
+                            case Constantes.VIDEO:
+                                DLFileEntry fileEntry = DLFileEntryLocalServiceUtil.getDLFileEntry(contenido.getContenidoId());
+                                StringBuilder videoLink = new StringBuilder();
+                                videoLink.append("/documents/");
+                                videoLink.append(fileEntry.getGroupId());
+                                videoLink.append("/");
+                                videoLink.append(fileEntry.getFolderId());
+                                videoLink.append("/");
+                                videoLink.append(fileEntry.getTitle());
+                                contenido.setTexto(videoLink.toString());
+                            case Constantes.EXAMEN :
+                                break;
+                        }
+                        contenido.setActivo(true);
+                        if (alumnoContenido.getIniciado() != null) {
+                            alumnoContenido.setIniciado(new Date());
+                            currentSession().update(alumnoContenido);
+                            currentSession().flush();
+                        }
+                    } catch (PortalException | SystemException e) {
+                        log.error("No se pudo obtener el texto del contenido", e);
+                    }
+                }
+                contenido.setAlumno(alumnoContenido);
+            }
+        }
+        return objetos;
+    }
+
+    @Override
     public List<AlumnoCurso> alumnos(Long cursoId) {
         log.debug("Lista de alumnos del curso {}", cursoId);
-        
+
         Query query = currentSession().createQuery("select a from AlumnoCurso a where a.id.curso.id = :cursoId");
         query.setLong("cursoId", cursoId);
         return query.list();
@@ -366,7 +470,7 @@ public class CursoDaoHibernate implements CursoDao {
     @Override
     public void inscribe(Long cursoId, Long alumnoId) {
         log.debug("Inscribe alumno {} a curso {}", alumnoId, cursoId);
-        
+
         Curso curso = (Curso) currentSession().get(Curso.class, cursoId);
         Alumno alumno = (Alumno) currentSession().get(Alumno.class, alumnoId);
         if (alumno == null) {
@@ -398,13 +502,13 @@ public class CursoDaoHibernate implements CursoDao {
         Query query = currentSession().createQuery("select a from AlumnoCurso a where a.id.curso.id = :cursoId");
         query.setLong("cursoId", cursoId);
         params.put("alumnos", query.list());
-        
+
         Curso curso = (Curso) currentSession().get(Curso.class, cursoId);
         params.put("curso", curso);
         try {
             log.debug("Buscando usuarios en la empresa {}", params.get("companyId"));
             List<User> usuarios = UserLocalServiceUtil.getCompanyUsers((Long) params.get("companyId"), QueryUtil.ALL_POS, QueryUtil.ALL_POS);
-            for(User user : usuarios) {
+            for (User user : usuarios) {
                 if (user.isDefaultUser()) {
                     usuarios.remove(user);
                     break;
@@ -414,8 +518,7 @@ public class CursoDaoHibernate implements CursoDao {
         } catch (SystemException e) {
             log.error("No se pudo obtener lista de usuarios", e);
         }
-        
+
         return params;
     }
-
 }

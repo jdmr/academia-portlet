@@ -74,6 +74,8 @@ public class Contenido implements Serializable {
     private AlumnoContenido alumno;
     @Transient
     private Boolean activo = false;
+    @Transient
+    private String texto;
 
     public Contenido() {
     }
@@ -278,6 +280,20 @@ public class Contenido implements Serializable {
      */
     public void setActivo(Boolean activo) {
         this.activo = activo;
+    }
+
+    /**
+     * @return the texto
+     */
+    public String getTexto() {
+        return texto;
+    }
+
+    /**
+     * @param texto the texto to set
+     */
+    public void setTexto(String texto) {
+        this.texto = texto;
     }
 
     @Override

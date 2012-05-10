@@ -91,19 +91,16 @@ public class CursoPortlet extends BaseController {
 
             } else {
                 if (cursoDao.estaInscrito(curso.getId(), usuario.getUserId())) {
-                    List<ObjetoAprendizaje> objetos = cursoDao.objetosAlumno(curso.getId(), usuario.getUserId());
+                    List<ObjetoAprendizaje> objetos = cursoDao.objetosAlumno(curso.getId(), usuario.getUserId(), themeDisplay);
+                    cicloObjetos:
                     for (ObjetoAprendizaje objeto : objetos) {
-                        boolean bandera = true;
+                        log.debug("Viendo contenido de objeto {}", objeto);
                         for (Contenido contenido : objeto.getContenidos()) {
-                            AlumnoContenido alumnoContenido = contenido.getAlumno();
-                            if (alumnoContenido.getIniciado() == null && bandera) {
-                                JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(contenido.getContenidoId());
-                                if (ja != null) {
-                                    String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
-                                    model.addAttribute("texto", texto);
-                                }
-                                contenido.setActivo(true);
-                                bandera = false;
+                            log.debug("Contenido : {} : Activo : {}", contenido, contenido.getActivo());
+                            if (contenido.getActivo()) {
+                                log.debug("Encontre el contenido activo {} y el texto {}", contenido, contenido.getTexto());
+                                model.addAttribute("texto", contenido.getTexto());
+                                break cicloObjetos;
                             }
                         }
                     }
@@ -126,6 +123,75 @@ public class CursoPortlet extends BaseController {
             model.addAttribute("message", "curso.no.configurado");
         }
 
+        return "curso/ver";
+    }
+
+    @RequestMapping(value = "VIEW", params="action=verContenido")
+    public String verContenido(RenderRequest request, Model model, @RequestParam Long contenidoId) throws SystemException, PortalException {
+        PortletCurso portletCurso = cursoDao.obtienePortlet(PortalUtil.getPortletId(request));
+
+        ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+        if (portletCurso != null) {
+            Curso curso = portletCurso.getCurso();
+            model.addAttribute("curso", curso);
+            User usuario = PortalUtil.getUser(request);
+            if (usuario == null) {
+                // Necesitamos firmar al usuario
+                model.addAttribute("sign_in", Boolean.TRUE);
+                model.addAttribute("sign_in_url", themeDisplay.getURLSignIn());
+
+                if (curso.getIntro() != null) {
+                    JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(curso.getIntro());
+                    if (ja != null) {
+                        String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+                        model.addAttribute("texto", texto);
+                    }
+                } else {
+                    String texto = messageSource.getMessage("curso.necesita.intro", null, themeDisplay.getLocale());
+                    model.addAttribute("texto", texto);
+                }
+
+            } else {
+                if (cursoDao.estaInscrito(curso.getId(), usuario.getUserId())) {
+                    List<ObjetoAprendizaje> objetos = cursoDao.objetosAlumno(curso.getId(), contenidoId, usuario.getUserId(), themeDisplay);
+                    cicloObjetos:
+                    for (ObjetoAprendizaje objeto : objetos) {
+                        log.debug("Viendo contenido de objeto {}", objeto);
+                        for (Contenido contenido : objeto.getContenidos()) {
+                            log.debug("Contenido : {} : Activo : {}", contenido, contenido.getActivo());
+                            if (contenido.getActivo()) {
+                                log.debug("Encontre el contenido activo {} y el texto {}", contenido, contenido.getTexto());
+                                switch(contenido.getTipo()) {
+                                    case Constantes.TEXTO :
+                                        model.addAttribute("texto", contenido.getTexto());
+                                        break;
+                                    case Constantes.VIDEO :
+                                        model.addAttribute("video", contenido.getTexto());
+                                        break;
+                                }
+                                break cicloObjetos;
+                            }
+                        }
+                    }
+                    model.addAttribute("objetos", objetos);
+                } else {
+                    if (curso.getIntro() != null) {
+                        JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(curso.getIntro());
+                        if (ja != null) {
+                            String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+                            model.addAttribute("texto", texto);
+                        }
+                    } else {
+                        String texto = messageSource.getMessage("curso.necesita.intro", null, themeDisplay.getLocale());
+                        model.addAttribute("texto", texto);
+                    }
+                }
+            }
+        } else {
+            log.warn("Preferencias no encontradas");
+            model.addAttribute("message", "curso.no.configurado");
+        }
+        
         return "curso/ver";
     }
 
@@ -157,7 +223,7 @@ public class CursoPortlet extends BaseController {
     @RequestMapping(value = "VIEW", params = "action=inscribeAlumno")
     public void inscribeAlumno(ActionRequest request, ActionResponse response, @RequestParam Long cursoId) throws SystemException, PortalException {
         log.debug("Inscribiendo alumno a curso {}", cursoId);
-        for(String key : request.getParameterMap().keySet()) {
+        for (String key : request.getParameterMap().keySet()) {
             log.debug("{} : {}", key, request.getParameterMap().get(key));
         }
 
@@ -176,16 +242,16 @@ public class CursoPortlet extends BaseController {
                     break;
                 case Constantes.PAGADO:
                     cursoDao.inscribe(curso, alumno, creaUsuario, Constantes.PENDIENTE);
-                    
+
                     break;
             }
         }
     }
-    
+
     @RequestMapping(value = "VIEW", params = "action=pagoAprobado")
     public String pagoAprobado(RenderRequest request, RenderResponse response, @RequestParam Long cursoId) throws SystemException, PortalException {
         log.debug("Pago aprobado para alumno a curso {}", cursoId);
-        for(String key : request.getParameterMap().keySet()) {
+        for (String key : request.getParameterMap().keySet()) {
             log.debug("{} : {}", key, request.getParameterMap().get(key));
         }
 
@@ -203,11 +269,11 @@ public class CursoPortlet extends BaseController {
         }
         return null;
     }
-    
+
     @RequestMapping(value = "VIEW", params = "action=pagoDenegado")
     public String pagoDenegado(RenderRequest request, RenderResponse response, @RequestParam Long cursoId) throws SystemException, PortalException {
         log.debug("Alumno no pago curso {}", cursoId);
-        for(String key : request.getParameterMap().keySet()) {
+        for (String key : request.getParameterMap().keySet()) {
             log.debug("{} : {}", key, request.getParameterMap().get(key));
         }
 
