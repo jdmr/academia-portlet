@@ -34,7 +34,6 @@ import com.liferay.portlet.documentlibrary.service.DLFileEntryLocalServiceUtil;
 import com.liferay.portlet.journal.model.JournalArticle;
 import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
 import java.util.*;
-import java.util.logging.Level;
 import mx.edu.um.academia.dao.CursoDao;
 import mx.edu.um.academia.model.*;
 import mx.edu.um.academia.utils.Constantes;
@@ -367,6 +366,7 @@ public class CursoDaoHibernate implements CursoDao {
         Alumno alumno = (Alumno) currentSession().load(Alumno.class, alumnoId);
         log.debug("{}", alumno);
         List<ObjetoAprendizaje> objetos = curso.getObjetos();
+        boolean noAsignado = true;
         for (ObjetoAprendizaje objeto : objetos) {
             boolean bandera = true;
             for (Contenido contenido : objeto.getContenidos()) {
@@ -378,23 +378,42 @@ public class CursoDaoHibernate implements CursoDao {
                     currentSession().save(alumnoContenido);
                     currentSession().flush();
                 }
-                if (bandera) {
-                    try {
-                        JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(contenido.getContenidoId());
-                        if (ja != null) {
-                            String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
-                            contenido.setTexto(texto);
-                        }
-                    } catch (PortalException | SystemException e) {
-                        log.error("No se pudo obtener el texto del contenido", e);
-                    }
+                log.debug("Buscando {} : {}", bandera, alumnoContenido.getTerminado());
+                if (bandera && alumnoContenido.getTerminado() == null) {
+                    this.asignaContenido(alumnoContenido, contenido, themeDisplay);
                     contenido.setActivo(bandera);
                     alumnoContenido.setIniciado(new Date());
                     currentSession().update(alumnoContenido);
                     currentSession().flush();
                     bandera = false;
+                    noAsignado = false;
                 }
                 contenido.setAlumno(alumnoContenido);
+            }
+        }
+        if (noAsignado) {
+            for (ObjetoAprendizaje objeto : objetos) {
+                boolean bandera = true;
+                for (Contenido contenido : objeto.getContenidos()) {
+                    log.debug("Cargando contenido {} del objeto {}", contenido, objeto);
+                    AlumnoContenidoPK pk = new AlumnoContenidoPK(alumno, contenido);
+                    AlumnoContenido alumnoContenido = (AlumnoContenido) currentSession().get(AlumnoContenido.class, pk);
+                    if (alumnoContenido == null) {
+                        alumnoContenido = new AlumnoContenido(alumno, contenido);
+                        currentSession().save(alumnoContenido);
+                        currentSession().flush();
+                    }
+                    if (bandera) {
+                        this.asignaContenido(alumnoContenido, contenido, themeDisplay);
+                        noAsignado = true;
+                        contenido.setActivo(bandera);
+                        alumnoContenido.setIniciado(new Date());
+                        currentSession().update(alumnoContenido);
+                        currentSession().flush();
+                        bandera = false;
+                    }
+                    contenido.setAlumno(alumnoContenido);
+                }
             }
         }
         return objetos;
@@ -420,39 +439,85 @@ public class CursoDaoHibernate implements CursoDao {
                     currentSession().flush();
                 }
                 if (contenidoId == contenido.getId()) {
-                    try {
-                        switch (contenido.getTipo()) {
-                            case Constantes.TEXTO:
-                                JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(contenido.getContenidoId());
-                                if (ja != null) {
-                                    String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
-                                    contenido.setTexto(texto);
-                                }
-                                break;
-                            case Constantes.VIDEO:
-                                DLFileEntry fileEntry = DLFileEntryLocalServiceUtil.getDLFileEntry(contenido.getContenidoId());
-                                StringBuilder videoLink = new StringBuilder();
-                                videoLink.append("/documents/");
-                                videoLink.append(fileEntry.getGroupId());
-                                videoLink.append("/");
-                                videoLink.append(fileEntry.getFolderId());
-                                videoLink.append("/");
-                                videoLink.append(fileEntry.getTitle());
-                                contenido.setTexto(videoLink.toString());
-                            case Constantes.EXAMEN :
-                                break;
-                        }
-                        contenido.setActivo(true);
-                        if (alumnoContenido.getIniciado() != null) {
-                            alumnoContenido.setIniciado(new Date());
-                            currentSession().update(alumnoContenido);
-                            currentSession().flush();
-                        }
-                    } catch (PortalException | SystemException e) {
-                        log.error("No se pudo obtener el texto del contenido", e);
+                    this.asignaContenido(alumnoContenido, contenido, themeDisplay);
+                    contenido.setActivo(true);
+                    log.debug("Validando si ha sido iniciado {}", alumnoContenido.getIniciado());
+                    if (alumnoContenido.getIniciado() == null) {
+                        alumnoContenido.setIniciado(new Date());
+                        currentSession().update(alumnoContenido);
+                        currentSession().flush();
                     }
                 }
                 contenido.setAlumno(alumnoContenido);
+            }
+        }
+        return objetos;
+    }
+
+    @Override
+    public List<ObjetoAprendizaje> objetosAlumnoSiguiente(Long cursoId, Long alumnoId, ThemeDisplay themeDisplay) {
+        log.debug("Obteniendo siguiente contenido curso {} para el alumno {}", cursoId, alumnoId);
+
+        Curso curso = (Curso) currentSession().get(Curso.class, cursoId);
+        log.debug("{}", curso);
+        Alumno alumno = (Alumno) currentSession().load(Alumno.class, alumnoId);
+        log.debug("{}", alumno);
+        List<ObjetoAprendizaje> objetos = curso.getObjetos();
+        boolean noAsignado = true;
+        for (ObjetoAprendizaje objeto : objetos) {
+            boolean bandera = true;
+            boolean bandera2 = false;
+            for (Contenido contenido : objeto.getContenidos()) {
+                log.debug("Cargando contenido {} del objeto {}", contenido, objeto);
+                AlumnoContenidoPK pk = new AlumnoContenidoPK(alumno, contenido);
+                AlumnoContenido alumnoContenido = (AlumnoContenido) currentSession().get(AlumnoContenido.class, pk);
+                if (alumnoContenido == null) {
+                    alumnoContenido = new AlumnoContenido(alumno, contenido);
+                    currentSession().save(alumnoContenido);
+                    currentSession().flush();
+                }
+                if (bandera && alumnoContenido.getTerminado() == null) {
+                    if (bandera2) {
+                        this.asignaContenido(alumnoContenido, contenido, themeDisplay);
+                        contenido.setActivo(bandera);
+                        alumnoContenido.setIniciado(new Date());
+                        currentSession().update(alumnoContenido);
+                        currentSession().flush();
+                        bandera = false;
+                        bandera2 = false;
+                        noAsignado = false;
+                    } else {
+                        alumnoContenido.setTerminado(new Date());
+                        currentSession().update(alumnoContenido);
+                        currentSession().flush();
+                        bandera2 = true;
+                    }
+                }
+                contenido.setAlumno(alumnoContenido);
+            }
+        }
+        if (noAsignado) {
+            for (ObjetoAprendizaje objeto : objetos) {
+                boolean bandera = true;
+                for (Contenido contenido : objeto.getContenidos()) {
+                    AlumnoContenidoPK pk = new AlumnoContenidoPK(alumno, contenido);
+                    AlumnoContenido alumnoContenido = (AlumnoContenido) currentSession().get(AlumnoContenido.class, pk);
+                    if (alumnoContenido == null) {
+                        alumnoContenido = new AlumnoContenido(alumno, contenido);
+                        currentSession().save(alumnoContenido);
+                        currentSession().flush();
+                    }
+                    if (bandera) {
+                        this.asignaContenido(alumnoContenido, contenido, themeDisplay);
+                        noAsignado = true;
+                        contenido.setActivo(bandera);
+                        alumnoContenido.setIniciado(new Date());
+                        currentSession().update(alumnoContenido);
+                        currentSession().flush();
+                        bandera = false;
+                    }
+                    contenido.setAlumno(alumnoContenido);
+                }
             }
         }
         return objetos;
@@ -520,5 +585,40 @@ public class CursoDaoHibernate implements CursoDao {
         }
 
         return params;
+    }
+
+    private void asignaContenido(AlumnoContenido alumnoContenido, Contenido contenido, ThemeDisplay themeDisplay) {
+        try {
+            switch (contenido.getTipo()) {
+                case Constantes.TEXTO:
+                    JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(contenido.getContenidoId());
+                    if (ja != null) {
+                        String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+                        contenido.setTexto(texto);
+                    }
+                    break;
+                case Constantes.VIDEO:
+                    DLFileEntry fileEntry = DLFileEntryLocalServiceUtil.getDLFileEntry(contenido.getContenidoId());
+                    StringBuilder videoLink = new StringBuilder();
+                    videoLink.append("/documents/");
+                    videoLink.append(fileEntry.getGroupId());
+                    videoLink.append("/");
+                    videoLink.append(fileEntry.getFolderId());
+                    videoLink.append("/");
+                    videoLink.append(fileEntry.getTitle());
+                    contenido.setTexto(videoLink.toString());
+                case Constantes.EXAMEN:
+                    break;
+            }
+            contenido.setActivo(true);
+            log.debug("Validando si ha sido iniciado {}", alumnoContenido.getIniciado());
+            if (alumnoContenido.getIniciado() == null) {
+                alumnoContenido.setIniciado(new Date());
+                currentSession().update(alumnoContenido);
+                currentSession().flush();
+            }
+        } catch (PortalException | SystemException e) {
+            log.error("No se pudo obtener el texto del contenido", e);
+        }
     }
 }

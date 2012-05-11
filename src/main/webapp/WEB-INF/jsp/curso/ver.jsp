@@ -17,7 +17,6 @@
                             <c:forEach items="${objeto.contenidos}" var="contenido">
                                 <portlet:renderURL var="verContenidoUrl" >
                                     <portlet:param name="action" value="verContenido" />
-                                    <portlet:param name="cursoId" value="${curso.id}" />
                                     <portlet:param name="contenidoId" value="${contenido.id}" />
                                 </portlet:renderURL>
                                 <li<c:if test="${contenido.activo}"> class="active"</c:if> style="font-size: 0.8em;">
@@ -59,6 +58,10 @@
                     </c:when>
                     <c:otherwise>${texto}</c:otherwise>
                 </c:choose>
+                <portlet:renderURL var="verSiguienteUrl" >
+                    <portlet:param name="action" value="verSiguiente" />
+                </portlet:renderURL>
+                <div><a href="${verSiguienteUrl}" class="btn btn-primary btn-large"><s:message code="siguiente" /> <i class="icon-chevron-right" ></i></a></div>
             </div>
         </div>
     </c:when>

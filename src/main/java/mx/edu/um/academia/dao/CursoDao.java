@@ -71,8 +71,10 @@ public interface CursoDao {
     public List<ObjetoAprendizaje> objetosAlumno(Long cursoId, Long alumnoId);
 
     public List<ObjetoAprendizaje> objetosAlumno(Long cursoId, Long alumnoId, ThemeDisplay themeDisplay);
-    
+
     public List<ObjetoAprendizaje> objetosAlumno(Long cursoId, Long contenidoId, Long alumnoId, ThemeDisplay themeDisplay);
+
+    public List<ObjetoAprendizaje> objetosAlumnoSiguiente(Long id, Long alumnoId, ThemeDisplay themeDisplay);
 
     public void inscribe(Long cursoId, Long alumnoId);
 

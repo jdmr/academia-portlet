@@ -98,8 +98,14 @@ public class CursoPortlet extends BaseController {
                         for (Contenido contenido : objeto.getContenidos()) {
                             log.debug("Contenido : {} : Activo : {}", contenido, contenido.getActivo());
                             if (contenido.getActivo()) {
-                                log.debug("Encontre el contenido activo {} y el texto {}", contenido, contenido.getTexto());
-                                model.addAttribute("texto", contenido.getTexto());
+                                switch(contenido.getTipo()) {
+                                    case Constantes.TEXTO :
+                                        model.addAttribute("texto", contenido.getTexto());
+                                        break;
+                                    case Constantes.VIDEO :
+                                        model.addAttribute("video", contenido.getTexto());
+                                        break;
+                                }
                                 break cicloObjetos;
                             }
                         }
@@ -128,6 +134,7 @@ public class CursoPortlet extends BaseController {
 
     @RequestMapping(value = "VIEW", params="action=verContenido")
     public String verContenido(RenderRequest request, Model model, @RequestParam Long contenidoId) throws SystemException, PortalException {
+        log.debug("Ver contenido {}", contenidoId);
         PortletCurso portletCurso = cursoDao.obtienePortlet(PortalUtil.getPortletId(request));
 
         ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
@@ -154,6 +161,76 @@ public class CursoPortlet extends BaseController {
             } else {
                 if (cursoDao.estaInscrito(curso.getId(), usuario.getUserId())) {
                     List<ObjetoAprendizaje> objetos = cursoDao.objetosAlumno(curso.getId(), contenidoId, usuario.getUserId(), themeDisplay);
+                    cicloObjetos:
+                    for (ObjetoAprendizaje objeto : objetos) {
+                        log.debug("Viendo contenido de objeto {}", objeto);
+                        for (Contenido contenido : objeto.getContenidos()) {
+                            log.debug("Contenido : {} : Activo : {}", contenido, contenido.getActivo());
+                            if (contenido.getActivo()) {
+                                log.debug("Encontre el contenido activo {} y el texto {}", contenido, contenido.getTexto());
+                                switch(contenido.getTipo()) {
+                                    case Constantes.TEXTO :
+                                        model.addAttribute("texto", contenido.getTexto());
+                                        break;
+                                    case Constantes.VIDEO :
+                                        model.addAttribute("video", contenido.getTexto());
+                                        break;
+                                }
+                                break cicloObjetos;
+                            }
+                        }
+                    }
+                    model.addAttribute("objetos", objetos);
+                } else {
+                    if (curso.getIntro() != null) {
+                        JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(curso.getIntro());
+                        if (ja != null) {
+                            String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+                            model.addAttribute("texto", texto);
+                        }
+                    } else {
+                        String texto = messageSource.getMessage("curso.necesita.intro", null, themeDisplay.getLocale());
+                        model.addAttribute("texto", texto);
+                    }
+                }
+            }
+        } else {
+            log.warn("Preferencias no encontradas");
+            model.addAttribute("message", "curso.no.configurado");
+        }
+        
+        return "curso/ver";
+    }
+
+    @RequestMapping(value = "VIEW", params="action=verSiguiente")
+    public String verSiguiente(RenderRequest request, Model model) throws SystemException, PortalException {
+        log.debug("Ver siguiente contenido");
+        PortletCurso portletCurso = cursoDao.obtienePortlet(PortalUtil.getPortletId(request));
+
+        ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+        if (portletCurso != null) {
+            Curso curso = portletCurso.getCurso();
+            model.addAttribute("curso", curso);
+            User usuario = PortalUtil.getUser(request);
+            if (usuario == null) {
+                // Necesitamos firmar al usuario
+                model.addAttribute("sign_in", Boolean.TRUE);
+                model.addAttribute("sign_in_url", themeDisplay.getURLSignIn());
+
+                if (curso.getIntro() != null) {
+                    JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(curso.getIntro());
+                    if (ja != null) {
+                        String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+                        model.addAttribute("texto", texto);
+                    }
+                } else {
+                    String texto = messageSource.getMessage("curso.necesita.intro", null, themeDisplay.getLocale());
+                    model.addAttribute("texto", texto);
+                }
+
+            } else {
+                if (cursoDao.estaInscrito(curso.getId(), usuario.getUserId())) {
+                    List<ObjetoAprendizaje> objetos = cursoDao.objetosAlumnoSiguiente(curso.getId(), usuario.getUserId(), themeDisplay);
                     cicloObjetos:
                     for (ObjetoAprendizaje objeto : objetos) {
                         log.debug("Viendo contenido de objeto {}", objeto);
