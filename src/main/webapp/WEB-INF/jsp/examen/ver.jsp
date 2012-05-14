@@ -60,6 +60,12 @@
         <h3>${examen.fechaModificacion}</h3>
     </div>
 </div>
+<div class="row-fluid">
+    <div class="span6">
+        <h5><s:message code="puntos" /></h5>
+        <h3>${examen.puntos}</h3>
+    </div>
+</div>
 <c:if test="${not empty texto}">
     <div class="row-fluid">
         <div>${texto}</div>

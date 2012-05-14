@@ -48,6 +48,7 @@ public class Examen implements Serializable {
     @Column(length = 128, nullable = false)
     @NotBlank
     private String nombre;
+    private Integer puntos = 0;
     private Long contenido;
     @Column(name = "comunidad_id", nullable = false)
     private Long comunidadId;
@@ -61,6 +62,8 @@ public class Examen implements Serializable {
     private String creador;
     @OneToMany(mappedBy = "id.examen")
     private List<ExamenPregunta> preguntas;
+    @Transient
+    private List<Pregunta> otrasPreguntas;
 
     public Examen() {
     }
@@ -110,6 +113,20 @@ public class Examen implements Serializable {
      */
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    /**
+     * @return the puntos
+     */
+    public Integer getPuntos() {
+        return puntos;
+    }
+
+    /**
+     * @param puntos the puntos to set
+     */
+    public void setPuntos(Integer puntos) {
+        this.puntos = puntos;
     }
 
     /**
@@ -194,6 +211,20 @@ public class Examen implements Serializable {
      */
     public void setPreguntas(List<ExamenPregunta> preguntas) {
         this.preguntas = preguntas;
+    }
+
+    /**
+     * @return the otrasPreguntas
+     */
+    public List<Pregunta> getOtrasPreguntas() {
+        return otrasPreguntas;
+    }
+
+    /**
+     * @param otrasPreguntas the otrasPreguntas to set
+     */
+    public void setOtrasPreguntas(List<Pregunta> otrasPreguntas) {
+        this.otrasPreguntas = otrasPreguntas;
     }
 
     @Override

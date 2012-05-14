@@ -1,0 +1,18 @@
+<%@ include file="/WEB-INF/jsp/include.jsp" %>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<h1><s:message code="resultado.examen" arguments="${examen.nombre}" /></h1>
+<div class="alert alert-block ${messageType}">
+    <h4 class="alert-header"><s:message code="${messageTitle}" /></h4>
+    <s:message code="resultado.mensaje" arguments="${totales}" />
+</div>
+<c:if test="${incorrectas != null}">
+    <div class="well">
+        <h2><s:message code="incorrectas" /></h3>
+        <c:forEach items="${incorrectas}" var="pregunta">
+        <h5>${pregunta.texto}</h5>
+            <c:forEach items="${pregunta.respuestas}" var="respuesta">
+                <div class="alert alert-error">${respuesta.texto}</div>
+            </c:forEach>
+        </c:forEach>
+    </div>
+</c:if>

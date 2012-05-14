@@ -98,12 +98,17 @@ public class CursoPortlet extends BaseController {
                         for (Contenido contenido : objeto.getContenidos()) {
                             log.debug("Contenido : {} : Activo : {}", contenido, contenido.getActivo());
                             if (contenido.getActivo()) {
-                                switch(contenido.getTipo()) {
-                                    case Constantes.TEXTO :
+                                switch (contenido.getTipo()) {
+                                    case Constantes.TEXTO:
                                         model.addAttribute("texto", contenido.getTexto());
                                         break;
-                                    case Constantes.VIDEO :
+                                    case Constantes.VIDEO:
                                         model.addAttribute("video", contenido.getTexto());
+                                        break;
+                                    case Constantes.EXAMEN:
+                                        model.addAttribute("texto", contenido.getTexto());
+                                        model.addAttribute("examen", contenido.getExamen());
+                                        model.addAttribute("preguntas", contenido.getExamen().getOtrasPreguntas());
                                         break;
                                 }
                                 break cicloObjetos;
@@ -132,7 +137,7 @@ public class CursoPortlet extends BaseController {
         return "curso/ver";
     }
 
-    @RequestMapping(value = "VIEW", params="action=verContenido")
+    @RequestMapping(value = "VIEW", params = "action=verContenido")
     public String verContenido(RenderRequest request, Model model, @RequestParam Long contenidoId) throws SystemException, PortalException {
         log.debug("Ver contenido {}", contenidoId);
         PortletCurso portletCurso = cursoDao.obtienePortlet(PortalUtil.getPortletId(request));
@@ -168,12 +173,17 @@ public class CursoPortlet extends BaseController {
                             log.debug("Contenido : {} : Activo : {}", contenido, contenido.getActivo());
                             if (contenido.getActivo()) {
                                 log.debug("Encontre el contenido activo {} y el texto {}", contenido, contenido.getTexto());
-                                switch(contenido.getTipo()) {
-                                    case Constantes.TEXTO :
+                                switch (contenido.getTipo()) {
+                                    case Constantes.TEXTO:
                                         model.addAttribute("texto", contenido.getTexto());
                                         break;
-                                    case Constantes.VIDEO :
+                                    case Constantes.VIDEO:
                                         model.addAttribute("video", contenido.getTexto());
+                                        break;
+                                    case Constantes.EXAMEN:
+                                        model.addAttribute("texto", contenido.getTexto());
+                                        model.addAttribute("examen", contenido.getExamen());
+                                        model.addAttribute("preguntas", contenido.getExamen().getOtrasPreguntas());
                                         break;
                                 }
                                 break cicloObjetos;
@@ -198,11 +208,11 @@ public class CursoPortlet extends BaseController {
             log.warn("Preferencias no encontradas");
             model.addAttribute("message", "curso.no.configurado");
         }
-        
+
         return "curso/ver";
     }
 
-    @RequestMapping(value = "VIEW", params="action=verSiguiente")
+    @RequestMapping(value = "VIEW", params = "action=verSiguiente")
     public String verSiguiente(RenderRequest request, Model model) throws SystemException, PortalException {
         log.debug("Ver siguiente contenido");
         PortletCurso portletCurso = cursoDao.obtienePortlet(PortalUtil.getPortletId(request));
@@ -238,12 +248,17 @@ public class CursoPortlet extends BaseController {
                             log.debug("Contenido : {} : Activo : {}", contenido, contenido.getActivo());
                             if (contenido.getActivo()) {
                                 log.debug("Encontre el contenido activo {} y el texto {}", contenido, contenido.getTexto());
-                                switch(contenido.getTipo()) {
-                                    case Constantes.TEXTO :
+                                switch (contenido.getTipo()) {
+                                    case Constantes.TEXTO:
                                         model.addAttribute("texto", contenido.getTexto());
                                         break;
-                                    case Constantes.VIDEO :
+                                    case Constantes.VIDEO:
                                         model.addAttribute("video", contenido.getTexto());
+                                        break;
+                                    case Constantes.EXAMEN:
+                                        model.addAttribute("texto", contenido.getTexto());
+                                        model.addAttribute("examen", contenido.getExamen());
+                                        model.addAttribute("preguntas", contenido.getExamen().getOtrasPreguntas());
                                         break;
                                 }
                                 break cicloObjetos;
@@ -268,7 +283,7 @@ public class CursoPortlet extends BaseController {
             log.warn("Preferencias no encontradas");
             model.addAttribute("message", "curso.no.configurado");
         }
-        
+
         return "curso/ver";
     }
 
@@ -367,5 +382,18 @@ public class CursoPortlet extends BaseController {
             return "curso/denegado";
         }
         return null;
+    }
+
+    @RequestMapping(value = "VIEW", params = "action=enviaExamen")
+    public String enviaExamen(RenderRequest request, RenderResponse response, Model model, @RequestParam Long examenId) throws SystemException, PortalException {
+        log.debug("Recibiendo respuestas de examen {}", examenId);
+        for (String key : request.getParameterMap().keySet()) {
+            log.debug("{} : {}", key, request.getParameterMap().get(key));
+        }
+        Map<String, Object> resultados = cursoDao.califica(request.getParameterMap(), this.getThemeDisplay(request));
+        model.addAllAttributes(resultados);
+        
+        
+        return "curso/examen";
     }
 }

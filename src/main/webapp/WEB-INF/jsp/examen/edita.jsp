@@ -14,6 +14,11 @@
             <form:errors cssClass="errors" path="nombre" cssStyle="color:red;" />
         </div>
         <div class="control-group">
+            <label for="puntos"><s:message code="puntos" /></label>
+            <form:input path="puntos" type="number" step="1" min="0" cssStyle="text-align: right;"/>
+            <form:errors cssClass="errors" path="puntos" cssStyle="color:red;" />
+        </div>
+        <div class="control-group">
             <label for="comunidadId"><s:message code="comunidad" /></label>
             <form:select path="comunidadId" items="${comunidades}" />
             <form:errors cssClass="errors" path="comunidadId" />

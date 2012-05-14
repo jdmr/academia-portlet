@@ -35,6 +35,7 @@ import com.liferay.portlet.journal.model.JournalArticle;
 import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
 import java.util.*;
 import mx.edu.um.academia.dao.CursoDao;
+import mx.edu.um.academia.dao.ExamenDao;
 import mx.edu.um.academia.model.*;
 import mx.edu.um.academia.utils.Constantes;
 import org.hibernate.Criteria;
@@ -59,6 +60,8 @@ public class CursoDaoHibernate implements CursoDao {
     private static final Logger log = LoggerFactory.getLogger(CursoDaoHibernate.class);
     @Autowired
     private SessionFactory sessionFactory;
+    @Autowired
+    private ExamenDao examenDao;
 
     public CursoDaoHibernate() {
         log.info("Nueva instancia del dao de cursos");
@@ -405,7 +408,6 @@ public class CursoDaoHibernate implements CursoDao {
                     }
                     if (bandera) {
                         this.asignaContenido(alumnoContenido, contenido, themeDisplay);
-                        noAsignado = true;
                         contenido.setActivo(bandera);
                         alumnoContenido.setIniciado(new Date());
                         currentSession().update(alumnoContenido);
@@ -509,7 +511,6 @@ public class CursoDaoHibernate implements CursoDao {
                     }
                     if (bandera) {
                         this.asignaContenido(alumnoContenido, contenido, themeDisplay);
-                        noAsignado = true;
                         contenido.setActivo(bandera);
                         alumnoContenido.setIniciado(new Date());
                         currentSession().update(alumnoContenido);
@@ -589,9 +590,10 @@ public class CursoDaoHibernate implements CursoDao {
 
     private void asignaContenido(AlumnoContenido alumnoContenido, Contenido contenido, ThemeDisplay themeDisplay) {
         try {
+            JournalArticle ja;
             switch (contenido.getTipo()) {
                 case Constantes.TEXTO:
-                    JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(contenido.getContenidoId());
+                    ja = JournalArticleLocalServiceUtil.getArticle(contenido.getContenidoId());
                     if (ja != null) {
                         String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
                         contenido.setTexto(texto);
@@ -608,6 +610,37 @@ public class CursoDaoHibernate implements CursoDao {
                     videoLink.append(fileEntry.getTitle());
                     contenido.setTexto(videoLink.toString());
                 case Constantes.EXAMEN:
+                    Examen examen = contenido.getExamen();
+                    if (examen.getContenido() != null) {
+                        ja = JournalArticleLocalServiceUtil.getArticle(examen.getContenido());
+                        if (ja != null) {
+                            String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+                            contenido.setTexto(texto);
+                        }
+                    }
+
+                    List<Pregunta> preguntas = new ArrayList<>();
+                    for (Pregunta pregunta : examenDao.preguntas(examen.getId())) {
+                        for (Respuesta respuesta : pregunta.getRespuestas()) {
+                            ja = JournalArticleLocalServiceUtil.getArticle(respuesta.getContenido());
+                            if (ja != null) {
+                                String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+                                respuesta.setTexto(texto);
+                            }
+                        }
+                        ja = JournalArticleLocalServiceUtil.getArticle(pregunta.getContenido());
+                        if (ja != null) {
+                            String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+                            pregunta.setTexto(texto);
+                        }
+                        preguntas.add(pregunta);
+                    }
+                    if (preguntas.size() > 0) {
+                        for (Pregunta pregunta : preguntas) {
+                            log.debug("{} ||| {}", pregunta, pregunta.getTexto());
+                        }
+                        examen.setOtrasPreguntas(preguntas);
+                    }
                     break;
             }
             contenido.setActivo(true);
@@ -620,5 +653,125 @@ public class CursoDaoHibernate implements CursoDao {
         } catch (PortalException | SystemException e) {
             log.error("No se pudo obtener el texto del contenido", e);
         }
+    }
+
+    @Override
+    public Examen obtieneExamen(Long examenId) {
+        Examen examen = (Examen) currentSession().get(Examen.class, examenId);
+        return examen;
+    }
+
+    @Override
+    public Map<String, Object> califica(Map<String, String[]> params, ThemeDisplay themeDisplay) {
+        try {
+            Examen examen = (Examen) currentSession().get(Examen.class, new Long(params.get("examenId")[0]));
+            Integer totalExamen = 0;
+            Integer totalUsuario = 0;
+            Set<Pregunta> incorrectas = new LinkedHashSet<>();
+            for (ExamenPregunta examenPregunta : examen.getPreguntas()) {
+                Pregunta pregunta = examenPregunta.getId().getPregunta();
+                if (pregunta.getEsMultiple() && examenPregunta.getPorPregunta()) {
+                    // Cuando puede tener muchas respuestas y los puntos son por pregunta
+                    totalExamen += examenPregunta.getPuntos();
+                    String[] respuestas = params.get(pregunta.getId().toString());
+                    List<String> correctas = new ArrayList<>();
+                    if (respuestas.length == pregunta.getCorrectas().size()) {
+                        boolean vaBien = true;
+                        for (Respuesta correcta : pregunta.getCorrectas()) {
+                            boolean encontre = false;
+                            for (String respuesta : respuestas) {
+                                if (respuesta.equals(correcta.getId().toString())) {
+                                    encontre = true;
+                                    correctas.add(respuesta);
+                                    break;
+                                }
+                            }
+                            if (!encontre) {
+                                vaBien = false;
+                            }
+                        }
+                        if (vaBien) {
+                            totalUsuario += examenPregunta.getPuntos();
+                        } else {
+                            // pon respuesta incorrecta
+                            for (String respuestaId : respuestas) {
+                                if (!correctas.contains(respuestaId)) {
+                                    Respuesta respuesta = (Respuesta) currentSession().get(Respuesta.class, new Long(respuestaId));
+                                    JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(respuesta.getContenido());
+                                    if (ja != null) {
+                                        String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+                                        respuesta.setTexto(texto);
+                                    }
+                                    pregunta.getRespuestas().add(respuesta);
+                                }
+                            }
+                            JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(pregunta.getContenido());
+                            if (ja != null) {
+                                String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+                                pregunta.setTexto(texto);
+                            }
+                            incorrectas.add(pregunta);
+                        }
+                    }
+                } else {
+                    // Cuando puede tener muchas respuestas pero los puntos son por respuesta
+                    String[] respuestas = params.get(pregunta.getId().toString());
+                    List<String> correctas = new ArrayList<>();
+                    if (respuestas.length <= pregunta.getCorrectas().size()) {
+                        respuestasLoop:
+                        for (Respuesta correcta : pregunta.getCorrectas()) {
+                            totalExamen += examenPregunta.getPuntos();
+                            for (String respuesta : respuestas) {
+                                if (respuesta.equals(correcta.getId().toString())) {
+                                    totalUsuario += examenPregunta.getPuntos();
+                                    correctas.add(respuesta);
+                                    continue respuestasLoop;
+                                }
+                            }
+                            // pon respuesta incorrecta
+                            for (String respuestaId : respuestas) {
+                                if (!correctas.contains(respuestaId)) {
+                                    Respuesta respuesta = (Respuesta) currentSession().get(Respuesta.class, new Long(respuestaId));
+                                    JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(respuesta.getContenido());
+                                    if (ja != null) {
+                                        String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+                                        respuesta.setTexto(texto);
+                                    }
+                                    pregunta.getRespuestas().add(respuesta);
+                                }
+                            }
+
+                            JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(pregunta.getContenido());
+                            if (ja != null) {
+                                String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+                                pregunta.setTexto(texto);
+                            }
+                            incorrectas.add(pregunta);
+                        }
+                    }
+                }
+                log.debug("Pregunta {} : Respuesta {} : Usuario {}", new Object[]{pregunta.getId(), pregunta.getCorrectas(), params.get(pregunta.getId().toString())});
+            }
+
+            Map<String, Object> resultados = new HashMap<>();
+            resultados.put("examen", examen);
+            resultados.put("totalExamen", totalExamen);
+            resultados.put("totalUsuario", totalUsuario);
+            resultados.put("totales", new String[]{totalUsuario.toString(), totalExamen.toString()});
+            if (examen.getPuntos() != null && totalUsuario < examen.getPuntos()) {
+                resultados.put("messageTitle", "desaprobado");
+                resultados.put("messageType", "alert-error");
+            } else {
+                resultados.put("messageTitle", "aprobado");
+                resultados.put("messageType", "alert-success");
+            }
+            if (incorrectas.size() > 0) {
+                resultados.put("incorrectas", incorrectas);
+            }
+            return resultados;
+        } catch (PortalException | SystemException e) {
+            log.error("No se pudo calificar el examen", e);
+        }
+        return null;
     }
 }

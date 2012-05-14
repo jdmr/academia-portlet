@@ -8,6 +8,10 @@
         </div>
     </c:when>
     <c:when test="${objetos != null}">
+        <portlet:renderURL var="verSiguienteUrl" >
+            <portlet:param name="action" value="verSiguiente" />
+        </portlet:renderURL>
+        
         <div class="row-fluid">
             <div class="span3">
                 <div class="well" style='padding: 0; padding-bottom: 15px;'>
@@ -46,7 +50,7 @@
                         <video id="<portlet:namespace />mediaspace" controls="controls">
                             <source src="${video}" />
                         </video>
-
+                        <div><a href="${verSiguienteUrl}" class="btn btn-primary btn-large"><s:message code="siguiente" /> <i class="icon-chevron-right" ></i></a></div>
                         <aui:script>
                             jwplayer('<portlet:namespace />mediaspace').setup({
                                 modes : [
@@ -56,12 +60,44 @@
                             });
                         </aui:script>
                     </c:when>
-                    <c:otherwise>${texto}</c:otherwise>
+                    <c:when test="${examen != null}">
+                        <div>${texto}</div>
+                        <portlet:renderURL var="enviaExamenUrl" >
+                            <portlet:param name="action" value="enviaExamen" />
+                        </portlet:renderURL>
+                        <form name="<portlet:namespace />preguntasForm" action="${enviaExamenUrl}" method="post" class="well">
+                            <input type="hidden" name="<portlet:namespace />examenId" id="<portlet:namespace />examenId" value="${examen.id}" />
+                            <c:forEach items="${preguntas}" var="pregunta">
+                                <div class="control-group">
+                                    <h5>${pregunta.texto}</h5>
+                                    <c:forEach items="${pregunta.respuestas}" var="respuesta">
+                                        <c:choose>
+                                            <c:when test="${pregunta.esMultiple}">
+                                                <label class="checkbox">
+                                                    <input type="checkbox" name="<portlet:namespace/>${pregunta.id}" value="${respuesta.id}" />
+                                                    ${respuesta.texto}
+                                                </label>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <label class="radio">
+                                                    <input type="radio" name="<portlet:namespace/>${pregunta.id}" value="${respuesta.id}" />
+                                                    ${respuesta.texto}
+                                                </label>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </c:forEach>
+                                </div>
+                            </c:forEach>
+                            <div class="control-group">
+                                <button type="submit" class="btn btn-primary btn-large"><i class="icon-upload icon-white"></i> <s:message code="enviar.respuestas" /></button>
+                            </div>
+                        </form>
+                    </c:when>
+                    <c:otherwise>
+                        ${texto}
+                        <div><a href="${verSiguienteUrl}" class="btn btn-primary btn-large"><s:message code="siguiente" /> <i class="icon-chevron-right" ></i></a></div>
+                    </c:otherwise>
                 </c:choose>
-                <portlet:renderURL var="verSiguienteUrl" >
-                    <portlet:param name="action" value="verSiguiente" />
-                </portlet:renderURL>
-                <div><a href="${verSiguienteUrl}" class="btn btn-primary btn-large"><s:message code="siguiente" /> <i class="icon-chevron-right" ></i></a></div>
             </div>
         </div>
     </c:when>

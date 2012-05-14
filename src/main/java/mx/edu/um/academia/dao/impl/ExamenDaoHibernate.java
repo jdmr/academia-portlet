@@ -63,8 +63,8 @@ public class ExamenDaoHibernate implements ExamenDao {
         Examen examen = (Examen) currentSession().get(Examen.class, otra.getId());
         examen.setVersion(otra.getVersion());
         examen.setNombre(otra.getNombre());
+        examen.setPuntos(otra.getPuntos());
         examen.setComunidadId(otra.getComunidadId());
-        examen.setContenido(otra.getContenido());
         examen.setFechaModificacion(new Date());
         if (creador != null) {
             examen.setCreador(creador.getScreenName());

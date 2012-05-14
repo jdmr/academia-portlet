@@ -17,6 +17,8 @@
 
                 <th><s:message code="nombre" /></th>
                 
+                <th><s:message code="puntos" /></th>
+                
             </tr>
         </thead>
         <tbody>
@@ -28,6 +30,8 @@
                 <tr>
 
                     <td><a href="${verExamen}">${examen.nombre}</a></td>
+
+                    <td>${examen.puntos}</td>
 
                 </tr>
             </c:forEach>
