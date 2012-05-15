@@ -404,6 +404,9 @@ public class CursoDaoHibernate implements CursoDao {
         Alumno alumno = (Alumno) currentSession().load(Alumno.class, alumnoId);
         log.debug("{}", alumno);
         List<ObjetoAprendizaje> objetos = curso.getObjetos();
+        boolean terminado = true;
+        boolean noAsignado = true;
+        boolean activo = false;
         for (ObjetoAprendizaje objeto : objetos) {
             for (Contenido contenido : objeto.getContenidos()) {
                 log.debug("Cargando contenido {} del objeto {}", contenido, objeto);
@@ -414,9 +417,11 @@ public class CursoDaoHibernate implements CursoDao {
                     currentSession().save(alumnoContenido);
                     currentSession().flush();
                 }
-                if (contenidoId == contenido.getId()) {
+                if (contenidoId == contenido.getId() && terminado) {
                     this.asignaContenido(alumnoContenido, contenido, themeDisplay);
                     contenido.setActivo(true);
+                    noAsignado = false;
+                    activo = true;
                     log.debug("Validando si ha sido iniciado {}", alumnoContenido.getIniciado());
                     if (alumnoContenido.getIniciado() == null) {
                         alumnoContenido.setIniciado(new Date());
@@ -424,7 +429,61 @@ public class CursoDaoHibernate implements CursoDao {
                         currentSession().flush();
                     }
                 }
+                if (alumnoContenido.getTerminado() == null) {
+                    terminado = false;
+                }
                 contenido.setAlumno(alumnoContenido);
+            }
+        }
+        if (noAsignado) {
+            for (ObjetoAprendizaje objeto : objetos) {
+                boolean bandera = true;
+                for (Contenido contenido : objeto.getContenidos()) {
+                    AlumnoContenidoPK pk = new AlumnoContenidoPK(alumno, contenido);
+                    AlumnoContenido alumnoContenido = (AlumnoContenido) currentSession().get(AlumnoContenido.class, pk);
+                    if (alumnoContenido == null) {
+                        alumnoContenido = new AlumnoContenido(alumno, contenido);
+                        currentSession().save(alumnoContenido);
+                        currentSession().flush();
+                    }
+                    if (bandera && alumnoContenido.getTerminado() == null && !activo) {
+                        this.asignaContenido(alumnoContenido, contenido, themeDisplay);
+                        contenido.setActivo(bandera);
+                        bandera = false;
+                        activo = true;
+                        noAsignado = false;
+                        if (alumnoContenido.getIniciado() == null) {
+                            alumnoContenido.setIniciado(new Date());
+                            currentSession().update(alumnoContenido);
+                            currentSession().flush();
+                        }
+                    }
+                    contenido.setAlumno(alumnoContenido);
+                }
+            }
+        }
+        if (noAsignado) {
+            for (ObjetoAprendizaje objeto : objetos) {
+                boolean bandera = true;
+                for (Contenido contenido : objeto.getContenidos()) {
+                    AlumnoContenidoPK pk = new AlumnoContenidoPK(alumno, contenido);
+                    AlumnoContenido alumnoContenido = (AlumnoContenido) currentSession().get(AlumnoContenido.class, pk);
+                    if (alumnoContenido == null) {
+                        alumnoContenido = new AlumnoContenido(alumno, contenido);
+                        currentSession().save(alumnoContenido);
+                        currentSession().flush();
+                    }
+                    if (bandera && !activo) {
+                        this.asignaContenido(alumnoContenido, contenido, themeDisplay);
+                        contenido.setActivo(bandera);
+                        alumnoContenido.setIniciado(new Date());
+                        currentSession().update(alumnoContenido);
+                        currentSession().flush();
+                        bandera = false;
+                        activo = true;
+                    }
+                    contenido.setAlumno(alumnoContenido);
+                }
             }
         }
         return objetos;
