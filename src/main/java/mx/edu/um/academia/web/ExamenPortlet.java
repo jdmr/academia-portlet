@@ -349,5 +349,13 @@ public class ExamenPortlet extends BaseController {
         response.setRenderParameter("action", "ver");
         response.setRenderParameter("id", examenPregunta.getId().getExamen().getId().toString());
     }
+    
+    @RequestMapping(params = "action=eliminaPregunta")
+    public void eliminaPregunta(ActionRequest request, ActionResponse response, @RequestParam Long examenId, @RequestParam Long preguntaId) {
+        log.debug("Eliminando pregunta {} del examen {}", preguntaId, examenId);
+        examenDao.quitaPregunta(examenId, preguntaId);
+        response.setRenderParameter("action", "ver");
+        response.setRenderParameter("id", examenId.toString());
+    }
 
 }
