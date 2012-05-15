@@ -50,7 +50,7 @@
                         <video id="<portlet:namespace />mediaspace" controls="controls">
                             <source src="${video}" />
                         </video>
-                        <div><a href="${verSiguienteUrl}" class="btn btn-primary btn-large"><s:message code="siguiente" /> <i class="icon-chevron-right" ></i></a></div>
+                        <div style="margin-top: 20px;"><a href="${verSiguienteUrl}" class="btn btn-primary btn-large"><s:message code="siguiente" /> <i class="icon-chevron-right" ></i></a></div>
                         <aui:script>
                             jwplayer('<portlet:namespace />mediaspace').setup({
                                 modes : [
@@ -67,6 +67,7 @@
                         </portlet:renderURL>
                         <form name="<portlet:namespace />preguntasForm" action="${enviaExamenUrl}" method="post" class="well">
                             <input type="hidden" name="<portlet:namespace />examenId" id="<portlet:namespace />examenId" value="${examen.id}" />
+                            <input type="hidden" name="<portlet:namespace />contenidoId" id="<portlet:namespace />contenidoId" value="${contenidoId}" />
                             <c:forEach items="${preguntas}" var="pregunta">
                                 <div class="control-group">
                                     <h5>${pregunta.texto}</h5>
@@ -95,7 +96,7 @@
                     </c:when>
                     <c:otherwise>
                         ${texto}
-                        <div><a href="${verSiguienteUrl}" class="btn btn-primary btn-large"><s:message code="siguiente" /> <i class="icon-chevron-right" ></i></a></div>
+                        <div style="margin-top: 20px;"><a href="${verSiguienteUrl}" class="btn btn-primary btn-large"><s:message code="siguiente" /> <i class="icon-chevron-right" ></i></a></div>
                     </c:otherwise>
                 </c:choose>
             </div>

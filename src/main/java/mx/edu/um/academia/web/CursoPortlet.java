@@ -98,6 +98,7 @@ public class CursoPortlet extends BaseController {
                         for (Contenido contenido : objeto.getContenidos()) {
                             log.debug("Contenido : {} : Activo : {}", contenido, contenido.getActivo());
                             if (contenido.getActivo()) {
+                                model.addAttribute("contenidoId", contenido.getId());
                                 switch (contenido.getTipo()) {
                                     case Constantes.TEXTO:
                                         model.addAttribute("texto", contenido.getTexto());
@@ -173,6 +174,7 @@ public class CursoPortlet extends BaseController {
                             log.debug("Contenido : {} : Activo : {}", contenido, contenido.getActivo());
                             if (contenido.getActivo()) {
                                 log.debug("Encontre el contenido activo {} y el texto {}", contenido, contenido.getTexto());
+                                model.addAttribute("contenidoId", contenido.getId());
                                 switch (contenido.getTipo()) {
                                     case Constantes.TEXTO:
                                         model.addAttribute("texto", contenido.getTexto());
@@ -248,6 +250,7 @@ public class CursoPortlet extends BaseController {
                             log.debug("Contenido : {} : Activo : {}", contenido, contenido.getActivo());
                             if (contenido.getActivo()) {
                                 log.debug("Encontre el contenido activo {} y el texto {}", contenido, contenido.getTexto());
+                                model.addAttribute("contenidoId", contenido.getId());
                                 switch (contenido.getTipo()) {
                                     case Constantes.TEXTO:
                                         model.addAttribute("texto", contenido.getTexto());
@@ -390,7 +393,8 @@ public class CursoPortlet extends BaseController {
         for (String key : request.getParameterMap().keySet()) {
             log.debug("{} : {}", key, request.getParameterMap().get(key));
         }
-        Map<String, Object> resultados = cursoDao.califica(request.getParameterMap(), this.getThemeDisplay(request));
+        User usuario = PortalUtil.getUser(request);
+        Map<String, Object> resultados = cursoDao.califica(request.getParameterMap(), this.getThemeDisplay(request), usuario);
         model.addAllAttributes(resultados);
         
         

@@ -132,7 +132,7 @@
     </form>
     <script type="text/javascript">
         $(document).ready(function() {
-            $("select#<portlet:namespace />contenidos").chosen();
+            $("select#<portlet:namespace />examenId").chosen();
         });
     </script>
 </c:if>

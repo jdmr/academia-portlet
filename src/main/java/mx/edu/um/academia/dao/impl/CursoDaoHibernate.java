@@ -662,7 +662,7 @@ public class CursoDaoHibernate implements CursoDao {
     }
 
     @Override
-    public Map<String, Object> califica(Map<String, String[]> params, ThemeDisplay themeDisplay) {
+    public Map<String, Object> califica(Map<String, String[]> params, ThemeDisplay themeDisplay, User usuario) {
         try {
             Examen examen = (Examen) currentSession().get(Examen.class, new Long(params.get("examenId")[0]));
             Integer totalExamen = 0;
@@ -761,9 +761,32 @@ public class CursoDaoHibernate implements CursoDao {
             if (examen.getPuntos() != null && totalUsuario < examen.getPuntos()) {
                 resultados.put("messageTitle", "desaprobado");
                 resultados.put("messageType", "alert-error");
+                Long contenidoId = new Long(params.get("contenidoId")[0]);
+                Alumno alumno = (Alumno) currentSession().load(Alumno.class, usuario.getUserId());
+                Contenido contenido = (Contenido) currentSession().load(Contenido.class, contenidoId);
+                AlumnoContenidoPK pk = new AlumnoContenidoPK(alumno, contenido);
+                AlumnoContenido alumnoContenido = (AlumnoContenido) currentSession().get(AlumnoContenido.class, pk);
+                if (alumnoContenido != null && alumnoContenido.getTerminado() != null) {
+                    alumnoContenido.setTerminado(null);
+                    currentSession().update(alumnoContenido);
+                    currentSession().flush();
+                }
             } else {
                 resultados.put("messageTitle", "aprobado");
                 resultados.put("messageType", "alert-success");
+                for (String key : params.keySet()) {
+                    log.debug("{} : {}", key, params.get(key));
+                }
+                Long contenidoId = new Long(params.get("contenidoId")[0]);
+                Alumno alumno = (Alumno) currentSession().load(Alumno.class, usuario.getUserId());
+                Contenido contenido = (Contenido) currentSession().load(Contenido.class, contenidoId);
+                AlumnoContenidoPK pk = new AlumnoContenidoPK(alumno, contenido);
+                AlumnoContenido alumnoContenido = (AlumnoContenido) currentSession().get(AlumnoContenido.class, pk);
+                if (alumnoContenido != null) {
+                    alumnoContenido.setTerminado(new Date());
+                    currentSession().update(alumnoContenido);
+                    currentSession().flush();
+                }
             }
             if (incorrectas.size() > 0) {
                 resultados.put("incorrectas", incorrectas);
