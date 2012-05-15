@@ -69,6 +69,10 @@ public class Pregunta implements Serializable {
     private String texto;
     @Transient
     private List<Respuesta> respuestas = new ArrayList<>();
+    @Transient
+    private Integer puntos;
+    @Transient
+    private Boolean porPregunta;
 
     public Pregunta() {
     }
@@ -258,6 +262,34 @@ public class Pregunta implements Serializable {
      */
     public void setRespuestas(List<Respuesta> respuestas) {
         this.respuestas = respuestas;
+    }
+
+    /**
+     * @return the puntos
+     */
+    public Integer getPuntos() {
+        return puntos;
+    }
+
+    /**
+     * @param puntos the puntos to set
+     */
+    public void setPuntos(Integer puntos) {
+        this.puntos = puntos;
+    }
+
+    /**
+     * @return the porPregunta
+     */
+    public Boolean getPorPregunta() {
+        return porPregunta;
+    }
+
+    /**
+     * @param porPregunta the porPregunta to set
+     */
+    public void setPorPregunta(Boolean porPregunta) {
+        this.porPregunta = porPregunta;
     }
 
     @Override

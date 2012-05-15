@@ -227,6 +227,8 @@ public class ExamenDaoHibernate implements ExamenDao {
         for(ExamenPregunta examenPregunta : examen.getPreguntas()) {
             Map<Integer, Respuesta> respuestas = new TreeMap<>();
             Pregunta pregunta  = examenPregunta.getId().getPregunta();
+            pregunta.setPuntos(examenPregunta.getPuntos());
+            pregunta.setPorPregunta(examenPregunta.getPorPregunta());
             for(Respuesta respuesta : pregunta.getCorrectas()) {
                 log.debug("Agregando correcta {} a pregunta {}", respuesta, pregunta);
                 respuestas.put(new Double(Math.random() * 100000).intValue(), respuesta);

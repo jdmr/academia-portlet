@@ -66,10 +66,6 @@ public interface CursoDao {
 
     public Boolean estaInscrito(Long cursoId, Long alumnoId);
 
-    public AlumnoObjetoAprendizaje obtieneAlumnoObjeto(Long objetoId, Long alumnoId);
-
-    public List<ObjetoAprendizaje> objetosAlumno(Long cursoId, Long alumnoId);
-
     public List<ObjetoAprendizaje> objetosAlumno(Long cursoId, Long alumnoId, ThemeDisplay themeDisplay);
 
     public List<ObjetoAprendizaje> objetosAlumno(Long cursoId, Long contenidoId, Long alumnoId, ThemeDisplay themeDisplay);

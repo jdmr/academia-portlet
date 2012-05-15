@@ -80,7 +80,7 @@
                 <portlet:param name="preguntaId" value="${pregunta.id}" />
             </portlet:actionURL>
             <div class="control-group" style="margin-bottom: 10px;">
-                <h3><a href="${eliminaPreguntaUrl}" class="btn btn-danger btn-mini" onclick="return confirm('<s:message code="confirma.elimina.pregunta" arguments="${pregunta.nombre}" />')"><i class="icon-remove icon-white"></i></a> ${pregunta.nombre}</h3>
+                <h3><a href="${eliminaPreguntaUrl}" class="btn btn-danger btn-mini" onclick="return confirm('<s:message code="confirma.elimina.pregunta" arguments="${pregunta.nombre}" />')"><i class="icon-remove icon-white"></i></a> ${pregunta.nombre} (<c:choose><c:when test="${pregunta.porPregunta}"><s:message code="cantidad.puntos.pregunta" arguments="${pregunta.puntos}" /></c:when><c:otherwise><s:message code="cantidad.puntos.respuesta" arguments="${pregunta.puntos}" /></c:otherwise></c:choose>)</h3>
                 <h5>${pregunta.texto}</h5>
                 <c:forEach items="${pregunta.respuestas}" var="respuesta">
                     <c:choose>

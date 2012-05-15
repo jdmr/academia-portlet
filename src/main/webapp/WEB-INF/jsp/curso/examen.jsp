@@ -16,3 +16,7 @@
         </c:forEach>
     </div>
 </c:if>
+<portlet:renderURL var="verSiguienteUrl" >
+    <portlet:param name="action" value="ver" />
+</portlet:renderURL>
+<div style="margin-top: 20px;"><a href="${verSiguienteUrl}" class="btn btn-primary btn-large"><s:message code="siguiente" /> <i class="icon-chevron-right" ></i></a></div>

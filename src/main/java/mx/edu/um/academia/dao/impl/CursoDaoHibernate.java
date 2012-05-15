@@ -328,39 +328,6 @@ public class CursoDaoHibernate implements CursoDao {
     }
 
     @Override
-    public AlumnoObjetoAprendizaje obtieneAlumnoObjeto(Long objetoId, Long alumnoId) {
-        log.debug("Obtiene objeto {} del alumno {}", objetoId, alumnoId);
-        ObjetoAprendizaje objeto = (ObjetoAprendizaje) currentSession().load(ObjetoAprendizaje.class, objetoId);
-        Alumno alumno = (Alumno) currentSession().load(Alumno.class, alumnoId);
-        AlumnoObjetoAprendizajePK pk = new AlumnoObjetoAprendizajePK(alumno, objeto);
-        return (AlumnoObjetoAprendizaje) currentSession().get(AlumnoObjetoAprendizaje.class, pk);
-    }
-
-    @Override
-    public List<ObjetoAprendizaje> objetosAlumno(Long cursoId, Long alumnoId) {
-        log.debug("Obteniendo objetos de aprendizaje del curso {} para el alumno {}", cursoId, alumnoId);
-        Curso curso = (Curso) currentSession().get(Curso.class, cursoId);
-        log.debug("{}", curso);
-        Alumno alumno = (Alumno) currentSession().load(Alumno.class, alumnoId);
-        log.debug("{}", alumno);
-        List<ObjetoAprendizaje> objetos = curso.getObjetos();
-        for (ObjetoAprendizaje objeto : objetos) {
-            for (Contenido contenido : objeto.getContenidos()) {
-                log.debug("Cargando contenido {} del objeto {}", contenido, objeto);
-                AlumnoContenidoPK pk = new AlumnoContenidoPK(alumno, contenido);
-                AlumnoContenido alumnoContenido = (AlumnoContenido) currentSession().get(AlumnoContenido.class, pk);
-                if (alumnoContenido == null) {
-                    alumnoContenido = new AlumnoContenido(alumno, contenido);
-                    currentSession().save(alumnoContenido);
-                    currentSession().flush();
-                }
-                contenido.setAlumno(alumnoContenido);
-            }
-        }
-        return objetos;
-    }
-
-    @Override
     public List<ObjetoAprendizaje> objetosAlumno(Long cursoId, Long alumnoId, ThemeDisplay themeDisplay) {
         log.debug("Obteniendo objetos de aprendizaje del curso {} para el alumno {}", cursoId, alumnoId);
 
@@ -370,10 +337,11 @@ public class CursoDaoHibernate implements CursoDao {
         log.debug("{}", alumno);
         List<ObjetoAprendizaje> objetos = curso.getObjetos();
         boolean noAsignado = true;
+        boolean activo = false;
         for (ObjetoAprendizaje objeto : objetos) {
             boolean bandera = true;
             for (Contenido contenido : objeto.getContenidos()) {
-                log.debug("Cargando contenido {} del objeto {}", contenido, objeto);
+                log.debug("Cargando contenido {} del objeto {} : activo : {}", new Object[]{contenido, objeto, contenido.getActivo()});
                 AlumnoContenidoPK pk = new AlumnoContenidoPK(alumno, contenido);
                 AlumnoContenido alumnoContenido = (AlumnoContenido) currentSession().get(AlumnoContenido.class, pk);
                 if (alumnoContenido == null) {
@@ -382,19 +350,23 @@ public class CursoDaoHibernate implements CursoDao {
                     currentSession().flush();
                 }
                 log.debug("Buscando {} : {}", bandera, alumnoContenido.getTerminado());
-                if (bandera && alumnoContenido.getTerminado() == null) {
+                if (bandera && alumnoContenido.getTerminado() == null && !activo) {
                     this.asignaContenido(alumnoContenido, contenido, themeDisplay);
+                    log.debug("Activando a {}", contenido.getNombre());
                     contenido.setActivo(bandera);
+                    activo = true;
                     alumnoContenido.setIniciado(new Date());
                     currentSession().update(alumnoContenido);
                     currentSession().flush();
                     bandera = false;
                     noAsignado = false;
                 }
+                log.debug("Asignando el contenido {} : activo : {}", contenido.getNombre(), contenido.getActivo());
                 contenido.setAlumno(alumnoContenido);
             }
         }
         if (noAsignado) {
+            log.debug("No asignado >> asignando");
             for (ObjetoAprendizaje objeto : objetos) {
                 boolean bandera = true;
                 for (Contenido contenido : objeto.getContenidos()) {
@@ -406,9 +378,11 @@ public class CursoDaoHibernate implements CursoDao {
                         currentSession().save(alumnoContenido);
                         currentSession().flush();
                     }
-                    if (bandera) {
+                    if (bandera && !activo) {
                         this.asignaContenido(alumnoContenido, contenido, themeDisplay);
+                        log.debug("Activando a {}", contenido.getNombre());
                         contenido.setActivo(bandera);
+                        activo = true;
                         alumnoContenido.setIniciado(new Date());
                         currentSession().update(alumnoContenido);
                         currentSession().flush();
@@ -466,6 +440,7 @@ public class CursoDaoHibernate implements CursoDao {
         log.debug("{}", alumno);
         List<ObjetoAprendizaje> objetos = curso.getObjetos();
         boolean noAsignado = true;
+        boolean activo = false;
         for (ObjetoAprendizaje objeto : objetos) {
             boolean bandera = true;
             boolean bandera2 = false;
@@ -478,10 +453,11 @@ public class CursoDaoHibernate implements CursoDao {
                     currentSession().save(alumnoContenido);
                     currentSession().flush();
                 }
-                if (bandera && alumnoContenido.getTerminado() == null) {
+                if (bandera && alumnoContenido.getTerminado() == null && !activo) {
                     if (bandera2) {
                         this.asignaContenido(alumnoContenido, contenido, themeDisplay);
                         contenido.setActivo(bandera);
+                        activo = true;
                         alumnoContenido.setIniciado(new Date());
                         currentSession().update(alumnoContenido);
                         currentSession().flush();
@@ -509,9 +485,10 @@ public class CursoDaoHibernate implements CursoDao {
                         currentSession().save(alumnoContenido);
                         currentSession().flush();
                     }
-                    if (bandera) {
+                    if (bandera && !activo) {
                         this.asignaContenido(alumnoContenido, contenido, themeDisplay);
                         contenido.setActivo(bandera);
+                        activo = true;
                         alumnoContenido.setIniciado(new Date());
                         currentSession().update(alumnoContenido);
                         currentSession().flush();
@@ -600,15 +577,19 @@ public class CursoDaoHibernate implements CursoDao {
                     }
                     break;
                 case Constantes.VIDEO:
+                    log.debug("Buscando el video con el id {}", contenido.getContenidoId());
                     DLFileEntry fileEntry = DLFileEntryLocalServiceUtil.getDLFileEntry(contenido.getContenidoId());
-                    StringBuilder videoLink = new StringBuilder();
-                    videoLink.append("/documents/");
-                    videoLink.append(fileEntry.getGroupId());
-                    videoLink.append("/");
-                    videoLink.append(fileEntry.getFolderId());
-                    videoLink.append("/");
-                    videoLink.append(fileEntry.getTitle());
-                    contenido.setTexto(videoLink.toString());
+                    if (fileEntry != null) {
+                        StringBuilder videoLink = new StringBuilder();
+                        videoLink.append("/documents/");
+                        videoLink.append(fileEntry.getGroupId());
+                        videoLink.append("/");
+                        videoLink.append(fileEntry.getFolderId());
+                        videoLink.append("/");
+                        videoLink.append(fileEntry.getTitle());
+                        contenido.setTexto(videoLink.toString());
+                    }
+                    break;
                 case Constantes.EXAMEN:
                     Examen examen = contenido.getExamen();
                     if (examen.getContenido() != null) {
@@ -643,7 +624,6 @@ public class CursoDaoHibernate implements CursoDao {
                     }
                     break;
             }
-            contenido.setActivo(true);
             log.debug("Validando si ha sido iniciado {}", alumnoContenido.getIniciado());
             if (alumnoContenido.getIniciado() == null) {
                 alumnoContenido.setIniciado(new Date());
@@ -670,8 +650,10 @@ public class CursoDaoHibernate implements CursoDao {
             Set<Pregunta> incorrectas = new LinkedHashSet<>();
             for (ExamenPregunta examenPregunta : examen.getPreguntas()) {
                 Pregunta pregunta = examenPregunta.getId().getPregunta();
+                log.debug("{}({}:{}) > Multiple : {} || Por pregunta : {}", new Object[]{pregunta.getNombre(), pregunta.getId(), examen.getId(), pregunta.getEsMultiple(), examenPregunta.getPorPregunta()});
                 if (pregunta.getEsMultiple() && examenPregunta.getPorPregunta()) {
                     // Cuando puede tener muchas respuestas y los puntos son por pregunta
+                    log.debug("ENTRO 1");
                     totalExamen += examenPregunta.getPuntos();
                     String[] respuestas = params.get(pregunta.getId().toString());
                     List<String> correctas = new ArrayList<>();
@@ -715,11 +697,15 @@ public class CursoDaoHibernate implements CursoDao {
                     }
                 } else {
                     // Cuando puede tener muchas respuestas pero los puntos son por respuesta
+                    // Tambien cuando es una sola respuesta la correcta
+                    log.debug("ENTRO 2");
                     String[] respuestas = params.get(pregunta.getId().toString());
                     List<String> correctas = new ArrayList<>();
                     if (respuestas.length <= pregunta.getCorrectas().size()) {
+                        log.debug("ENTRO 3");
                         respuestasLoop:
                         for (Respuesta correcta : pregunta.getCorrectas()) {
+                            log.debug("Sumando {} a {} para el total de puntos del examen", examenPregunta.getPuntos(), totalExamen);
                             totalExamen += examenPregunta.getPuntos();
                             for (String respuesta : respuestas) {
                                 if (respuesta.equals(correcta.getId().toString())) {
@@ -728,6 +714,8 @@ public class CursoDaoHibernate implements CursoDao {
                                     continue respuestasLoop;
                                 }
                             }
+                        }
+                        if (correctas.size() < pregunta.getCorrectas().size()) {
                             // pon respuesta incorrecta
                             for (String respuestaId : respuestas) {
                                 if (!correctas.contains(respuestaId)) {
@@ -757,7 +745,7 @@ public class CursoDaoHibernate implements CursoDao {
             resultados.put("examen", examen);
             resultados.put("totalExamen", totalExamen);
             resultados.put("totalUsuario", totalUsuario);
-            resultados.put("totales", new String[]{totalUsuario.toString(), totalExamen.toString()});
+            resultados.put("totales", new String[]{totalUsuario.toString(), totalExamen.toString(), examen.getPuntos().toString()});
             if (examen.getPuntos() != null && totalUsuario < examen.getPuntos()) {
                 resultados.put("messageTitle", "desaprobado");
                 resultados.put("messageType", "alert-error");
