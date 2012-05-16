@@ -55,7 +55,7 @@
                             jwplayer('<portlet:namespace />mediaspace').setup({
                                 modes : [
                                     { type : 'html5' },
-                                    { type : 'flash', src : '/academia-theme/jwplayer/player.swf'}
+                                    { type : 'flash', src : '${themeRoot}jwplayer/player.swf'}
                                 ]        
                             });
                         </aui:script>

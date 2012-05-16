@@ -193,6 +193,8 @@ public class ContenidoPortlet extends BaseController {
                 }
         }
         modelo.addAttribute("contenido", contenido);
+        modelo.addAttribute("themeRoot", getThemeDisplay(request).getPathThemeRoot());
+        
         return "contenido/ver";
     }
 

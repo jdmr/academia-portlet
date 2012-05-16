@@ -69,6 +69,7 @@ public class CursoPortlet extends BaseController {
         PortletCurso portletCurso = cursoDao.obtienePortlet(PortalUtil.getPortletId(request));
 
         ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+        model.addAttribute("themeRoot", themeDisplay.getPathThemeRoot());
         if (portletCurso != null) {
             Curso curso = portletCurso.getCurso();
             model.addAttribute("curso", curso);
