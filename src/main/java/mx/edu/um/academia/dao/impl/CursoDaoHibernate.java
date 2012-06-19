@@ -321,7 +321,7 @@ public class CursoDaoHibernate implements CursoDao {
         AlumnoCursoPK pk = new AlumnoCursoPK(alumno, curso);
         AlumnoCurso alumnoCurso = (AlumnoCurso) currentSession().get(AlumnoCurso.class, pk);
         boolean resultado = false;
-        if (alumnoCurso != null && Constantes.INSCRITO.equals(alumnoCurso.getEstatus())) {
+        if (alumnoCurso != null && (Constantes.INSCRITO.equals(alumnoCurso.getEstatus()) || Constantes.CONCLUIDO.equals(alumnoCurso.getEstatus()))) {
             resultado = true;
         }
         return resultado;
@@ -381,7 +381,7 @@ public class CursoDaoHibernate implements CursoDao {
                     if (bandera && !activo) {
                         this.asignaContenido(cursoId, alumnoContenido, contenido, themeDisplay);
                         log.debug("Activando a {}", contenido.getNombre());
-                        contenido.setActivo(bandera);
+                        contenido.setActivo(true);
                         activo = true;
                         alumnoContenido.setIniciado(new Date());
                         currentSession().update(alumnoContenido);
@@ -548,7 +548,16 @@ public class CursoDaoHibernate implements CursoDao {
                         this.asignaContenido(cursoId, alumnoContenido, contenido, themeDisplay);
                         contenido.setActivo(bandera);
                         activo = true;
-                        alumnoContenido.setIniciado(new Date());
+                        if (alumnoContenido.getIniciado() == null) {
+                            alumnoContenido.setIniciado(new Date());
+                        } else {
+                            AlumnoCursoPK pk2 = new AlumnoCursoPK(alumno, curso);
+                            AlumnoCurso alumnoCurso = (AlumnoCurso) currentSession().get(AlumnoCurso.class, pk2);
+                            alumnoCurso.setEstatus(Constantes.CONCLUIDO);
+                            alumnoCurso.setFechaConclusion(new Date());
+                            currentSession().update(alumnoCurso);
+                            currentSession().flush();
+                        }
                         currentSession().update(alumnoContenido);
                         currentSession().flush();
                         bandera = false;
@@ -853,5 +862,18 @@ public class CursoDaoHibernate implements CursoDao {
             log.error("No se pudo calificar el examen", e);
         }
         return null;
+    }
+
+    @Override
+    public Boolean haConcluido(Long alumnoId, Long cursoId) {
+        Curso curso = (Curso) currentSession().load(Curso.class, cursoId);
+        Alumno alumno = (Alumno) currentSession().load(Alumno.class, alumnoId);
+        AlumnoCursoPK pk = new AlumnoCursoPK(alumno, curso);
+        AlumnoCurso alumnoCurso = (AlumnoCurso) currentSession().get(AlumnoCurso.class, pk);
+        boolean resultado = false;
+        if (alumnoCurso.getEstatus().equals(Constantes.CONCLUIDO)) {
+            resultado = true;
+        }
+        return resultado;
     }
 }

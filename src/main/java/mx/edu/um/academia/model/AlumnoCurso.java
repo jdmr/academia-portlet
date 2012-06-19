@@ -53,6 +53,9 @@ public class AlumnoCurso implements Serializable {
     private BigDecimal calificacion;
     @Column(nullable = false, length = 32)
     private String estatus = Constantes.PENDIENTE;
+    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    @Column(name="fecha_conclusion")
+    private Date fechaConclusion;
 
     public AlumnoCurso() {
     }
@@ -193,6 +196,20 @@ public class AlumnoCurso implements Serializable {
      */
     public void setEstatus(String estatus) {
         this.estatus = estatus;
+    }
+
+    /**
+     * @return the fechaConclusion
+     */
+    public Date getFechaConclusion() {
+        return fechaConclusion;
+    }
+
+    /**
+     * @param fechaConclusion the fechaConclusion to set
+     */
+    public void setFechaConclusion(Date fechaConclusion) {
+        this.fechaConclusion = fechaConclusion;
     }
 
     @Override

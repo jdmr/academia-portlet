@@ -93,30 +93,34 @@ public class CursoPortlet extends BaseController {
             } else {
                 if (cursoDao.estaInscrito(curso.getId(), usuario.getUserId())) {
                     List<ObjetoAprendizaje> objetos = cursoDao.objetosAlumno(curso.getId(), usuario.getUserId(), themeDisplay);
-                    cicloObjetos:
-                    for (ObjetoAprendizaje objeto : objetos) {
-                        log.debug("Viendo contenido de objeto {}", objeto);
-                        for (Contenido contenido : objeto.getContenidos()) {
-                            log.debug("Contenido : {} : Activo : {}", contenido, contenido.getActivo());
-                            if (contenido.getActivo()) {
-                                model.addAttribute("contenidoId", contenido.getId());
-                                switch (contenido.getTipo()) {
-                                    case Constantes.TEXTO:
-                                        model.addAttribute("texto", contenido.getTexto());
-                                        break;
-                                    case Constantes.VIDEO:
-                                        model.addAttribute("video", contenido.getTexto());
-                                        break;
-                                    case Constantes.EXAMEN:
-                                        model.addAttribute("texto", contenido.getTexto());
-                                        model.addAttribute("examen", contenido.getExamen());
-                                        model.addAttribute("preguntas", contenido.getExamen().getOtrasPreguntas());
-                                        break;
-                                    case Constantes.ARTICULATE:
-                                        model.addAttribute("texto", contenido.getTexto());
-                                        break;
+                    if (cursoDao.haConcluido(usuario.getUserId(), curso.getId())) {
+                        model.addAttribute("concluido", true);
+                    } else {
+                        cicloObjetos:
+                        for (ObjetoAprendizaje objeto : objetos) {
+                            log.debug("Viendo contenido de objeto {}", objeto);
+                            for (Contenido contenido : objeto.getContenidos()) {
+                                log.debug("Contenido : {} : Activo : {}", contenido, contenido.getActivo());
+                                if (contenido.getActivo()) {
+                                    model.addAttribute("contenidoId", contenido.getId());
+                                    switch (contenido.getTipo()) {
+                                        case Constantes.TEXTO:
+                                            model.addAttribute("texto", contenido.getTexto());
+                                            break;
+                                        case Constantes.VIDEO:
+                                            model.addAttribute("video", contenido.getTexto());
+                                            break;
+                                        case Constantes.EXAMEN:
+                                            model.addAttribute("texto", contenido.getTexto());
+                                            model.addAttribute("examen", contenido.getExamen());
+                                            model.addAttribute("preguntas", contenido.getExamen().getOtrasPreguntas());
+                                            break;
+                                        case Constantes.ARTICULATE:
+                                            model.addAttribute("texto", contenido.getTexto());
+                                            break;
+                                    }
+                                    break cicloObjetos;
                                 }
-                                break cicloObjetos;
                             }
                         }
                     }
@@ -182,20 +186,19 @@ public class CursoPortlet extends BaseController {
                                 switch (contenido.getTipo()) {
                                     case Constantes.TEXTO:
                                         model.addAttribute("texto", contenido.getTexto());
-                                        break;
+                                        break cicloObjetos;
                                     case Constantes.VIDEO:
                                         model.addAttribute("video", contenido.getTexto());
-                                        break;
+                                        break cicloObjetos;
                                     case Constantes.EXAMEN:
                                         model.addAttribute("texto", contenido.getTexto());
                                         model.addAttribute("examen", contenido.getExamen());
                                         model.addAttribute("preguntas", contenido.getExamen().getOtrasPreguntas());
-                                        break;
+                                        break cicloObjetos;
                                     case Constantes.ARTICULATE:
                                         model.addAttribute("texto", contenido.getTexto());
-                                        break;
+                                        break cicloObjetos;
                                 }
-                                break cicloObjetos;
                             }
                         }
                     }
@@ -250,31 +253,34 @@ public class CursoPortlet extends BaseController {
             } else {
                 if (cursoDao.estaInscrito(curso.getId(), usuario.getUserId())) {
                     List<ObjetoAprendizaje> objetos = cursoDao.objetosAlumnoSiguiente(curso.getId(), usuario.getUserId(), themeDisplay);
-                    cicloObjetos:
-                    for (ObjetoAprendizaje objeto : objetos) {
-                        log.debug("Viendo contenido de objeto {}", objeto);
-                        for (Contenido contenido : objeto.getContenidos()) {
-                            log.debug("Contenido : {} : Activo : {}", contenido, contenido.getActivo());
-                            if (contenido.getActivo()) {
-                                log.debug("Encontre el contenido activo {} y el texto {}", contenido, contenido.getTexto());
-                                model.addAttribute("contenidoId", contenido.getId());
-                                switch (contenido.getTipo()) {
-                                    case Constantes.TEXTO:
-                                        model.addAttribute("texto", contenido.getTexto());
-                                        break;
-                                    case Constantes.VIDEO:
-                                        model.addAttribute("video", contenido.getTexto());
-                                        break;
-                                    case Constantes.EXAMEN:
-                                        model.addAttribute("texto", contenido.getTexto());
-                                        model.addAttribute("examen", contenido.getExamen());
-                                        model.addAttribute("preguntas", contenido.getExamen().getOtrasPreguntas());
-                                        break;
-                                    case Constantes.ARTICULATE:
-                                        model.addAttribute("texto", contenido.getTexto());
-                                        break;
+                    if (cursoDao.haConcluido(usuario.getUserId(), curso.getId())) {
+                        model.addAttribute("concluido", true);
+                    } else {
+                        cicloObjetos:
+                        for (ObjetoAprendizaje objeto : objetos) {
+                            log.debug("Viendo contenido de objeto {}", objeto);
+                            for (Contenido contenido : objeto.getContenidos()) {
+                                log.debug("Contenido : {} : Activo : {}", contenido, contenido.getActivo());
+                                if (contenido.getActivo()) {
+                                    log.debug("Encontre el contenido activo {} y el texto {}", contenido, contenido.getTexto());
+                                    model.addAttribute("contenidoId", contenido.getId());
+                                    switch (contenido.getTipo()) {
+                                        case Constantes.TEXTO:
+                                            model.addAttribute("texto", contenido.getTexto());
+                                            break cicloObjetos;
+                                        case Constantes.VIDEO:
+                                            model.addAttribute("video", contenido.getTexto());
+                                            break cicloObjetos;
+                                        case Constantes.EXAMEN:
+                                            model.addAttribute("texto", contenido.getTexto());
+                                            model.addAttribute("examen", contenido.getExamen());
+                                            model.addAttribute("preguntas", contenido.getExamen().getOtrasPreguntas());
+                                            break cicloObjetos;
+                                        case Constantes.ARTICULATE:
+                                            model.addAttribute("texto", contenido.getTexto());
+                                            break cicloObjetos;
+                                    }
                                 }
-                                break cicloObjetos;
                             }
                         }
                     }
@@ -406,8 +412,20 @@ public class CursoPortlet extends BaseController {
         User usuario = PortalUtil.getUser(request);
         Map<String, Object> resultados = cursoDao.califica(request.getParameterMap(), this.getThemeDisplay(request), usuario);
         model.addAllAttributes(resultados);
-        
-        
+
+
         return "curso/examen";
+    }
+
+    @RequestMapping(value = "VIEW", params = "action=diploma")
+    public void diploma(ActionRequest request, ActionResponse response) throws SystemException, PortalException {
+        log.debug("Obteniendo diploma");
+
+        PortletCurso portletCurso = cursoDao.obtienePortlet(PortalUtil.getPortletId(request));
+        if (portletCurso != null) {
+            Curso curso = portletCurso.getCurso();
+            User usuario = PortalUtil.getUser(request);
+            log.debug("Imprimiendo diploma de {} para el curso {}", usuario.getScreenName(), curso.getNombre());
+        }
     }
 }

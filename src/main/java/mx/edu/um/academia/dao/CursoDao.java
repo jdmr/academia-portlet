@@ -81,4 +81,6 @@ public interface CursoDao {
     public Examen obtieneExamen(Long examenId);
 
     public Map<String, Object> califica(Map<String, String[]> params, ThemeDisplay themeDisplay, User usuario);
+    
+    public Boolean haConcluido(Long alumnoId, Long cursoId);
 }
