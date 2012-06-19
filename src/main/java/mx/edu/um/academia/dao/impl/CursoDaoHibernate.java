@@ -351,7 +351,7 @@ public class CursoDaoHibernate implements CursoDao {
                 }
                 log.debug("Buscando {} : {}", bandera, alumnoContenido.getTerminado());
                 if (bandera && alumnoContenido.getTerminado() == null && !activo) {
-                    this.asignaContenido(alumnoContenido, contenido, themeDisplay);
+                    this.asignaContenido(cursoId, alumnoContenido, contenido, themeDisplay);
                     log.debug("Activando a {}", contenido.getNombre());
                     contenido.setActivo(bandera);
                     activo = true;
@@ -379,7 +379,7 @@ public class CursoDaoHibernate implements CursoDao {
                         currentSession().flush();
                     }
                     if (bandera && !activo) {
-                        this.asignaContenido(alumnoContenido, contenido, themeDisplay);
+                        this.asignaContenido(cursoId, alumnoContenido, contenido, themeDisplay);
                         log.debug("Activando a {}", contenido.getNombre());
                         contenido.setActivo(bandera);
                         activo = true;
@@ -418,7 +418,7 @@ public class CursoDaoHibernate implements CursoDao {
                     currentSession().flush();
                 }
                 if (contenidoId == contenido.getId() && terminado) {
-                    this.asignaContenido(alumnoContenido, contenido, themeDisplay);
+                    this.asignaContenido(cursoId, alumnoContenido, contenido, themeDisplay);
                     contenido.setActivo(true);
                     noAsignado = false;
                     activo = true;
@@ -447,7 +447,7 @@ public class CursoDaoHibernate implements CursoDao {
                         currentSession().flush();
                     }
                     if (bandera && alumnoContenido.getTerminado() == null && !activo) {
-                        this.asignaContenido(alumnoContenido, contenido, themeDisplay);
+                        this.asignaContenido(cursoId, alumnoContenido, contenido, themeDisplay);
                         contenido.setActivo(bandera);
                         bandera = false;
                         activo = true;
@@ -474,7 +474,7 @@ public class CursoDaoHibernate implements CursoDao {
                         currentSession().flush();
                     }
                     if (bandera && !activo) {
-                        this.asignaContenido(alumnoContenido, contenido, themeDisplay);
+                        this.asignaContenido(cursoId, alumnoContenido, contenido, themeDisplay);
                         contenido.setActivo(bandera);
                         alumnoContenido.setIniciado(new Date());
                         currentSession().update(alumnoContenido);
@@ -514,7 +514,7 @@ public class CursoDaoHibernate implements CursoDao {
                 }
                 if (bandera && alumnoContenido.getTerminado() == null && !activo) {
                     if (bandera2) {
-                        this.asignaContenido(alumnoContenido, contenido, themeDisplay);
+                        this.asignaContenido(cursoId, alumnoContenido, contenido, themeDisplay);
                         contenido.setActivo(bandera);
                         activo = true;
                         alumnoContenido.setIniciado(new Date());
@@ -545,7 +545,7 @@ public class CursoDaoHibernate implements CursoDao {
                         currentSession().flush();
                     }
                     if (bandera && !activo) {
-                        this.asignaContenido(alumnoContenido, contenido, themeDisplay);
+                        this.asignaContenido(cursoId, alumnoContenido, contenido, themeDisplay);
                         contenido.setActivo(bandera);
                         activo = true;
                         alumnoContenido.setIniciado(new Date());
@@ -624,10 +624,20 @@ public class CursoDaoHibernate implements CursoDao {
         return params;
     }
 
-    private void asignaContenido(AlumnoContenido alumnoContenido, Contenido contenido, ThemeDisplay themeDisplay) {
+    private void asignaContenido(Long cursoId, AlumnoContenido alumnoContenido, Contenido contenido, ThemeDisplay themeDisplay) {
         try {
             JournalArticle ja;
             switch (contenido.getTipo()) {
+                case Constantes.ARTICULATE:
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("<iframe src='/academia-portlet");
+                    sb.append("/contenido/player.html?contenidoId=").append(contenido.getId());
+                    sb.append("&cursoId=").append(cursoId);
+                    sb.append("&userId=").append(themeDisplay.getUserId());
+                    sb.append("&admin=true");
+                    sb.append("' style='width:100%;height:600px;'></iframe>");
+                    contenido.setTexto(sb.toString());
+                    break;
                 case Constantes.TEXTO:
                     ja = JournalArticleLocalServiceUtil.getArticle(contenido.getContenidoId());
                     if (ja != null) {

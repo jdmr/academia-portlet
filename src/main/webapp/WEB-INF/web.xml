@@ -26,4 +26,16 @@
         <servlet-name>ViewRendererServlet</servlet-name>
         <url-pattern>/WEB-INF/servlet/view</url-pattern>
     </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>contenido</servlet-name>
+        <servlet-class>mx.edu.um.academia.web.ContenidoServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>   
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>contenido</servlet-name>
+        <url-pattern>/contenido/*</url-pattern>
+    </servlet-mapping>
+        
 </web-app>

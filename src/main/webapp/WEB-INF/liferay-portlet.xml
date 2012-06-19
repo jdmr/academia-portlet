@@ -17,6 +17,9 @@
     <portlet>
         <portlet-name>CursosAdmin</portlet-name>
         <instanceable>false</instanceable>
+        <remoteable>true</remoteable>
+        <private-request-attributes>false</private-request-attributes>
+        <private-session-attributes>false</private-session-attributes>
         <header-portlet-css>/css/cursos_admin.css</header-portlet-css>
         <header-portlet-javascript>/js/cursos_admin.js</header-portlet-javascript>
     </portlet>
@@ -41,6 +44,9 @@
     <portlet>
         <portlet-name>Cursos</portlet-name>
         <instanceable>true</instanceable>
+        <remoteable>true</remoteable>
+        <private-request-attributes>false</private-request-attributes>
+        <private-session-attributes>false</private-session-attributes>
         <header-portlet-css>/css/cursos.css</header-portlet-css>
         <header-portlet-javascript>/js/cursos.js</header-portlet-javascript>
     </portlet>

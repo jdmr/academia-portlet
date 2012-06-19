@@ -27,6 +27,7 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.model.User;
 import com.liferay.portal.util.PortalUtil;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -121,15 +123,17 @@ public class ObjetoAprendizajePortlet extends BaseController {
     @RequestMapping(params = "action=crea")
     public void crea(ActionRequest request, ActionResponse response,
             @Valid ObjetoAprendizaje objeto,
-            BindingResult result) throws SystemException, PortalException {
+            BindingResult result,
+            @RequestParam(required=false) MultipartFile archivo) throws SystemException, PortalException, IOException {
         log.debug("Creando objeto de aprendizaje {}", objeto);
         if (result.hasErrors()) {
             log.debug("Hubo algun error en la forma, regresando");
             response.setRenderParameter("action", "nuevoError");
         }
-
+        
         User creador = PortalUtil.getUser(request);
-        objetoAprendizajeDao.crea(objeto, creador);
+        
+        objetoAprendizajeDao.crea(objeto, archivo, creador);
 
         response.setRenderParameter("action", "ver");
         response.setRenderParameter("id", objeto.getId().toString());

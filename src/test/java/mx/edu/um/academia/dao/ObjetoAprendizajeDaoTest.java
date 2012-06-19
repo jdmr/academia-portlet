@@ -23,6 +23,7 @@
  */
 package mx.edu.um.academia.dao;
 
+import java.io.IOException;
 import java.util.*;
 import mx.edu.um.academia.model.ObjetoAprendizaje;
 import org.hibernate.Session;
@@ -93,10 +94,10 @@ public class ObjetoAprendizajeDaoTest {
      * Test of crea method, of class ObjetoAprendizajeDao.
      */
     @Test
-    public void testCrea() {
+    public void testCrea() throws IOException {
         log.debug("crea");
         ObjetoAprendizaje objetoAprendizaje = new ObjetoAprendizaje("TEST--1", "TEST--1", "TEST--1", 1l);
-        ObjetoAprendizaje result = instance.crea(objetoAprendizaje, null);
+        ObjetoAprendizaje result = instance.crea(objetoAprendizaje, null, null);
         assertNotNull(result.getId());
         assertNotNull(result.getVersion());
     }

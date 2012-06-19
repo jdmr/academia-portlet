@@ -24,9 +24,11 @@
 package mx.edu.um.academia.dao;
 
 import com.liferay.portal.model.User;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 import mx.edu.um.academia.model.ObjetoAprendizaje;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -36,7 +38,7 @@ public interface ObjetoAprendizajeDao {
 
     public ObjetoAprendizaje actualiza(ObjetoAprendizaje objetoAprendizaje, User creador);
 
-    public ObjetoAprendizaje crea(ObjetoAprendizaje objetoAprendizaje, User creador);
+    public ObjetoAprendizaje crea(ObjetoAprendizaje objetoAprendizaje, MultipartFile archivo, User creador) throws IOException;
 
     public String elimina(Long objetoAprendizajeId, User creador);
 

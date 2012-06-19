@@ -112,6 +112,9 @@ public class CursoPortlet extends BaseController {
                                         model.addAttribute("examen", contenido.getExamen());
                                         model.addAttribute("preguntas", contenido.getExamen().getOtrasPreguntas());
                                         break;
+                                    case Constantes.ARTICULATE:
+                                        model.addAttribute("texto", contenido.getTexto());
+                                        break;
                                 }
                                 break cicloObjetos;
                             }
@@ -188,6 +191,9 @@ public class CursoPortlet extends BaseController {
                                         model.addAttribute("examen", contenido.getExamen());
                                         model.addAttribute("preguntas", contenido.getExamen().getOtrasPreguntas());
                                         break;
+                                    case Constantes.ARTICULATE:
+                                        model.addAttribute("texto", contenido.getTexto());
+                                        break;
                                 }
                                 break cicloObjetos;
                             }
@@ -263,6 +269,9 @@ public class CursoPortlet extends BaseController {
                                         model.addAttribute("texto", contenido.getTexto());
                                         model.addAttribute("examen", contenido.getExamen());
                                         model.addAttribute("preguntas", contenido.getExamen().getOtrasPreguntas());
+                                        break;
+                                    case Constantes.ARTICULATE:
+                                        model.addAttribute("texto", contenido.getTexto());
                                         break;
                                 }
                                 break cicloObjetos;

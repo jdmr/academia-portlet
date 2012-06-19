@@ -24,10 +24,17 @@
 package mx.edu.um.academia.dao.impl;
 
 import com.liferay.portal.model.User;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import mx.edu.um.academia.dao.ContenidoDao;
 import mx.edu.um.academia.dao.ObjetoAprendizajeDao;
 import mx.edu.um.academia.model.Contenido;
 import mx.edu.um.academia.model.ObjetoAprendizaje;
+import mx.edu.um.academia.utils.Constantes;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -38,6 +45,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -50,6 +58,8 @@ public class ObjetoAprendizajeDaoHibernate implements ObjetoAprendizajeDao {
     private static final Logger log = LoggerFactory.getLogger(ObjetoAprendizajeDaoHibernate.class);
     @Autowired
     private SessionFactory sessionFactory;
+    @Autowired
+    private ContenidoDao contenidoDao;
 
     public ObjetoAprendizajeDaoHibernate() {
         log.info("Nueva instancia de ObjetoAprendizajeDaoHibernate");
@@ -79,15 +89,70 @@ public class ObjetoAprendizajeDaoHibernate implements ObjetoAprendizajeDao {
     }
 
     @Override
-    public ObjetoAprendizaje crea(ObjetoAprendizaje objetoAprendizaje, User creador) {
+    public ObjetoAprendizaje crea(ObjetoAprendizaje objetoAprendizaje, MultipartFile archivo, User creador) throws IOException {
         log.debug("Creando ObjetoAprendizaje {} por usuario", objetoAprendizaje, creador);
         Date fecha = new Date();
+        Contenido contenido = null;
+
+        if (archivo != null) {
+            int size = 1024;
+            byte[] buf = new byte[size];
+            ZipInputStream zinstream = new ZipInputStream(archivo.getInputStream());
+            ZipEntry zentry = zinstream.getNextEntry();
+            while (zentry != null) {
+                StringBuilder sb = new StringBuilder();
+                sb.append("/opt/portal/liferay-portal-6.0.6/data/cursos");
+                sb.append("/").append(objetoAprendizaje.getComunidadId());
+                sb.append("/").append(objetoAprendizaje.getCodigo());
+                sb.append("/").append(zentry.getName());
+                String entryName = sb.toString();
+                log.debug("Obtuve archivo {}", entryName);
+                File file = new File(entryName);
+                if (!file.getParentFile().exists()) {
+                    boolean creoDirectorios = file.mkdirs();
+                    log.debug("Se crearon los directorios: {}", creoDirectorios);
+                }
+                
+                if (zentry.isDirectory()) {
+                    if (!file.exists()) {
+                        boolean creoDirectorios = file.mkdirs();
+                        log.debug("Se crearon los directorios: {}", creoDirectorios);
+                    }
+                } else {
+                    log.debug("Creando archivo {}", entryName);
+                    FileOutputStream outstream = new FileOutputStream(file);
+                    int n;
+
+                    while ((n = zinstream.read(buf, 0, size)) > -1) {
+                        outstream.write(buf, 0, n);
+                    }
+                    outstream.close();
+                }
+                
+                if (entryName.endsWith("player.html")) {
+                    contenido = new Contenido(objetoAprendizaje.getCodigo(), objetoAprendizaje.getNombre(), null);
+                    contenido.setRuta(entryName);
+                    contenido.setComunidadId(objetoAprendizaje.getComunidadId());
+                    contenido.setTipo(Constantes.ARTICULATE);
+                    contenido = contenidoDao.crea(contenido, creador);
+                }
+
+                zinstream.closeEntry();
+                zentry = zinstream.getNextEntry();
+            }
+        }
+
         objetoAprendizaje.setFechaCreacion(fecha);
         objetoAprendizaje.setFechaModificacion(fecha);
         if (creador != null) {
             objetoAprendizaje.setCreador(creador.getScreenName());
         } else {
             objetoAprendizaje.setCreador("admin");
+        }
+        if (contenido != null) {
+            List<Contenido> contenidos = new ArrayList<>();
+            contenidos.add(contenido);
+            objetoAprendizaje.setContenidos(contenidos);
         }
         currentSession().save(objetoAprendizaje);
         return objetoAprendizaje;
@@ -184,7 +249,7 @@ public class ObjetoAprendizajeDaoHibernate implements ObjetoAprendizajeDao {
             log.debug("Seleccionado: " + contenido.getNombre());
         }
         resultado.put("seleccionados", contenidos);
-        
+
         Criteria criteria = currentSession().createCriteria(Contenido.class);
         criteria.add(Restrictions.in("comunidadId", (Set<Long>) comunidades));
         criteria.addOrder(Order.asc("codigo"));
@@ -198,13 +263,13 @@ public class ObjetoAprendizajeDaoHibernate implements ObjetoAprendizajeDao {
         log.debug("regresando {}", resultado);
         return resultado;
     }
-    
+
     @Override
     public void agregaContenido(Long objetoId, Long[] contenidosArray) {
         log.debug("Agregando contenido a objeto {}", objetoId);
         ObjetoAprendizaje objeto = (ObjetoAprendizaje) currentSession().get(ObjetoAprendizaje.class, objetoId);
         objeto.getContenidos().clear();
-        for(Long contenidoId : contenidosArray) {
+        for (Long contenidoId : contenidosArray) {
             objeto.getContenidos().add((Contenido) currentSession().load(Contenido.class, contenidoId));
         }
         currentSession().update(objeto);

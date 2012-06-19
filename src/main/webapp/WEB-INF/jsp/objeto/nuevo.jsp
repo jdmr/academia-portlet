@@ -4,7 +4,7 @@
     <portlet:param name="action" value="crea"/>
 </portlet:actionURL>
 
-<form:form name="objetoForm" commandName="objeto" method="post" action="${actionUrl}" >
+<form:form name="objetoForm" commandName="objeto" method="post" action="${actionUrl}" enctype="multipart/form-data" >
     <fieldset>
         <div class="control-group">
             <label for="codigo"><s:message code="codigo" /></label>
@@ -20,6 +20,10 @@
             <label for="descripcion"><s:message code="descripcion" /></label>
             <form:textarea path="descripcion" cssClass="span6" cssStyle="height: 150px;" />
             <form:errors cssClass="errors" path="descripcion" />
+        </div>
+        <div class="control-group">
+            <label for="nombre"><s:message code="articulate" /></label>
+            <input type="file" name="archivo" />
         </div>
         <div class="control-group">
             <label for="comunidadId"><s:message code="comunidad" /></label>

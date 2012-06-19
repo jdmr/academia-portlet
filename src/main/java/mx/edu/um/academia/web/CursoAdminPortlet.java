@@ -42,6 +42,7 @@ import java.io.PrintWriter;
 import java.util.*;
 import javax.portlet.*;
 import javax.validation.Valid;
+import mx.edu.um.academia.dao.ContenidoDao;
 import mx.edu.um.academia.dao.CursoDao;
 import mx.edu.um.academia.model.Contenido;
 import mx.edu.um.academia.model.Curso;
@@ -58,6 +59,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 
 /**
  *
@@ -71,6 +73,8 @@ public class CursoAdminPortlet extends BaseController {
     private CursoDao cursoDao;
     @Autowired
     private ResourceBundleMessageSource messages;
+    @Autowired
+    private ContenidoDao contenidoDao;
 
     public CursoAdminPortlet() {
         log.info("Nueva instancia de Curso Admin Portlet creada");
@@ -317,7 +321,7 @@ public class CursoAdminPortlet extends BaseController {
         response.setRenderParameter("action", "ver");
         response.setRenderParameter("id", cursoId.toString());
     }
-    
+
     @RequestMapping(params = "action=alumnos")
     public String alumnos(RenderRequest request, RenderResponse response, Model modelo, @RequestParam Long cursoId) {
         log.debug("List de alumnos del curso {}", cursoId);
@@ -326,9 +330,9 @@ public class CursoAdminPortlet extends BaseController {
         params.put("cursoId", cursoId);
         params.put("companyId", getThemeDisplay(request).getCompanyId());
         params = cursoDao.alumnos(params);
-        
+
         modelo.addAllAttributes(params);
-        
+
         return "cursoAdmin/alumnos";
     }
 
@@ -406,6 +410,14 @@ public class CursoAdminPortlet extends BaseController {
                     sb.append("<video controls='controls' src='").append(videoLink.toString()).append("' />");
                 }
                 break;
+            case Constantes.ARTICULATE:
+                ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+                sb.append("<iframe src='").append(request.getContextPath());
+                sb.append("/contenido/player.html?contenidoId=").append(contenido.getId());
+                sb.append("&cursoId=").append(cursoId);
+                sb.append("&userId=").append(themeDisplay.getUserId());
+                sb.append("&admin=true");
+                sb.append("' style='width:100%;height:600px;'></iframe>");
         }
         sb.append("</div>");
         PrintWriter writer = response.getWriter();
@@ -428,14 +440,23 @@ public class CursoAdminPortlet extends BaseController {
             }
         }
     }
-    
+
+    @ResourceMapping(value = "contenido")
+    public void buscaContenido(@RequestParam Long contenidoId, ResourceRequest request, ResourceResponse response) throws IOException, SystemException {
+        log.debug("Buscando contenido {}", contenidoId);
+        Contenido contenido = contenidoDao.obtiene(contenidoId);
+        log.debug("{}", contenido.getRuta());
+        PrintWriter writer = response.getWriter();
+        writer.println();
+    }
+
     private Map<String, String> obtieneTiposDeCurso(Locale locale) {
         Map<String, String> tipos = new LinkedHashMap<>();
         tipos.put(Constantes.PATROCINADO, messages.getMessage(Constantes.PATROCINADO, null, locale));
         tipos.put(Constantes.PAGADO, messages.getMessage(Constantes.PAGADO, null, locale));
         return tipos;
     }
-    
+
     private List<String> obtieneTiposDeComercio() {
         List<String> comercios = new ArrayList<>();
         comercios.add("PAYPAL");

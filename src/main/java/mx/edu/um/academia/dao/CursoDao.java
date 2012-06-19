@@ -77,8 +77,8 @@ public interface CursoDao {
     public List<AlumnoCurso> alumnos(Long cursoId);
 
     public Map<String, Object> alumnos(Map<String, Object> params);
-    
+
     public Examen obtieneExamen(Long examenId);
-    
+
     public Map<String, Object> califica(Map<String, String[]> params, ThemeDisplay themeDisplay, User usuario);
 }

@@ -50,7 +50,7 @@ public class Contenido implements Serializable {
     @Column(length = 32, nullable = false)
     private String codigo;
     @NotBlank
-    @Column(length = 128, nullable = false)
+    @Column(nullable = false)
     private String nombre;
     @Column(name = "contenido_id")
     private Long contenidoId;
@@ -76,6 +76,7 @@ public class Contenido implements Serializable {
     private Boolean activo = false;
     @Transient
     private String texto;
+    private String ruta;
 
     public Contenido() {
     }
@@ -323,5 +324,19 @@ public class Contenido implements Serializable {
     @Override
     public String toString() {
         return "Contenido{" + "id=" + id + ", codigo=" + codigo + ", nombre=" + nombre + ", contenidoId=" + contenidoId + ", tipo=" + tipo + ", comunidadId=" + comunidadId + '}';
+    }
+
+    /**
+     * @return the ruta
+     */
+    public String getRuta() {
+        return ruta;
+    }
+
+    /**
+     * @param ruta the ruta to set
+     */
+    public void setRuta(String ruta) {
+        this.ruta = ruta;
     }
 }
