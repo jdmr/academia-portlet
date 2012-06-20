@@ -38,6 +38,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import javax.mail.util.ByteArrayDataSource;
 import javax.portlet.*;
 import mx.edu.um.academia.dao.CursoDao;
 import mx.edu.um.academia.model.*;
@@ -54,6 +57,8 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -71,6 +76,8 @@ public class CursoPortlet extends BaseController {
     private CursoDao cursoDao;
     @Autowired
     private ResourceBundleMessageSource messageSource;
+    @Autowired
+    protected JavaMailSender mailSender;
 
     public CursoPortlet() {
         log.info("Nueva instancia de Curso Portlet");
@@ -269,6 +276,20 @@ public class CursoPortlet extends BaseController {
                     List<ObjetoAprendizaje> objetos = cursoDao.objetosAlumnoSiguiente(curso.getId(), usuario.getUserId(), themeDisplay);
                     if (cursoDao.haConcluido(usuario.getUserId(), curso.getId())) {
                         model.addAttribute("concluido", true);
+                        
+//                        try {
+//                            MimeMessage message = mailSender.createMimeMessage();
+//                            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+//                            helper.setTo("lneria@um.edu.mx");
+//                            String titulo = usuario.getFullName() + " ha concluido el curso "+ curso.getNombre();
+//                            helper.setSubject(titulo);
+//                            helper.setText(titulo);
+//                            //helper.addAttachment("Diploma-"+curso.getCodigo()+".pdf", new ByteArrayDataSource(archivo, tipoContenido));
+//                            mailSender.send(message);
+//                        } catch(MessagingException e) {
+//                            log.error("Hubo un error al intentar enviar el correo", e);
+//                        }
+
                     } else {
                         cicloObjetos:
                         for (ObjetoAprendizaje objeto : objetos) {

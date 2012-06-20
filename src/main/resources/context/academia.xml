@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:p="http://www.springframework.org/schema/p"
        xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:context="http://www.springframework.org/schema/context"
@@ -61,4 +60,19 @@
         </property>
     </bean>
     
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl" >
+        <property name="host" value="${mail.session.mail.smtp.host}" />
+        <property name="port" value="${mail.session.mail.smtp.port}" />
+        <property name="username" value="${mail.session.mail.smtp.user}" />
+        <property name="password" value="${mail.session.mail.smtp.password}" />
+        <property name="javaMailProperties">
+            <props>
+                <prop key="mail.debug">true</prop>
+                <prop key="mail.smtp.auth">${mail.session.mail.smtp.auth}</prop>
+                <prop key="mail.smtp.starttls.enable">${mail.session.mail.smtp.starttls.enable}</prop>
+                <prop key="mail.smtp.socketFactory.class">${mail.session.mail.smtp.socketFactory.class}</prop>
+            </props>
+        </property>
+    </bean>
+
 </beans>
