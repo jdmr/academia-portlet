@@ -31,7 +31,11 @@ import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.journal.model.JournalArticle;
 import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.portlet.*;
@@ -39,12 +43,22 @@ import mx.edu.um.academia.dao.CursoDao;
 import mx.edu.um.academia.model.*;
 import mx.edu.um.academia.utils.ComunidadUtil;
 import mx.edu.um.academia.utils.Constantes;
+import net.sf.jasperreports.engine.JREmptyDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 
 /**
  *
@@ -417,15 +431,40 @@ public class CursoPortlet extends BaseController {
         return "curso/examen";
     }
 
-    @RequestMapping(value = "VIEW", params = "action=diploma")
-    public void diploma(ActionRequest request, ActionResponse response) throws SystemException, PortalException {
+    @ResourceMapping(value = "diploma")
+    public void diploma(ResourceRequest request, ResourceResponse response) throws SystemException, PortalException {
         log.debug("Obteniendo diploma");
 
         PortletCurso portletCurso = cursoDao.obtienePortlet(PortalUtil.getPortletId(request));
         if (portletCurso != null) {
-            Curso curso = portletCurso.getCurso();
-            User usuario = PortalUtil.getUser(request);
-            log.debug("Imprimiendo diploma de {} para el curso {}", usuario.getScreenName(), curso.getNombre());
+            ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+            SimpleDateFormat sdf = new SimpleDateFormat("EEEE dd MMMM yyyy", themeDisplay.getLocale());
+            try {
+                Curso curso = portletCurso.getCurso();
+                User usuario = PortalUtil.getUser(request);
+                log.debug("Imprimiendo diploma de {} para el curso {}", usuario.getScreenName(), curso.getNombre());
+                JasperDesign jd = JRXmlLoader.load(this.getClass().getResourceAsStream("/reportes/diploma.jrxml"));
+                JasperReport jr = JasperCompileManager.compileReport(jd);
+                Map<String, Object> params = new HashMap<>();
+                params.put("alumno", usuario.getFullName());
+                params.put("curso", curso.getNombre());
+                params.put("fecha", sdf.format(new Date()));
+                log.debug("PARAMS: {}", params);
+                JasperPrint jasperPrint = JasperFillManager.fillReport(jr, params, new JREmptyDataSource());
+                byte[] archivo = JasperExportManager.exportReportToPdf(jasperPrint);
+                if (archivo != null) {
+//                    response.addHeader("Content-Disposition", "attachment; filename=diploma.pdf");
+                    response.setContentType("application/pdf");
+                    response.setContentLength(archivo.length);
+                    try (BufferedOutputStream bos = new BufferedOutputStream(response.getPortletOutputStream())) {
+                        bos.write(archivo);
+                        bos.flush();
+                    }
+                }
+
+            } catch (JRException | IOException e) {
+                log.error("Hubo un problema al general el reporte", e);
+            }
         }
     }
 }

@@ -49,10 +49,7 @@
                     <c:when test="${concluido}">
                         <h3><s:message code="concluido.titulo" /></h3>
                         <h6><s:message code="concluido.mensaje" /></h6>
-                        <portlet:actionURL var="diplomaUrl" >
-                            <portlet:param name="action" value="diploma" />
-                        </portlet:actionURL>
-                        <form name="<portlet:namespace />diplomaForm" action="${diplomaUrl}" method="post">
+                        <form name="<portlet:namespace />diplomaForm" action="<portlet:resourceURL id='diploma'/>" method="post">
                             <div class="control-group">
                                 <button type="submit" class="btn btn-primary btn-large"><i class="icon-print icon-white"></i> <s:message code="concluido.diploma" /></button>
                             </div>
