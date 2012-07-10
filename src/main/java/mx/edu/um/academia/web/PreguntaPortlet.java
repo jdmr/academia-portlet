@@ -38,6 +38,7 @@ import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -49,6 +50,7 @@ import mx.edu.um.academia.utils.ComunidadUtil;
 import mx.edu.um.academia.utils.TextoUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -68,6 +70,8 @@ public class PreguntaPortlet extends BaseController {
     private PreguntaDao preguntaDao;
     @Autowired
     private TextoUtil textoUtil;
+    @Autowired
+    private ResourceBundleMessageSource messageSource;
 
     public PreguntaPortlet() {
         log.info("Nueva instancia del Controlador de Preguntas");
@@ -154,10 +158,15 @@ public class PreguntaPortlet extends BaseController {
         Pregunta pregunta = preguntaDao.obtiene(id);
         if (pregunta.getContenido() != null) {
             ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
-            JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(pregunta.getContenido());
-            if (ja != null) {
-                String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
-                modelo.addAttribute("texto", texto);
+            try {
+                JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(pregunta.getContenido());
+                if (ja != null) {
+                    String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+                    modelo.addAttribute("texto", texto);
+                }
+            } catch(com.liferay.portlet.journal.NoSuchArticleException e) {
+                log.error("No encontre el contenido", e);
+                modelo.addAttribute("texto", messageSource.getMessage("no.encontre.articulo", new String[]{pregunta.getNombre()}, themeDisplay.getLocale()));
             }
         }
         modelo.addAttribute("pregunta", pregunta);

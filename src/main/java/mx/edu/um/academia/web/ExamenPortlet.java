@@ -47,6 +47,7 @@ import mx.edu.um.academia.utils.ComunidadUtil;
 import mx.edu.um.academia.utils.TextoUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -61,18 +62,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequestMapping("VIEW")
 public class ExamenPortlet extends BaseController {
-    
+
     @Autowired
     private ExamenDao examenDao;
     @Autowired
     private PreguntaDao preguntaDao;
     @Autowired
     private TextoUtil textoUtil;
-    
+    @Autowired
+    private ResourceBundleMessageSource messageSource;
+
     public ExamenPortlet() {
         log.info("Nueva instancia del Controlador de Examenes");
     }
-    
+
     @RequestMapping
     public String lista(RenderRequest request,
             @RequestParam(required = false) String filtro,
@@ -161,30 +164,35 @@ public class ExamenPortlet extends BaseController {
             }
         }
         modelo.addAttribute("examen", examen);
-        
+
         List<Pregunta> preguntas = new ArrayList<>();
-        for(Pregunta pregunta : examenDao.preguntas(id)) {
-            for(Respuesta respuesta : pregunta.getRespuestas()) {
+        for (Pregunta pregunta : examenDao.preguntas(id)) {
+            for (Respuesta respuesta : pregunta.getRespuestas()) {
                 JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(respuesta.getContenido());
                 if (ja != null) {
                     String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
                     respuesta.setTexto(texto);
                 }
             }
-            JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(pregunta.getContenido());
-            if (ja != null) {
-                String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
-                pregunta.setTexto(texto);
+            if (pregunta.getContenido() != null) {
+                JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(pregunta.getContenido());
+                if (ja != null) {
+                    String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+                    pregunta.setTexto(texto);
+                }
+                preguntas.add(pregunta);
+            } else {
+                pregunta.setTexto(messageSource.getMessage("pregunta.requiere.texto", new String[] {pregunta.getNombre()}, themeDisplay.getLocale()));
+                preguntas.add(pregunta);
             }
-            preguntas.add(pregunta);
         }
         if (preguntas.size() > 0) {
-            for(Pregunta pregunta : preguntas) {
+            for (Pregunta pregunta : preguntas) {
                 log.debug("{} ||| {}", pregunta, pregunta.getTexto());
             }
             modelo.addAttribute("preguntas", preguntas);
         }
-        
+
         return "examen/ver";
     }
 
@@ -232,7 +240,7 @@ public class ExamenPortlet extends BaseController {
         User creador = PortalUtil.getUser(request);
         examenDao.elimina(id, creador);
     }
-    
+
     @RequestMapping(params = "action=nuevoTexto")
     public String nuevoTexto(RenderRequest request, Model modelo, @RequestParam Long id) throws SystemException, PortalException {
         log.debug("Nuevo texto para examen {}", id);
@@ -323,7 +331,7 @@ public class ExamenPortlet extends BaseController {
         log.debug("Pregunta para examen {}", id);
         Examen examen = examenDao.obtiene(id);
         modelo.addAttribute("examen", examen);
-        
+
         List<Pregunta> preguntas = preguntaDao.todas(ComunidadUtil.obtieneComunidades(request).keySet());
         modelo.addAttribute("preguntas", preguntas);
 
@@ -339,17 +347,17 @@ public class ExamenPortlet extends BaseController {
         log.debug("Actualizando texto para examen {}", examenPregunta);
         User creador = PortalUtil.getUser(request);
         examenDao.asignaPregunta(
-                examenPregunta.getId().getExamen().getId(), 
-                examenPregunta.getId().getPregunta().getId(), 
-                examenPregunta.getPuntos(), 
-                examenPregunta.getPorPregunta(), 
-                null, 
+                examenPregunta.getId().getExamen().getId(),
+                examenPregunta.getId().getPregunta().getId(),
+                examenPregunta.getPuntos(),
+                examenPregunta.getPorPregunta(),
+                null,
                 creador);
 
         response.setRenderParameter("action", "ver");
         response.setRenderParameter("id", examenPregunta.getId().getExamen().getId().toString());
     }
-    
+
     @RequestMapping(params = "action=eliminaPregunta")
     public void eliminaPregunta(ActionRequest request, ActionResponse response, @RequestParam Long examenId, @RequestParam Long preguntaId) {
         log.debug("Eliminando pregunta {} del examen {}", preguntaId, examenId);
@@ -357,5 +365,4 @@ public class ExamenPortlet extends BaseController {
         response.setRenderParameter("action", "ver");
         response.setRenderParameter("id", examenId.toString());
     }
-
 }

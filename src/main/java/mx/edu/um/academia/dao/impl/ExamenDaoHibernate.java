@@ -28,6 +28,7 @@ import java.util.*;
 import mx.edu.um.academia.dao.ExamenDao;
 import mx.edu.um.academia.model.*;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.*;
@@ -222,9 +223,11 @@ public class ExamenDaoHibernate implements ExamenDao {
 
     @Override
     public List<Pregunta> preguntas(Long examenId) {
-        Examen examen = (Examen) currentSession().get(Examen.class, examenId);
+        Query query = currentSession().createQuery("select ep from ExamenPregunta ep inner join ep.id.examen as e inner join ep.id.pregunta as p where e.id = :examenId order by ep.fechaCreacion");
+        query.setLong("examenId", examenId);
+        List<ExamenPregunta> lista = query.list();
         List<Pregunta> preguntas = new ArrayList<>();
-        for(ExamenPregunta examenPregunta : examen.getPreguntas()) {
+        for(ExamenPregunta examenPregunta : lista) {
             Map<Integer, Respuesta> respuestas = new TreeMap<>();
             Pregunta pregunta  = examenPregunta.getId().getPregunta();
             pregunta.setPuntos(examenPregunta.getPuntos());
