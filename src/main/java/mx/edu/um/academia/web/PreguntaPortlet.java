@@ -38,7 +38,6 @@ import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -164,7 +163,7 @@ public class PreguntaPortlet extends BaseController {
                     String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
                     modelo.addAttribute("texto", texto);
                 }
-            } catch(com.liferay.portlet.journal.NoSuchArticleException e) {
+            } catch (com.liferay.portlet.journal.NoSuchArticleException e) {
                 log.error("No encontre el contenido", e);
                 modelo.addAttribute("texto", messageSource.getMessage("no.encontre.articulo", new String[]{pregunta.getNombre()}, themeDisplay.getLocale()));
             }
@@ -219,7 +218,11 @@ public class PreguntaPortlet extends BaseController {
 
         Pregunta pregunta = preguntaDao.obtiene(id);
         if (pregunta.getContenido() != null) {
-            JournalArticleLocalServiceUtil.deleteJournalArticle(pregunta.getContenido());
+            try {
+                JournalArticleLocalServiceUtil.deleteJournalArticle(pregunta.getContenido());
+            } catch (com.liferay.portlet.journal.NoSuchArticleException e) {
+                log.error("No se encontro el articulo para borrarlo, borrando contenido de todas formas", e);
+            }
         }
         User creador = PortalUtil.getUser(request);
         preguntaDao.elimina(id, creador);
@@ -312,7 +315,7 @@ public class PreguntaPortlet extends BaseController {
 
     @RequestMapping(params = "action=agregaRespuestas")
     public void agregaRespuestas(ActionRequest request, ActionResponse response, @RequestParam Long preguntaId, @RequestParam Long[] correctas, @RequestParam Long[] incorrectas) {
-        log.debug("Agregando respuestas correctas {} e incorrectas {} a {}", new Object[] {correctas, incorrectas, preguntaId});
+        log.debug("Agregando respuestas correctas {} e incorrectas {} a {}", new Object[]{correctas, incorrectas, preguntaId});
 
         preguntaDao.asignaRespuestas(preguntaId, correctas, incorrectas);
 
