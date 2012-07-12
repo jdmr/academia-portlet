@@ -50,6 +50,12 @@
         <header-portlet-css>/css/cursos.css</header-portlet-css>
         <header-portlet-javascript>/js/cursos.js</header-portlet-javascript>
     </portlet>
+    <portlet>
+        <portlet-name>MisCursos</portlet-name>
+        <instanceable>false</instanceable>
+        <header-portlet-css>/css/mis_cursos.css</header-portlet-css>
+        <header-portlet-javascript>/js/mis_cursos.js</header-portlet-javascript>
+    </portlet>
     <role-mapper>
         <role-name>administrator</role-name>
         <role-link>Administrator</role-link>

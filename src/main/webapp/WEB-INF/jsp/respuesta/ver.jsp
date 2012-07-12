@@ -1,5 +1,12 @@
 <%@ include file="/WEB-INF/jsp/include.jsp" %>
 
+<c:if test="${not empty message}">
+    <div class="alert alert-block <c:choose><c:when test='${not empty messageStyle}'>${messageStyle}</c:when><c:otherwise>alert-success</c:otherwise></c:choose> fade in">
+        <a class="close" data-dismiss="alert">×</a>
+        <p>${message}</p>
+    </div>
+</c:if>
+
 <div class="well">
     <portlet:renderURL var="nuevoUrl" >
         <portlet:param name="action" value="nuevo" />

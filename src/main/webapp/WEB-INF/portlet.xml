@@ -234,4 +234,43 @@
             <value>true</value>
         </container-runtime-option>
     </portlet>
+    <portlet>
+        <description>MisCursos</description>
+        <portlet-name>MisCursos</portlet-name>
+        <display-name>MisCursos</display-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+        <init-param>
+            <name>contextConfigLocation</name>
+            <value>/WEB-INF/classes/context/portlet/mis_cursos.xml</value>
+        </init-param>
+        <init-param>
+            <name>check-auth-token</name>
+            <value>false</value>
+        </init-param>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+        </supports>
+        <supported-locale>en</supported-locale>
+        <supported-locale>es</supported-locale>
+        <resource-bundle>mis_cursos</resource-bundle>
+        <portlet-info>
+            <title>Mis Cursos</title>
+            <short-title>Mis Cursos</short-title>
+            <keywords></keywords>
+        </portlet-info>
+        <security-role-ref>
+            <role-name>administrator</role-name>
+        </security-role-ref>
+        <security-role-ref>
+            <role-name>guest</role-name>
+        </security-role-ref>
+        <security-role-ref>
+            <role-name>power-user</role-name>
+        </security-role-ref>
+        <security-role-ref>
+            <role-name>user</role-name>
+        </security-role-ref>
+    </portlet>
 </portlet-app>

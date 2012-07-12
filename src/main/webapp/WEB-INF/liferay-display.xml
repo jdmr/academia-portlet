@@ -10,5 +10,6 @@
         <portlet id="Preguntas" />
         <portlet id="Examenes" />
         <portlet id="Cursos" />
+        <portlet id="MisCursos" />
     </category>
 </display>

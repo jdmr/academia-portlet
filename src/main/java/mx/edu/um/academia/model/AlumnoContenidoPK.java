@@ -24,6 +24,7 @@
 package mx.edu.um.academia.model;
 
 import java.io.Serializable;
+import java.util.Objects;
 import javax.persistence.Embeddable;
 import javax.persistence.ManyToOne;
 
@@ -61,5 +62,31 @@ public class AlumnoContenidoPK implements Serializable {
 
     public void setContenido(Contenido contenido) {
         this.contenido = contenido;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 47 * hash + Objects.hashCode(this.alumno);
+        hash = 47 * hash + Objects.hashCode(this.contenido);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final AlumnoContenidoPK other = (AlumnoContenidoPK) obj;
+        if (!Objects.equals(this.alumno, other.alumno)) {
+            return false;
+        }
+        if (!Objects.equals(this.contenido, other.contenido)) {
+            return false;
+        }
+        return true;
     }
 }

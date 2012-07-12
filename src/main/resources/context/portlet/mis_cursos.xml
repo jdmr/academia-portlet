@@ -17,7 +17,7 @@
     <bean id="portletModeHandlerMapping" class="org.springframework.web.portlet.handler.PortletModeHandlerMapping">
         <property name="portletModeMap">
             <map> 
-                <entry key="view" value-ref="examenPortlet" />
+                <entry key="view" value-ref="misCursosPortlet" />
             </map> 
         </property>
     </bean>
@@ -31,7 +31,7 @@
     <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
         <property name="basenames">
             <list>
-                <value>examenes</value>
+                <value>mis_cursos</value>
                 <value>messages</value>
             </list>
         </property>

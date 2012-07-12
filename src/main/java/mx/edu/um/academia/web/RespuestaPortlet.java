@@ -55,6 +55,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  *
@@ -139,11 +140,14 @@ public class RespuestaPortlet extends BaseController {
         if (result.hasErrors()) {
             log.debug("Hubo algun error en la forma, regresando");
             response.setRenderParameter("action", "nuevoError");
+            return;
         }
 
         User creador = PortalUtil.getUser(request);
         respuestaDao.crea(respuesta, creador);
 
+//        redirectAttributes.addFlashAttribute("message", "La respuesta ha sido creada exitosamente");
+        
         response.setRenderParameter("action", "ver");
         response.setRenderParameter("id", respuesta.getId().toString());
     }
