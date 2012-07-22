@@ -168,10 +168,14 @@ public class ExamenPortlet extends BaseController {
         List<Pregunta> preguntas = new ArrayList<>();
         for (Pregunta pregunta : examenDao.preguntas(id)) {
             for (Respuesta respuesta : pregunta.getRespuestas()) {
-                JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(respuesta.getContenido());
-                if (ja != null) {
-                    String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
-                    respuesta.setTexto(texto);
+                if (respuesta.getContenido() != null) {
+                    JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(respuesta.getContenido());
+                    if (ja != null) {
+                        String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+                        respuesta.setTexto(texto);
+                    }
+                } else {
+                    respuesta.setTexto(messageSource.getMessage("respuesta.requiere.text", new String[] {respuesta.getNombre()}, themeDisplay.getLocale()));
                 }
             }
             if (pregunta.getContenido() != null) {
