@@ -49,6 +49,7 @@ import mx.edu.um.academia.model.Curso;
 import mx.edu.um.academia.model.ObjetoAprendizaje;
 import mx.edu.um.academia.utils.ComunidadUtil;
 import mx.edu.um.academia.utils.Constantes;
+import mx.edu.um.academia.utils.TextoUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -75,6 +76,8 @@ public class CursoAdminPortlet extends BaseController {
     private ResourceBundleMessageSource messages;
     @Autowired
     private ContenidoDao contenidoDao;
+    @Autowired
+    private TextoUtil textoUtil;
 
     public CursoAdminPortlet() {
         log.info("Nueva instancia de Curso Admin Portlet creada");
@@ -262,43 +265,7 @@ public class CursoAdminPortlet extends BaseController {
 
             ServiceContext serviceContext = ServiceContextFactory.getInstance(JournalArticle.class.getName(), request);
 
-            JournalArticle article = JournalArticleLocalServiceUtil.addArticle(
-                    creador.getUserId(), // UserId
-                    curso.getComunidadId(), // GroupId
-                    "", // ArticleId
-                    true, // AutoArticleId
-                    JournalArticleConstants.DEFAULT_VERSION, // Version
-                    curso.getNombre() + " - INTRO", // Titulo
-                    "", // Descripcion
-                    texto, // Contenido
-                    "general", // Tipo
-                    "", // Estructura
-                    "", // Template
-                    displayDate.get(Calendar.MONTH), // displayDateMonth,
-                    displayDate.get(Calendar.DAY_OF_MONTH), // displayDateDay,
-                    displayDate.get(Calendar.YEAR), // displayDateYear,
-                    displayDate.get(Calendar.HOUR_OF_DAY), // displayDateHour,
-                    displayDate.get(Calendar.MINUTE), // displayDateMinute,
-                    0, // expirationDateMonth, 
-                    0, // expirationDateDay, 
-                    0, // expirationDateYear, 
-                    0, // expirationDateHour, 
-                    0, // expirationDateMinute, 
-                    true, // neverExpire
-                    0, // reviewDateMonth, 
-                    0, // reviewDateDay, 
-                    0, // reviewDateYear, 
-                    0, // reviewDateHour, 
-                    0, // reviewDateMinute, 
-                    true, // neverReview
-                    true, // indexable
-                    false, // SmallImage
-                    "", // SmallImageUrl
-                    null, // SmallFile
-                    null, // Images
-                    "", // articleURL 
-                    serviceContext // serviceContext
-                    );
+            JournalArticle article = textoUtil.crea(curso.getNombre() + " - INTRO", curso.getNombre() + " - INTRO", texto, displayDate, creador.getUserId(), curso.getComunidadId(), serviceContext);
 
             log.debug("Asignando intro {} a curso {}", article.getId(), curso);
             curso.setIntro(article.getId());

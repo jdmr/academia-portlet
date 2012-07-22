@@ -25,12 +25,17 @@ package mx.edu.um.academia.utils;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portlet.journal.model.JournalArticle;
 import com.liferay.portlet.journal.model.JournalArticleConstants;
 import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -46,18 +51,28 @@ public class TextoUtil {
     
     public JournalArticle crea(String titulo, String descripcion, String contenido, Calendar displayDate, Long userId, Long comunidadId, ServiceContext serviceContext) throws PortalException, SystemException {
         log.debug("Creando articulo {}", titulo);
+        Locale defaultLocale = LocaleUtil.fromLanguageId(
+			LocalizationUtil.getDefaultLocale(contenido));
+        Map<Locale, String> titleMap = new HashMap<>();
+        titleMap.put(defaultLocale, titulo);
+        log.debug("Creando el mapa de titulo con {} - {} = {}", new Object[]{defaultLocale, titulo, titleMap});
+        Map<Locale, String> descriptionMap = new HashMap<>();
+        descriptionMap.put(defaultLocale, descripcion);
         JournalArticle article = JournalArticleLocalServiceUtil.addArticle(
                 userId, // UserId
                 comunidadId, // GroupId
-                "", // ArticleId
-                true, // AutoArticleId
-                JournalArticleConstants.DEFAULT_VERSION, // Version
-                titulo, // Titulo
-                descripcion, // Descripcion
-                contenido, // Contenido
+                0, // ClassNameId
+                0, // ClassPK
+                "", // articleId
+                true, // autoArticleId
+                JournalArticleConstants.VERSION_DEFAULT, // Version
+                titleMap, // titleMap
+                descriptionMap, // descriptionMap
+                contenido, // content
                 "general", // Tipo
                 "", // Estructura
                 "", // Template
+                null, // layoutId
                 displayDate.get(Calendar.MONTH), // displayDateMonth,
                 displayDate.get(Calendar.DAY_OF_MONTH), // displayDateDay,
                 displayDate.get(Calendar.YEAR), // displayDateYear,

@@ -201,9 +201,11 @@
             <plugin>
                 <groupId>com.liferay.maven.plugins</groupId>
                 <artifactId>liferay-maven-plugin</artifactId>
-                <version>6.0.6</version>
+                <version>${liferay.version}</version>
                 <configuration>
                     <autoDeployDir>${liferay.auto.deploy.dir}</autoDeployDir>
+                    <liferayVersion>${liferay.version}</liferayVersion>
+                    <pluginType>portlet</pluginType>
                 </configuration>
             </plugin>
             <plugin>
@@ -227,7 +229,7 @@
     </build>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <liferay.auto.deploy.dir>/opt/portal/liferay-portal-6.0.6/deploy</liferay.auto.deploy.dir>
-        <liferay.version>6.0.6</liferay.version>
+        <liferay.auto.deploy.dir>/opt/portal/liferay-portal-6.1.0-ce-ga1/deploy</liferay.auto.deploy.dir>
+        <liferay.version>6.1.0</liferay.version>
     </properties>
 </project>

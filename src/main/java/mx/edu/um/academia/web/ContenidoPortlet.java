@@ -25,7 +25,9 @@ package mx.edu.um.academia.web;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.util.CalendarFactoryUtil;
+import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.UnicodeFormatter;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.model.User;
@@ -34,9 +36,10 @@ import com.liferay.portal.service.ServiceContextFactory;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.documentlibrary.model.DLFileEntry;
+import com.liferay.portlet.documentlibrary.model.DLFolderConstants;
+import com.liferay.portlet.documentlibrary.service.DLAppServiceUtil;
 import com.liferay.portlet.documentlibrary.service.DLFileEntryLocalServiceUtil;
 import com.liferay.portlet.journal.model.JournalArticle;
-import com.liferay.portlet.journal.model.JournalArticleConstants;
 import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
 import java.io.IOException;
 import java.util.*;
@@ -50,6 +53,7 @@ import mx.edu.um.academia.model.Contenido;
 import mx.edu.um.academia.model.Examen;
 import mx.edu.um.academia.utils.ComunidadUtil;
 import mx.edu.um.academia.utils.Constantes;
+import mx.edu.um.academia.utils.TextoUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -75,6 +79,8 @@ public class ContenidoPortlet extends BaseController {
     private ExamenDao examenDao;
     @Autowired
     private ResourceBundleMessageSource messages;
+    @Autowired
+    private TextoUtil textoUtil;
 
     public ContenidoPortlet() {
         log.info("Nueva instancia de Contenido Portlet");
@@ -281,43 +287,7 @@ public class ContenidoPortlet extends BaseController {
         if (contenido.getContenidoId() != null) {
             JournalArticleLocalServiceUtil.deleteJournalArticle(contenido.getContenidoId());
         }
-        JournalArticle article = JournalArticleLocalServiceUtil.addArticle(
-                creador.getUserId(), // UserId
-                contenido.getComunidadId(), // GroupId
-                "", // ArticleId
-                true, // AutoArticleId
-                JournalArticleConstants.DEFAULT_VERSION, // Version
-                contenido.getNombre(), // Titulo
-                contenido.getNombre(), // Descripcion
-                texto, // Contenido
-                "general", // Tipo
-                "", // Estructura
-                "", // Template
-                displayDate.get(Calendar.MONTH), // displayDateMonth,
-                displayDate.get(Calendar.DAY_OF_MONTH), // displayDateDay,
-                displayDate.get(Calendar.YEAR), // displayDateYear,
-                displayDate.get(Calendar.HOUR_OF_DAY), // displayDateHour,
-                displayDate.get(Calendar.MINUTE), // displayDateMinute,
-                0, // expirationDateMonth, 
-                0, // expirationDateDay, 
-                0, // expirationDateYear, 
-                0, // expirationDateHour, 
-                0, // expirationDateMinute, 
-                true, // neverExpire
-                0, // reviewDateMonth, 
-                0, // reviewDateDay, 
-                0, // reviewDateYear, 
-                0, // reviewDateHour, 
-                0, // reviewDateMinute, 
-                true, // neverReview
-                true, // indexable
-                false, // SmallImage
-                "", // SmallImageUrl
-                null, // SmallFile
-                null, // Images
-                "", // articleURL 
-                serviceContext // serviceContext
-                );
+        JournalArticle article = textoUtil.crea(contenido.getNombre(), contenido.getNombre(), texto, displayDate, creador.getUserId(), contenido.getComunidadId(), serviceContext);
         contenido.setContenidoId(article.getId());
         contenido = contenidoDao.actualizaContenidoId(contenido, creador);
 
@@ -380,11 +350,14 @@ public class ContenidoPortlet extends BaseController {
 
         User creador = PortalUtil.getUser(request);
         if (contenido.getContenidoId() != null) {
-            DLFileEntryLocalServiceUtil.deleteDLFileEntry(contenido.getContenidoId());
+            DLAppServiceUtil.deleteFileEntry(contenido.getContenidoId());
+//            DLFileEntryLocalServiceUtil.deleteDLFileEntry(contenido.getContenidoId());
         }
         ServiceContext serviceContext = ServiceContextFactory.getInstance(DLFileEntry.class.getName(), request);
-        serviceContext.setAddCommunityPermissions(true);
-        DLFileEntry fileEntry = DLFileEntryLocalServiceUtil.addFileEntry(creador.getUserId(), contenido.getComunidadId(), 0, archivo.getOriginalFilename(), archivo.getOriginalFilename(), contenido.getNombre(), "", "", archivo.getBytes(), serviceContext);
+        serviceContext.setAddGroupPermissions(true);
+        FileEntry fileEntry = DLAppServiceUtil.addFileEntry(0, DLFolderConstants.DEFAULT_PARENT_FOLDER_ID, archivo.getOriginalFilename(), archivo.getContentType(), archivo.getOriginalFilename(), contenido.getNombre(), "", archivo.getBytes(), serviceContext);
+//        DLFileEntry fileEntry = DLFileEntryLocalServiceUtil.addFileEntry(creador.getUserId(), contenido.getComunidadId(), 0, DLFolderConstants.DEFAULT_PARENT_FOLDER_ID, archivo.getOriginalFilename(), archivo.getContentType(), archivo.getOriginalFilename(), contenido.getNombre(), "", fileEntryTypeId, Map<String, Fields> fieldsMap, File file, InputStream is, long size, ServiceContext serviceContext);
+//        DLFileEntry fileEntry = DLFileEntryLocalServiceUtil.addFileEntry(creador.getUserId(), contenido.getComunidadId(), 0, 0, archivo.getOriginalFilename(), archivo.getOriginalFilename(), contenido.getNombre(), "", "", archivo.getBytes(), serviceContext);
         contenido.setContenidoId(fileEntry.getPrimaryKey());
         contenido = contenidoDao.actualizaContenidoId(contenido, creador);
 

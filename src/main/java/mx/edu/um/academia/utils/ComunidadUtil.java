@@ -71,9 +71,9 @@ public class ComunidadUtil {
         log.debug("Buscando comunidades");
         List<Integer> types = new ArrayList<>();
 
-        types.add(new Integer(GroupConstants.TYPE_COMMUNITY_OPEN));
-        types.add(new Integer(GroupConstants.TYPE_COMMUNITY_RESTRICTED));
-        types.add(new Integer(GroupConstants.TYPE_COMMUNITY_PRIVATE));
+        types.add(new Integer(GroupConstants.TYPE_SITE_OPEN));
+        types.add(new Integer(GroupConstants.TYPE_SITE_RESTRICTED));
+        types.add(new Integer(GroupConstants.TYPE_SITE_PRIVATE));
 
         LinkedHashMap<String, Object> groupParams = new LinkedHashMap<>();
         groupParams.put("types", types);

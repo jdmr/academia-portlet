@@ -268,6 +268,7 @@ public class PreguntaPortlet extends BaseController {
                 creador.getUserId(),
                 pregunta.getComunidadId(),
                 serviceContext);
+        
         pregunta.setContenido(article.getId());
         pregunta = preguntaDao.actualizaContenido(pregunta, creador);
 

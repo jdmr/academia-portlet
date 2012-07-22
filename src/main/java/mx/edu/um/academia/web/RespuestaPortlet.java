@@ -249,6 +249,7 @@ public class RespuestaPortlet extends BaseController {
                 creador.getUserId(),
                 respuesta.getComunidadId(),
                 serviceContext);
+        
         respuesta.setContenido(article.getId());
         respuesta = respuestaDao.actualizaContenido(respuesta, creador);
 
