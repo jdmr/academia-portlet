@@ -175,7 +175,7 @@ public class ExamenPortlet extends BaseController {
                         respuesta.setTexto(texto);
                     }
                 } else {
-                    respuesta.setTexto(messageSource.getMessage("respuesta.requiere.text", new String[] {respuesta.getNombre()}, themeDisplay.getLocale()));
+                    respuesta.setTexto(messageSource.getMessage("respuesta.requiere.texto", new String[] {respuesta.getNombre()}, themeDisplay.getLocale()));
                 }
             }
             if (pregunta.getContenido() != null) {
