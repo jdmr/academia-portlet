@@ -174,6 +174,10 @@ public class BaseController {
             paginas.add(cantidadDePaginas);
         }
 
+        if (cantidad > max && paginas.size() == 1) {
+            paginas.add(2l);
+        }
+
         log.debug("Paginas {}: {}", pagina, paginas);
         return new ArrayList<>(paginas);
     }
