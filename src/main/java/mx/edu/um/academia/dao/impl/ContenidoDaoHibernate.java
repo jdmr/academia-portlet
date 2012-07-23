@@ -108,19 +108,20 @@ public class ContenidoDaoHibernate implements ContenidoDao {
             params = new HashMap<>();
         }
 
-        if (!params.containsKey("max")) {
-            params.put("max", 10);
+        if (!params.containsKey("max") || params.get("max") == null) {
+            params.put("max", 5);
         } else {
             params.put("max", Math.min((Integer) params.get("max"), 100));
         }
 
-        Integer max = 0;
-        if (params.containsKey("max")) {
-            max = (Integer) params.get("max");
+        if (params.containsKey("pagina") && params.get("pagina") != null) {
+            Long pagina = (Long) params.get("pagina");
+            Long offset = (pagina - 1) * (Integer) params.get("max");
+            params.put("offset", offset.intValue());
         }
-        Integer offset = 0;
-        if (params.containsKey("offset")) {
-            offset = (Integer) params.get("offset");
+
+        if (!params.containsKey("offset") || params.get("offset") == null) {
+            params.put("offset", 0);
         }
 
         Criteria criteria = currentSession().createCriteria(Contenido.class);
@@ -150,8 +151,8 @@ public class ContenidoDaoHibernate implements ContenidoDao {
         }
         criteria.addOrder(Order.desc("fechaModificacion"));
 
-        criteria.setFirstResult(offset);
-        criteria.setMaxResults(max);
+        criteria.setFirstResult((Integer) params.get("offset"));
+        criteria.setMaxResults((Integer) params.get("max"));
         params.put("contenidos", criteria.list());
 
         countCriteria.setProjection(Projections.rowCount());

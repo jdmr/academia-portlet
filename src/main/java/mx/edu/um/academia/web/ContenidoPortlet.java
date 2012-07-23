@@ -88,8 +88,9 @@ public class ContenidoPortlet extends BaseController {
             @RequestParam(required = false) Integer direccion,
             @RequestParam(required = false) String order,
             @RequestParam(required = false) String sort,
+            @RequestParam(required = false) Long pagina,
             Model modelo) throws SystemException, PortalException {
-        log.debug("Lista de contenidos");
+        log.debug("Lista de contenidos [filtro: {}, offset: {}, max: {}, direccion: {}, order: {}, sort: {}, pagina: {}]", new Object[]{filtro, offset, max, direccion, order, sort, pagina});
         Map<Long, String> comunidades = ComunidadUtil.obtieneComunidades(request);
         Map<String, Object> params = new HashMap<>();
         params.put("comunidades", comunidades.keySet());
@@ -100,23 +101,15 @@ public class ContenidoPortlet extends BaseController {
             params.put("order", order);
             params.put("sort", sort);
         }
-        if (max == null) {
-            max = new Integer(5);
-        }
-        if (offset == null) {
-            offset = new Integer(0);
-        } else if (direccion != null && direccion == 1) {
-            offset = offset + max;
-        } else if ((direccion != null && direccion == 0) && offset > 0) {
-            offset = offset - max;
-        }
         params.put("max", max);
         params.put("offset", offset);
+        params.put("pagina", pagina);
 
         params = contenidoDao.lista(params);
         List<Contenido> contenidos = (List<Contenido>) params.get("contenidos");
         if (contenidos != null && contenidos.size() > 0) {
             modelo.addAttribute("contenidos", contenidos);
+            this.pagina(params, modelo, "contenidos", pagina);
         }
 
         return "contenido/lista";
@@ -194,7 +187,7 @@ public class ContenidoPortlet extends BaseController {
         }
         modelo.addAttribute("contenido", contenido);
         modelo.addAttribute("themeRoot", getThemeDisplay(request).getPathThemeRoot());
-        
+
         return "contenido/ver";
     }
 
@@ -401,9 +394,9 @@ public class ContenidoPortlet extends BaseController {
         tipos.put(Constantes.EXAMEN, messages.getMessage(Constantes.EXAMEN, null, locale));
         return tipos;
     }
-    
+
     @RequestMapping(params = "action=asignaExamen")
-    public void asignaExamen(ActionRequest request, ActionResponse response, 
+    public void asignaExamen(ActionRequest request, ActionResponse response,
             @RequestParam Long contenidoId,
             @RequestParam Long examenId) throws SystemException, PortalException {
         log.debug("Asignando examen {} a contenido {}", examenId, contenidoId);
@@ -412,5 +405,4 @@ public class ContenidoPortlet extends BaseController {
         response.setRenderParameter("action", "ver");
         response.setRenderParameter("id", contenidoId.toString());
     }
-
 }

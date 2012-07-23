@@ -105,9 +105,7 @@ public class RespuestaPortlet extends BaseController {
 
         if (respuestas != null && respuestas.size() > 0) {
             modelo.addAttribute("respuestas", respuestas);
-
             this.pagina(params, modelo, "respuestas", pagina);
-
         }
 
         return "respuesta/lista";

@@ -53,7 +53,7 @@ public class PreguntaDaoHibernate implements PreguntaDao {
     public PreguntaDaoHibernate() {
         log.info("Nueva instancia del DAO de Preguntas");
     }
-    
+
     private Session currentSession() {
         return sessionFactory.getCurrentSession();
     }
@@ -67,7 +67,7 @@ public class PreguntaDaoHibernate implements PreguntaDao {
         pregunta.setComunidadId(otra.getComunidadId());
         pregunta.setContenido(otra.getContenido());
         pregunta.setFechaModificacion(new Date());
-        log.debug("{} : {} : {}", new Object[] {pregunta.getEsMultiple(), otra.getEsMultiple(), (pregunta.getEsMultiple() != otra.getEsMultiple())});
+        log.debug("{} : {} : {}", new Object[]{pregunta.getEsMultiple(), otra.getEsMultiple(), (pregunta.getEsMultiple() != otra.getEsMultiple())});
         if (pregunta.getEsMultiple() != otra.getEsMultiple()) {
             pregunta.getCorrectas().clear();
             pregunta.getIncorrectas().clear();
@@ -115,19 +115,20 @@ public class PreguntaDaoHibernate implements PreguntaDao {
             params = new HashMap<>();
         }
 
-        if (!params.containsKey("max")) {
-            params.put("max", 10);
+        if (!params.containsKey("max") || params.get("max") == null) {
+            params.put("max", 5);
         } else {
             params.put("max", Math.min((Integer) params.get("max"), 100));
         }
 
-        Integer max = 0;
-        if (params.containsKey("max")) {
-            max = (Integer) params.get("max");
+        if (params.containsKey("pagina") && params.get("pagina") != null) {
+            Long pagina = (Long) params.get("pagina");
+            Long offset = (pagina - 1) * (Integer) params.get("max");
+            params.put("offset", offset.intValue());
         }
-        Integer offset = 0;
-        if (params.containsKey("offset")) {
-            offset = (Integer) params.get("offset");
+
+        if (!params.containsKey("offset") || params.get("offset") == null) {
+            params.put("offset", 0);
         }
 
         Criteria criteria = currentSession().createCriteria(Pregunta.class);
@@ -156,8 +157,8 @@ public class PreguntaDaoHibernate implements PreguntaDao {
         }
         criteria.addOrder(Order.desc("fechaModificacion"));
 
-        criteria.setFirstResult(offset);
-        criteria.setMaxResults(max);
+        criteria.setFirstResult((Integer) params.get("offset"));
+        criteria.setMaxResults((Integer) params.get("max"));
         params.put("preguntas", criteria.list());
 
         countCriteria.setProjection(Projections.rowCount());
@@ -180,14 +181,14 @@ public class PreguntaDaoHibernate implements PreguntaDao {
 
     @Override
     public void asignaRespuestas(Long preguntaId, Long[] correctas, Long[] incorrectas) {
-        log.debug("Asignando respuestas {} - {} a pregunta {}", new Object[] {correctas, incorrectas, preguntaId});
+        log.debug("Asignando respuestas {} - {} a pregunta {}", new Object[]{correctas, incorrectas, preguntaId});
         Pregunta pregunta = (Pregunta) currentSession().get(Pregunta.class, preguntaId);
         pregunta.getCorrectas().clear();
         pregunta.getIncorrectas().clear();
-        for(Long respuestaId : correctas) {
+        for (Long respuestaId : correctas) {
             pregunta.getCorrectas().add((Respuesta) currentSession().get(Respuesta.class, respuestaId));
         }
-        for(Long respuestaId : incorrectas) {
+        for (Long respuestaId : incorrectas) {
             pregunta.getIncorrectas().add((Respuesta) currentSession().get(Respuesta.class, respuestaId));
         }
         currentSession().update(pregunta);
@@ -214,7 +215,7 @@ public class PreguntaDaoHibernate implements PreguntaDao {
         Pregunta pregunta = (Pregunta) currentSession().get(Pregunta.class, preguntaId);
         Set<Respuesta> correctas = pregunta.getCorrectas();
         Set<Respuesta> incorrectas = pregunta.getIncorrectas();
-        
+
         Criteria criteria = currentSession().createCriteria(Respuesta.class);
         criteria.add(Restrictions.in("comunidadId", (Set<Long>) comunidades));
         criteria.addOrder(Order.asc("nombre"));
@@ -227,7 +228,7 @@ public class PreguntaDaoHibernate implements PreguntaDao {
         resultado.put("disponibles", disponibles);
         return resultado;
     }
-    
+
     @Override
     public List<Pregunta> todas(Set<Long> comunidades) {
         Criteria criteria = currentSession().createCriteria(Pregunta.class);
@@ -235,5 +236,4 @@ public class PreguntaDaoHibernate implements PreguntaDao {
         criteria.addOrder(Order.asc("nombre"));
         return criteria.list();
     }
-    
 }

@@ -109,19 +109,20 @@ public class ExamenDaoHibernate implements ExamenDao {
             params = new HashMap<>();
         }
 
-        if (!params.containsKey("max")) {
-            params.put("max", 10);
+        if (!params.containsKey("max") || params.get("max") == null) {
+            params.put("max", 5);
         } else {
             params.put("max", Math.min((Integer) params.get("max"), 100));
         }
 
-        Integer max = 0;
-        if (params.containsKey("max")) {
-            max = (Integer) params.get("max");
+        if (params.containsKey("pagina") && params.get("pagina") != null) {
+            Long pagina = (Long) params.get("pagina");
+            Long offset = (pagina - 1) * (Integer) params.get("max");
+            params.put("offset", offset.intValue());
         }
-        Integer offset = 0;
-        if (params.containsKey("offset")) {
-            offset = (Integer) params.get("offset");
+
+        if (!params.containsKey("offset") || params.get("offset") == null) {
+            params.put("offset", 0);
         }
 
         Criteria criteria = currentSession().createCriteria(Examen.class);
@@ -150,8 +151,8 @@ public class ExamenDaoHibernate implements ExamenDao {
         }
         criteria.addOrder(Order.desc("fechaModificacion"));
 
-        criteria.setFirstResult(offset);
-        criteria.setMaxResults(max);
+        criteria.setFirstResult((Integer) params.get("offset"));
+        criteria.setMaxResults((Integer) params.get("max"));
         params.put("examenes", criteria.list());
 
         countCriteria.setProjection(Projections.rowCount());
@@ -227,16 +228,16 @@ public class ExamenDaoHibernate implements ExamenDao {
         query.setLong("examenId", examenId);
         List<ExamenPregunta> lista = query.list();
         List<Pregunta> preguntas = new ArrayList<>();
-        for(ExamenPregunta examenPregunta : lista) {
+        for (ExamenPregunta examenPregunta : lista) {
             Map<Integer, Respuesta> respuestas = new TreeMap<>();
-            Pregunta pregunta  = examenPregunta.getId().getPregunta();
+            Pregunta pregunta = examenPregunta.getId().getPregunta();
             pregunta.setPuntos(examenPregunta.getPuntos());
             pregunta.setPorPregunta(examenPregunta.getPorPregunta());
-            for(Respuesta respuesta : pregunta.getCorrectas()) {
+            for (Respuesta respuesta : pregunta.getCorrectas()) {
                 log.debug("Agregando correcta {} a pregunta {}", respuesta, pregunta);
                 respuestas.put(new Double(Math.random() * 100000).intValue(), respuesta);
             }
-            for(Respuesta respuesta : pregunta.getIncorrectas()) {
+            for (Respuesta respuesta : pregunta.getIncorrectas()) {
                 log.debug("Agregando incorrecta {} a pregunta {}", respuesta, pregunta);
                 respuestas.put(new Double(Math.random() * 100000).intValue(), respuesta);
             }

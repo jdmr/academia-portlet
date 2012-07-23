@@ -49,7 +49,7 @@
 </form>
 <c:if test="${respuestas != null}">
     <aui:script>
-        highlightTableRows("<portlet:namespace />respuestas")
+        highlightTableRows("<portlet:namespace />respuestas");
         
         function buscaPagina(paginaId) {
             $('input#<portlet:namespace />pagina').val(paginaId);

@@ -112,7 +112,7 @@ public class ObjetoAprendizajeDaoHibernate implements ObjetoAprendizajeDao {
                     boolean creoDirectorios = file.mkdirs();
                     log.debug("Se crearon los directorios: {}", creoDirectorios);
                 }
-                
+
                 if (zentry.isDirectory()) {
                     if (!file.exists()) {
                         boolean creoDirectorios = file.mkdirs();
@@ -128,7 +128,7 @@ public class ObjetoAprendizajeDaoHibernate implements ObjetoAprendizajeDao {
                     }
                     outstream.close();
                 }
-                
+
                 if (entryName.endsWith("player.html")) {
                     contenido = new Contenido(objetoAprendizaje.getCodigo(), objetoAprendizaje.getNombre(), null);
                     contenido.setRuta(entryName);
@@ -180,13 +180,20 @@ public class ObjetoAprendizajeDaoHibernate implements ObjetoAprendizajeDao {
             params.put("max", Math.min((Integer) params.get("max"), 100));
         }
 
-        Integer max = 0;
-        if (params.containsKey("max")) {
-            max = (Integer) params.get("max");
+        if (!params.containsKey("max") || params.get("max") == null) {
+            params.put("max", 5);
+        } else {
+            params.put("max", Math.min((Integer) params.get("max"), 100));
         }
-        Integer offset = 0;
-        if (params.containsKey("offset")) {
-            offset = (Integer) params.get("offset");
+
+        if (params.containsKey("pagina") && params.get("pagina") != null) {
+            Long pagina = (Long) params.get("pagina");
+            Long offset = (pagina - 1) * (Integer) params.get("max");
+            params.put("offset", offset.intValue());
+        }
+
+        if (!params.containsKey("offset") || params.get("offset") == null) {
+            params.put("offset", 0);
         }
 
         Criteria criteria = currentSession().createCriteria(ObjetoAprendizaje.class);
@@ -216,8 +223,8 @@ public class ObjetoAprendizajeDaoHibernate implements ObjetoAprendizajeDao {
         }
         criteria.addOrder(Order.desc("fechaModificacion"));
 
-        criteria.setFirstResult(offset);
-        criteria.setMaxResults(max);
+        criteria.setFirstResult((Integer) params.get("offset"));
+        criteria.setMaxResults((Integer) params.get("max"));
         params.put("objetos", criteria.list());
 
         countCriteria.setProjection(Projections.rowCount());

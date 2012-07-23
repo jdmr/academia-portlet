@@ -54,14 +54,14 @@ import org.springframework.web.multipart.MultipartFile;
 @Controller
 @RequestMapping("VIEW")
 public class ObjetoAprendizajePortlet extends BaseController {
-    
+
     @Autowired
     private ObjetoAprendizajeDao objetoAprendizajeDao;
-    
+
     public ObjetoAprendizajePortlet() {
         log.info("Nueva instancia del portlet de objetos de aprendizaje");
     }
-    
+
     @RequestMapping
     public String lista(RenderRequest request,
             @RequestParam(required = false) String filtro,
@@ -70,8 +70,9 @@ public class ObjetoAprendizajePortlet extends BaseController {
             @RequestParam(required = false) Integer direccion,
             @RequestParam(required = false) String order,
             @RequestParam(required = false) String sort,
+            @RequestParam(required = false) Long pagina,
             Model modelo) throws SystemException, PortalException {
-        log.debug("Lista de objetos");
+        log.debug("Lista de objetos [filtro: {}, offset: {}, max: {}, direccion: {}, order: {}, sort: {}, pagina: {}]", new Object[]{filtro, offset, max, direccion, order, sort, pagina});
         Map<Long, String> comunidades = ComunidadUtil.obtieneComunidades(request);
         Map<String, Object> params = new HashMap<>();
         params.put("comunidades", comunidades.keySet());
@@ -82,23 +83,15 @@ public class ObjetoAprendizajePortlet extends BaseController {
             params.put("order", order);
             params.put("sort", sort);
         }
-        if (max == null) {
-            max = new Integer(5);
-        }
-        if (offset == null) {
-            offset = new Integer(0);
-        } else if (direccion != null && direccion == 1) {
-            offset = offset + max;
-        } else if ((direccion != null && direccion == 0) && offset > 0) {
-            offset = offset - max;
-        }
         params.put("max", max);
         params.put("offset", offset);
+        params.put("pagina", pagina);
 
         params = objetoAprendizajeDao.lista(params);
         List<ObjetoAprendizaje> objetos = (List<ObjetoAprendizaje>) params.get("objetos");
         if (objetos != null && objetos.size() > 0) {
             modelo.addAttribute("objetos", objetos);
+            this.pagina(params, modelo, "objetos", pagina);
         }
 
         return "objeto/lista";
@@ -124,15 +117,15 @@ public class ObjetoAprendizajePortlet extends BaseController {
     public void crea(ActionRequest request, ActionResponse response,
             @Valid ObjetoAprendizaje objeto,
             BindingResult result,
-            @RequestParam(required=false) MultipartFile archivo) throws SystemException, PortalException, IOException {
+            @RequestParam(required = false) MultipartFile archivo) throws SystemException, PortalException, IOException {
         log.debug("Creando objeto de aprendizaje {}", objeto);
         if (result.hasErrors()) {
             log.debug("Hubo algun error en la forma, regresando");
             response.setRenderParameter("action", "nuevoError");
         }
-        
+
         User creador = PortalUtil.getUser(request);
-        
+
         objetoAprendizajeDao.crea(objeto, archivo, creador);
 
         response.setRenderParameter("action", "ver");
@@ -144,12 +137,12 @@ public class ObjetoAprendizajePortlet extends BaseController {
         log.debug("Mostrando objeto de aprendizaje {}", id);
         ObjetoAprendizaje objeto = objetoAprendizajeDao.obtiene(id);
         modelo.addAttribute("objeto", objeto);
-        
+
         Map<Long, String> comunidades = ComunidadUtil.obtieneComunidades(request);
         Map<String, Object> contenidos = objetoAprendizajeDao.contenidos(id, comunidades.keySet());
         modelo.addAttribute("disponibles", contenidos.get("disponibles"));
         modelo.addAttribute("seleccionados", contenidos.get("seleccionados"));
-        
+
         return "objeto/ver";
     }
 
@@ -197,11 +190,10 @@ public class ObjetoAprendizajePortlet extends BaseController {
     @RequestMapping(params = "action=agregaContenido")
     public void agregaContenido(ActionRequest request, ActionResponse response, @RequestParam Long objetoId, @RequestParam Long[] contenidos) {
         log.debug("Agregando contenido {} a {}", contenidos, objetoId);
-        
+
         objetoAprendizajeDao.agregaContenido(objetoId, contenidos);
-        
+
         response.setRenderParameter("action", "ver");
         response.setRenderParameter("id", objetoId.toString());
     }
-    
 }

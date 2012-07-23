@@ -88,8 +88,9 @@ public class CursoAdminPortlet extends BaseController {
             @RequestParam(required = false) Integer direccion,
             @RequestParam(required = false) String order,
             @RequestParam(required = false) String sort,
+            @RequestParam(required = false) Long pagina,
             Model modelo) throws SystemException, PortalException {
-        log.debug("Lista de cursos");
+        log.debug("Lista de cursos [filtro: {}, offset: {}, max: {}, direccion: {}, order: {}, sort: {}, pagina: {}]", new Object[]{filtro, offset, max, direccion, order, sort, pagina});
         Map<Long, String> comunidades = ComunidadUtil.obtieneComunidades(request);
         Map<String, Object> params = new HashMap<>();
         params.put("comunidades", comunidades.keySet());
@@ -100,23 +101,15 @@ public class CursoAdminPortlet extends BaseController {
             params.put("order", order);
             params.put("sort", sort);
         }
-        if (max == null) {
-            max = new Integer(5);
-        }
-        if (offset == null) {
-            offset = new Integer(0);
-        } else if (direccion != null && direccion == 1) {
-            offset = offset + max;
-        } else if ((direccion != null && direccion == 0) && offset > 0) {
-            offset = offset - max;
-        }
         params.put("max", max);
         params.put("offset", offset);
+        params.put("pagina", pagina);
 
         params = cursoDao.lista(params);
         List<Curso> cursos = (List<Curso>) params.get("cursos");
         if (cursos != null && cursos.size() > 0) {
             modelo.addAttribute("cursos", params.get("cursos"));
+            this.pagina(params, modelo, "cursos", pagina);
         }
 
         return "cursoAdmin/lista";
