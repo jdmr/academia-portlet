@@ -64,16 +64,16 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @RequestMapping("VIEW")
 public class RespuestaPortlet extends BaseController {
-    
+
     @Autowired
     private RespuestaDao respuestaDao;
     @Autowired
     private TextoUtil textoUtil;
-    
+
     public RespuestaPortlet() {
         log.info("Nueva instancia del Controlador de Respuestas");
     }
-    
+
     @RequestMapping
     public String lista(RenderRequest request,
             @RequestParam(required = false) String filtro,
@@ -82,8 +82,9 @@ public class RespuestaPortlet extends BaseController {
             @RequestParam(required = false) Integer direccion,
             @RequestParam(required = false) String order,
             @RequestParam(required = false) String sort,
+            @RequestParam(required = false) Long pagina,
             Model modelo) throws SystemException, PortalException {
-        log.debug("Lista de respuestas");
+        log.debug("Lista de respuestas [filtro: {}, offset: {}, max: {}, direccion: {}, order: {}, sort: {}, pagina: {}]", new Object[]{filtro, offset, max, direccion, order, sort, pagina});
         Map<Long, String> comunidades = ComunidadUtil.obtieneComunidades(request);
         Map<String, Object> params = new HashMap<>();
         params.put("comunidades", comunidades.keySet());
@@ -94,23 +95,19 @@ public class RespuestaPortlet extends BaseController {
             params.put("order", order);
             params.put("sort", sort);
         }
-        if (max == null) {
-            max = new Integer(5);
-        }
-        if (offset == null) {
-            offset = new Integer(0);
-        } else if (direccion != null && direccion == 1) {
-            offset = offset + max;
-        } else if ((direccion != null && direccion == 0) && offset > 0) {
-            offset = offset - max;
-        }
         params.put("max", max);
         params.put("offset", offset);
+        params.put("pagina", pagina);
 
         params = respuestaDao.lista(params);
+
         List<Respuesta> respuestas = (List<Respuesta>) params.get("respuestas");
+
         if (respuestas != null && respuestas.size() > 0) {
             modelo.addAttribute("respuestas", respuestas);
+
+            this.pagina(params, modelo, "respuestas", pagina);
+
         }
 
         return "respuesta/lista";
@@ -147,7 +144,7 @@ public class RespuestaPortlet extends BaseController {
         respuestaDao.crea(respuesta, creador);
 
 //        redirectAttributes.addFlashAttribute("message", "La respuesta ha sido creada exitosamente");
-        
+
         response.setRenderParameter("action", "ver");
         response.setRenderParameter("id", respuesta.getId().toString());
     }
@@ -208,7 +205,7 @@ public class RespuestaPortlet extends BaseController {
         User creador = PortalUtil.getUser(request);
         respuestaDao.elimina(id, creador);
     }
-    
+
     @RequestMapping(params = "action=nuevoTexto")
     public String nuevoTexto(RenderRequest request, Model modelo, @RequestParam Long id) throws SystemException, PortalException {
         log.debug("Nuevo texto para respuesta {}", id);
@@ -293,5 +290,4 @@ public class RespuestaPortlet extends BaseController {
         response.setRenderParameter("action", "ver");
         response.setRenderParameter("id", respuesta.getId().toString());
     }
-
 }
