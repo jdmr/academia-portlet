@@ -174,12 +174,6 @@ public class ObjetoAprendizajeDaoHibernate implements ObjetoAprendizajeDao {
             params = new HashMap<>();
         }
 
-        if (!params.containsKey("max")) {
-            params.put("max", 10);
-        } else {
-            params.put("max", Math.min((Integer) params.get("max"), 100));
-        }
-
         if (!params.containsKey("max") || params.get("max") == null) {
             params.put("max", 5);
         } else {
