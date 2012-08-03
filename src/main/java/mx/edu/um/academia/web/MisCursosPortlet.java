@@ -25,8 +25,12 @@ package mx.edu.um.academia.web;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.model.User;
+import com.liferay.portal.util.PortalUtil;
+import java.util.List;
 import javax.portlet.*;
 import mx.edu.um.academia.dao.CursoDao;
+import mx.edu.um.academia.model.AlumnoCurso;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Controller;
@@ -53,6 +57,11 @@ public class MisCursosPortlet extends BaseController {
     @RequestMapping
     public String ver(RenderRequest request, Model model) throws SystemException, PortalException {
         log.debug("Ver curso");
+        User usuario = PortalUtil.getUser(request);
+        if (usuario != null) {
+            List<AlumnoCurso> cursos = cursoDao.obtieneCursos(usuario.getUserId());
+            model.addAttribute("cursos", cursos);
+        }
         return "mis_cursos/ver";
     }
 

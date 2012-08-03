@@ -877,4 +877,11 @@ public class CursoDaoHibernate implements CursoDao {
         }
         return resultado;
     }
+
+    @Override
+    public List<AlumnoCurso> obtieneCursos(Long alumnoId) {
+        Query query = currentSession().createQuery("select ac from AlumnoCurso ac where ac.id.alumno.id = :alumnoId order by fecha desc");
+        query.setLong("alumnoId", alumnoId);
+        return query.list();
+    }
 }
