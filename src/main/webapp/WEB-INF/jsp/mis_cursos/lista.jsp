@@ -10,6 +10,7 @@
                     <th><s:message code="estatus" /></th>
                     <th><s:message code="fechaConclusion" /></th>
                     <th><s:message code="ultimo.acceso" /></th>
+                    <th><s:message code="acciones" /></th>
                 </tr>
             </thead>
             <tbody>
@@ -24,6 +25,16 @@
                         <td><s:message code="${alumnoCurso.estatus}" /></td>
                         <td>${alumnoCurso.fechaConclusion}</td>
                         <td>${alumnoCurso.ultimoAcceso}</td>
+                        <td>
+                            <c:if test="${alumnoCurso.fechaConclusion != null}">
+                                <form name="<portlet:namespace />curso${alumno.curso.id}" action="<portlet:resourceURL id='diploma'/>" method="post" class="form form-search">
+                                    <input type="hidden" name="<portlet:namespace />cursoId" id="<portlet:namespace />cursoId" value="${alumnoCurso.curso.id}" />
+                                    <div class="control-group">
+                                        <button type="submit" class="btn btn-success"><i class="icon-print icon-white"></i> <s:message code="diploma" /></button>
+                                    </div>
+                                </form>
+                            </c:if>
+                        </td>
                     </tr>
                 </c:forEach>
             </tbody>
