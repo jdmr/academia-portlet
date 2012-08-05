@@ -85,4 +85,6 @@ public interface CursoDao {
     public Boolean haConcluido(Long alumnoId, Long cursoId);
 
     public List<AlumnoCurso> obtieneCursos(Long alumnoId);
+
+    public AlumnoCurso obtieneAlumnoCurso(Long alumnoId, Long cursoId);
 }

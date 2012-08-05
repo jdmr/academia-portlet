@@ -9,14 +9,21 @@
                     <th><s:message code="curso" /></th>
                     <th><s:message code="estatus" /></th>
                     <th><s:message code="fechaConclusion" /></th>
+                    <th><s:message code="ultimo.acceso" /></th>
                 </tr>
             </thead>
             <tbody>
                 <c:forEach items="${cursos}" var="alumnoCurso">
+                    <portlet:renderURL var="actionUrl" >
+                        <portlet:param name="action" value="ver" />
+                        <portlet:param name="cursoId" value="${alumnoCurso.curso.id}" />
+                    </portlet:renderURL>
+
                     <tr>
-                        <td>${alumnoCurso.id.curso.nombre}</td>
+                        <td><a href="${actionUrl}">${alumnoCurso.curso.nombre}</a></td>
                         <td><s:message code="${alumnoCurso.estatus}" /></td>
                         <td>${alumnoCurso.fechaConclusion}</td>
+                        <td>${alumnoCurso.ultimoAcceso}</td>
                     </tr>
                 </c:forEach>
             </tbody>
