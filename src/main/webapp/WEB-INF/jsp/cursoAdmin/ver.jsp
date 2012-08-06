@@ -64,6 +64,10 @@
         <h5><s:message code="creador" /></h5>
         <h3>${curso.creador}</h3>
     </div>
+    <div class="span6">
+        <h5><s:message code="dias" /></h5>
+        <h3>${curso.dias}</h3>
+    </div>
 </div>
 <div class="row-fluid">
     <div class="span6">

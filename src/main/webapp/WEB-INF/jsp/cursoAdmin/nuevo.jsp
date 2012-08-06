@@ -5,7 +5,7 @@
 
 <h1><s:message code="curso.nuevo" /></h1>
 
-<form:form name="cursoForm" commandName="curso" method="post" action="${actionUrl}" >
+<form:form name="cursoForm" commandName="curso" method="post" action="${actionUrl}" enctype="multipart/form-data">
     <fieldset>
         <div class="control-group">
             <label for="codigo"><s:message code="codigo" /></label>
@@ -46,6 +46,18 @@
             <form:select path="comunidadId" items="${comunidades}" />
             <form:errors cssClass="errors" path="comunidadId" />
         </div>
+        <div class="control-group">
+            <label for="archivo">
+                <s:message code="diploma" />
+            </label>
+            <input name="archivo" type="file" />
+        </div>
+        <div class="control-group">
+            <label for="dias"><s:message code="dias" /></label>
+            <form:input path="dias" type="number" min="0" step="1" />
+            <form:errors cssClass="errors" path="nombre" cssStyle="color:red;" />
+        </div>
+
         <div>
             <button type="submit" name="<portlet:namespace />_crea" class="btn btn-primary btn-large" id="<portlet:namespace />_crea" ><i class="icon-ok icon-white"></i>&nbsp;<s:message code='curso.crea' /></button>
             <a class="btn btn-large" href="<portlet:renderURL portletMode='view'/>"><i class="icon-remove"></i> <s:message code="regresa" /></a>

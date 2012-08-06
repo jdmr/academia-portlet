@@ -34,7 +34,6 @@ import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,13 +44,10 @@ import mx.edu.um.academia.utils.ComunidadUtil;
 import mx.edu.um.academia.utils.Constantes;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -108,7 +104,10 @@ public class CursoPortlet extends BaseController {
                 }
 
             } else {
-                if (cursoDao.estaInscrito(curso.getId(), usuario.getUserId())) {
+                AlumnoCurso alumnoCurso = cursoDao.obtieneAlumnoCurso(usuario.getUserId(), curso.getId());
+                if (alumnoCurso != null 
+                        && (alumnoCurso.getEstatus().equals(Constantes.INSCRITO) || alumnoCurso.getEstatus().equals(Constantes.CONCLUIDO))
+                        && alumnoCurso.getDiasDisponibles() > 0) {
                     List<ObjetoAprendizaje> objetos = cursoDao.objetosAlumno(curso.getId(), usuario.getUserId(), themeDisplay);
                     if (cursoDao.haConcluido(usuario.getUserId(), curso.getId())) {
                         model.addAttribute("concluido", true);
@@ -190,7 +189,10 @@ public class CursoPortlet extends BaseController {
                 }
 
             } else {
-                if (cursoDao.estaInscrito(curso.getId(), usuario.getUserId())) {
+                AlumnoCurso alumnoCurso = cursoDao.obtieneAlumnoCurso(usuario.getUserId(), curso.getId());
+                if (alumnoCurso != null 
+                        && (alumnoCurso.getEstatus().equals(Constantes.INSCRITO) || alumnoCurso.getEstatus().equals(Constantes.CONCLUIDO))
+                        && alumnoCurso.getDiasDisponibles() > 0) {
                     List<ObjetoAprendizaje> objetos = cursoDao.objetosAlumno(curso.getId(), contenidoId, usuario.getUserId(), themeDisplay);
                     cicloObjetos:
                     for (ObjetoAprendizaje objeto : objetos) {
@@ -268,11 +270,14 @@ public class CursoPortlet extends BaseController {
                 }
 
             } else {
-                if (cursoDao.estaInscrito(curso.getId(), usuario.getUserId())) {
+                AlumnoCurso alumnoCurso = cursoDao.obtieneAlumnoCurso(usuario.getUserId(), curso.getId());
+                if (alumnoCurso != null 
+                        && (alumnoCurso.getEstatus().equals(Constantes.INSCRITO) || alumnoCurso.getEstatus().equals(Constantes.CONCLUIDO))
+                        && alumnoCurso.getDiasDisponibles() > 0) {
                     List<ObjetoAprendizaje> objetos = cursoDao.objetosAlumnoSiguiente(curso.getId(), usuario.getUserId(), themeDisplay);
                     if (cursoDao.haConcluido(usuario.getUserId(), curso.getId())) {
                         model.addAttribute("concluido", true);
-                        
+
 //                        try {
 //                            MimeMessage message = mailSender.createMimeMessage();
 //                            MimeMessageHelper helper = new MimeMessageHelper(message, true);
@@ -459,18 +464,17 @@ public class CursoPortlet extends BaseController {
             try {
                 Curso curso = portletCurso.getCurso();
                 User usuario = PortalUtil.getUser(request);
+                AlumnoCurso alumnoCurso = cursoDao.obtieneAlumnoCurso(usuario.getUserId(), curso.getId());
                 log.debug("Imprimiendo diploma de {} para el curso {}", usuario.getScreenName(), curso.getNombre());
-                JasperDesign jd = JRXmlLoader.load(this.getClass().getResourceAsStream("/reportes/diploma.jrxml"));
-                JasperReport jr = JasperCompileManager.compileReport(jd);
+                JasperReport jr = cursoDao.obtieneReporte(curso.getId());
                 Map<String, Object> params = new HashMap<>();
                 params.put("alumno", usuario.getFullName());
                 params.put("curso", curso.getNombre());
-                params.put("fecha", sdf.format(new Date()));
+                params.put("fecha", sdf.format(alumnoCurso.getFechaConclusion()));
                 log.debug("PARAMS: {}", params);
                 JasperPrint jasperPrint = JasperFillManager.fillReport(jr, params, new JREmptyDataSource());
                 byte[] archivo = JasperExportManager.exportReportToPdf(jasperPrint);
                 if (archivo != null) {
-//                    response.addHeader("Content-Disposition", "attachment; filename=diploma.pdf");
                     response.setContentType("application/pdf");
                     response.setContentLength(archivo.length);
                     try (BufferedOutputStream bos = new BufferedOutputStream(response.getPortletOutputStream())) {

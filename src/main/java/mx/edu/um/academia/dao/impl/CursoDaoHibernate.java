@@ -38,6 +38,7 @@ import mx.edu.um.academia.dao.CursoDao;
 import mx.edu.um.academia.dao.ExamenDao;
 import mx.edu.um.academia.model.*;
 import mx.edu.um.academia.utils.Constantes;
+import net.sf.jasperreports.engine.JasperReport;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -45,6 +46,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -154,6 +156,14 @@ public class CursoDaoHibernate implements CursoDao {
             curso.setCreador("admin");
         }
         currentSession().save(curso);
+        currentSession().flush();
+
+        Reporte reporte = curso.getReporte();
+        if (reporte != null) {
+            this.asignaReporte(reporte, curso);
+        }
+        currentSession().flush();
+
         return curso;
     }
 
@@ -161,17 +171,7 @@ public class CursoDaoHibernate implements CursoDao {
     public Curso actualiza(Curso otro, User creador) {
         log.debug("Actualizando curso {} por usuario {}", otro, creador);
         Curso curso = (Curso) currentSession().get(Curso.class, otro.getId());
-        curso.setVersion(otro.getVersion());
-        curso.setCodigo(otro.getCodigo());
-        curso.setNombre(otro.getNombre());
-        curso.setTipo(otro.getTipo());
-        curso.setPrecio(otro.getPrecio());
-        curso.setComunidadId(otro.getComunidadId());
-        if (otro.getIntro() != null) {
-            curso.setIntro(otro.getIntro());
-        }
-        curso.setComercio(otro.getComercio());
-        curso.setComercioId(otro.getComercioId());
+        BeanUtils.copyProperties(otro, curso, new String[]{"id", "version", "fechaCreacion", "objetos"});
         curso.setFechaModificacion(new Date());
         if (creador != null) {
             curso.setCreador(creador.getScreenName());
@@ -179,6 +179,13 @@ public class CursoDaoHibernate implements CursoDao {
             curso.setCreador("admin");
         }
         currentSession().update(curso);
+        currentSession().flush();
+
+        Reporte reporte = curso.getReporte();
+        if (reporte != null) {
+            this.modificaReporte(reporte, curso);
+        }
+        currentSession().flush();
         return curso;
     }
 
@@ -336,6 +343,12 @@ public class CursoDaoHibernate implements CursoDao {
         log.debug("{}", curso);
         Alumno alumno = (Alumno) currentSession().load(Alumno.class, alumnoId);
         log.debug("{}", alumno);
+        AlumnoCursoPK alumnoCursoPK = new AlumnoCursoPK(alumno, curso);
+        AlumnoCurso alumnoCurso = (AlumnoCurso) currentSession().get(AlumnoCurso.class, alumnoCursoPK);
+        alumnoCurso.setUltimoAcceso(new Date());
+        currentSession().update(alumnoCurso);
+        currentSession().flush();
+
         List<ObjetoAprendizaje> objetos = curso.getObjetos();
         boolean noAsignado = true;
         boolean activo = false;
@@ -404,6 +417,12 @@ public class CursoDaoHibernate implements CursoDao {
         log.debug("{}", curso);
         Alumno alumno = (Alumno) currentSession().load(Alumno.class, alumnoId);
         log.debug("{}", alumno);
+        AlumnoCursoPK alumnoCursoPK = new AlumnoCursoPK(alumno, curso);
+        AlumnoCurso alumnoCurso = (AlumnoCurso) currentSession().get(AlumnoCurso.class, alumnoCursoPK);
+        alumnoCurso.setUltimoAcceso(new Date());
+        currentSession().update(alumnoCurso);
+        currentSession().flush();
+
         List<ObjetoAprendizaje> objetos = curso.getObjetos();
         boolean terminado = true;
         boolean noAsignado = true;
@@ -498,6 +517,12 @@ public class CursoDaoHibernate implements CursoDao {
         log.debug("{}", curso);
         Alumno alumno = (Alumno) currentSession().load(Alumno.class, alumnoId);
         log.debug("{}", alumno);
+        AlumnoCursoPK alumnoCursoPK = new AlumnoCursoPK(alumno, curso);
+        AlumnoCurso ac = (AlumnoCurso) currentSession().get(AlumnoCurso.class, alumnoCursoPK);
+        ac.setUltimoAcceso(new Date());
+        currentSession().update(ac);
+        currentSession().flush();
+
         List<ObjetoAprendizaje> objetos = curso.getObjetos();
         boolean noAsignado = true;
         boolean activo = false;
@@ -888,7 +913,7 @@ public class CursoDaoHibernate implements CursoDao {
         query.setLong("alumnoId", alumnoId);
         return query.list();
     }
-    
+
     @Override
     public AlumnoCurso obtieneAlumnoCurso(Long alumnoId, Long cursoId) {
         log.debug("Buscando el curso con {} y {}", alumnoId, cursoId);
@@ -903,7 +928,39 @@ public class CursoDaoHibernate implements CursoDao {
         alumnoCurso.setUltimoAcceso(new Date());
         currentSession().save(alumnoCurso);
         currentSession().flush();
-        
+
         return alumnoCurso;
+    }
+
+    public void asignaReporte(Reporte reporte, Curso curso) {
+        reporte.setNombre(curso.getCodigo());
+        reporte.setCurso(curso);
+        Date fecha = new Date();
+        reporte.setFechaModificacion(fecha);
+        reporte.setFechaCreacion(fecha);
+        currentSession().save(reporte);
+    }
+
+    public void modificaReporte(Reporte reporte, Curso curso) {
+        Query query = currentSession().createQuery("select r from Reporte r where r.curso.id = :cursoId");
+        query.setLong("cursoId", curso.getId());
+        Reporte otro = (Reporte) query.uniqueResult();
+        if (otro != null) {
+            otro.setCompilado(reporte.getCompilado());
+            otro.setNombre(curso.getCodigo());
+            Date fecha = new Date();
+            otro.setFechaModificacion(fecha);
+            currentSession().update(otro);
+        } else {
+            this.asignaReporte(reporte, curso);
+        }
+    }
+
+    @Override
+    public JasperReport obtieneReporte(Long cursoId) {
+        Query query = currentSession().createQuery("select r from Reporte r where r.curso.id = :cursoId");
+        query.setLong("cursoId", cursoId);
+        Reporte reporte = (Reporte) query.uniqueResult();
+        return reporte.getReporte();
     }
 }

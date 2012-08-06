@@ -47,6 +47,7 @@ import mx.edu.um.academia.dao.CursoDao;
 import mx.edu.um.academia.model.Contenido;
 import mx.edu.um.academia.model.Curso;
 import mx.edu.um.academia.model.ObjetoAprendizaje;
+import mx.edu.um.academia.model.Reporte;
 import mx.edu.um.academia.utils.ComunidadUtil;
 import mx.edu.um.academia.utils.Constantes;
 import org.apache.commons.lang.StringUtils;
@@ -59,6 +60,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 
 /**
@@ -138,15 +140,23 @@ public class CursoAdminPortlet extends BaseController {
     @RequestMapping(params = "action=crea")
     public void crea(ActionRequest request, ActionResponse response,
             @Valid Curso curso,
-            BindingResult result) throws SystemException, PortalException {
+            BindingResult result,
+            @RequestParam(required = false) MultipartFile archivo) throws SystemException, PortalException, IOException {
         log.debug("Creando curso {}", curso);
         if (result.hasErrors()) {
             log.debug("Hubo algun error en la forma, regresando");
             response.setRenderParameter("action", "nuevoError");
         }
 
+        if (archivo != null && !archivo.isEmpty()) {
+            Reporte reporte = new Reporte();
+            reporte.setCompilado(archivo.getBytes());
+            curso.setReporte(reporte);
+        }
+        
         User creador = PortalUtil.getUser(request);
         curso = cursoDao.crea(curso, creador);
+
 
         response.setRenderParameter("action", "ver");
         response.setRenderParameter("id", curso.getId().toString());
@@ -198,13 +208,20 @@ public class CursoAdminPortlet extends BaseController {
     @RequestMapping(params = "action=actualiza")
     public void actualiza(ActionRequest request, ActionResponse response,
             @Valid Curso curso,
-            BindingResult result) throws SystemException, PortalException {
+            BindingResult result,
+            @RequestParam(required = false) MultipartFile archivo) throws SystemException, PortalException, IOException {
         log.debug("Actualizando curso {}", curso);
         if (result.hasErrors()) {
             log.debug("Hubo algun error en la forma, regresando");
             response.setRenderParameter("action", "editaError");
         }
 
+        if (archivo != null && !archivo.isEmpty()) {
+            Reporte reporte = new Reporte();
+            reporte.setCompilado(archivo.getBytes());
+            curso.setReporte(reporte);
+        }
+        
         User creador = PortalUtil.getUser(request);
         curso = cursoDao.actualiza(curso, creador);
 

@@ -75,6 +75,10 @@ public class Curso implements Serializable {
     private String comercio = "PAYPAL";
     @Column(length = 64)
     private String comercioId;
+    @Column(nullable = false)
+    private Integer dias = 365;
+    @Transient
+    private Reporte reporte;
 
     public Curso() {
     }
@@ -279,6 +283,34 @@ public class Curso implements Serializable {
      */
     public void setComercioId(String comercioId) {
         this.comercioId = comercioId;
+    }
+
+    /**
+     * @return the dias
+     */
+    public Integer getDias() {
+        return dias;
+    }
+
+    /**
+     * @param dias the dias to set
+     */
+    public void setDias(Integer dias) {
+        this.dias = dias;
+    }
+
+    /**
+     * @return the reporte
+     */
+    public Reporte getReporte() {
+        return reporte;
+    }
+
+    /**
+     * @param reporte the reporte to set
+     */
+    public void setReporte(Reporte reporte) {
+        this.reporte = reporte;
     }
 
     @Override

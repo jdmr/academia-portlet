@@ -32,7 +32,6 @@ import com.liferay.portal.util.PortalUtil;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,13 +44,10 @@ import mx.edu.um.academia.model.ObjetoAprendizaje;
 import mx.edu.um.academia.utils.Constantes;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Controller;
@@ -92,42 +88,49 @@ public class MisCursosPortlet extends BaseController {
     public String ver(RenderRequest request, Model model, @RequestParam Long cursoId) throws PortalException, SystemException {
         User usuario = PortalUtil.getUser(request);
         AlumnoCurso alumnoCurso = cursoDao.obtieneAlumnoCurso(usuario.getUserId(), cursoId);
-        Curso curso = alumnoCurso.getCurso();
-        model.addAttribute("curso", curso);
+        if (alumnoCurso.getDiasDisponibles() > 0) {
+            Curso curso = alumnoCurso.getCurso();
+            model.addAttribute("curso", curso);
 
-        List<ObjetoAprendizaje> objetos = cursoDao.objetosAlumno(curso.getId(), usuario.getUserId(), this.getThemeDisplay(request));
-        if (cursoDao.haConcluido(usuario.getUserId(), curso.getId())) {
-            model.addAttribute("concluido", true);
-        } else {
-            cicloObjetos:
-            for (ObjetoAprendizaje objeto : objetos) {
-                log.debug("Viendo contenido de objeto {}", objeto);
-                for (Contenido contenido : objeto.getContenidos()) {
-                    log.debug("Contenido : {} : Activo : {}", contenido, contenido.getActivo());
-                    if (contenido.getActivo()) {
-                        model.addAttribute("contenidoId", contenido.getId());
-                        switch (contenido.getTipo()) {
-                            case Constantes.TEXTO:
-                                model.addAttribute("texto", contenido.getTexto());
-                                break;
-                            case Constantes.VIDEO:
-                                model.addAttribute("video", contenido.getTexto());
-                                break;
-                            case Constantes.EXAMEN:
-                                model.addAttribute("texto", contenido.getTexto());
-                                model.addAttribute("examen", contenido.getExamen());
-                                model.addAttribute("preguntas", contenido.getExamen().getOtrasPreguntas());
-                                break;
-                            case Constantes.ARTICULATE:
-                                model.addAttribute("texto", contenido.getTexto());
-                                break;
+            ThemeDisplay themeDisplay = this.getThemeDisplay(request);
+            List<ObjetoAprendizaje> objetos = cursoDao.objetosAlumno(curso.getId(), usuario.getUserId(), themeDisplay);
+            if (cursoDao.haConcluido(usuario.getUserId(), curso.getId())) {
+                model.addAttribute("concluido", true);
+            } else {
+                cicloObjetos:
+                for (ObjetoAprendizaje objeto : objetos) {
+                    log.debug("Viendo contenido de objeto {}", objeto);
+                    for (Contenido contenido : objeto.getContenidos()) {
+                        log.debug("Contenido : {} : Activo : {}", contenido, contenido.getActivo());
+                        if (contenido.getActivo()) {
+                            model.addAttribute("contenidoId", contenido.getId());
+                            switch (contenido.getTipo()) {
+                                case Constantes.TEXTO:
+                                    model.addAttribute("texto", contenido.getTexto());
+                                    break;
+                                case Constantes.VIDEO:
+                                    model.addAttribute("video", contenido.getTexto());
+                                    break;
+                                case Constantes.EXAMEN:
+                                    model.addAttribute("texto", contenido.getTexto());
+                                    model.addAttribute("examen", contenido.getExamen());
+                                    model.addAttribute("preguntas", contenido.getExamen().getOtrasPreguntas());
+                                    break;
+                                case Constantes.ARTICULATE:
+                                    model.addAttribute("texto", contenido.getTexto());
+                                    break;
+                            }
+                            break cicloObjetos;
                         }
-                        break cicloObjetos;
                     }
                 }
             }
+            model.addAttribute("objetos", objetos);
+        } else {
+            List<AlumnoCurso> cursos = cursoDao.obtieneCursos(usuario.getUserId());
+            model.addAttribute("cursos", cursos);
+            return "mis_cursos/lista";
         }
-        model.addAttribute("objetos", objetos);
 
         return "mis_cursos/ver";
     }
@@ -137,73 +140,13 @@ public class MisCursosPortlet extends BaseController {
         log.debug("Ver contenido {}", contenidoId);
         User usuario = PortalUtil.getUser(request);
         AlumnoCurso alumnoCurso = cursoDao.obtieneAlumnoCurso(usuario.getUserId(), cursoId);
+        if (alumnoCurso.getDiasDisponibles() > 0) {
 
-        ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
-        if (alumnoCurso != null) {
-            Curso curso = alumnoCurso.getCurso();
-            model.addAttribute("curso", curso);
-            List<ObjetoAprendizaje> objetos = cursoDao.objetosAlumno(curso.getId(), contenidoId, usuario.getUserId(), themeDisplay);
-            cicloObjetos:
-            for (ObjetoAprendizaje objeto : objetos) {
-                log.debug("Viendo contenido de objeto {}", objeto);
-                for (Contenido contenido : objeto.getContenidos()) {
-                    log.debug("Contenido : {} : Activo : {}", contenido, contenido.getActivo());
-                    if (contenido.getActivo()) {
-                        log.debug("Encontre el contenido activo {} y el texto {}", contenido, contenido.getTexto());
-                        model.addAttribute("contenidoId", contenido.getId());
-                        switch (contenido.getTipo()) {
-                            case Constantes.TEXTO:
-                                model.addAttribute("texto", contenido.getTexto());
-                                break cicloObjetos;
-                            case Constantes.VIDEO:
-                                model.addAttribute("video", contenido.getTexto());
-                                break cicloObjetos;
-                            case Constantes.EXAMEN:
-                                model.addAttribute("texto", contenido.getTexto());
-                                model.addAttribute("examen", contenido.getExamen());
-                                model.addAttribute("preguntas", contenido.getExamen().getOtrasPreguntas());
-                                break cicloObjetos;
-                            case Constantes.ARTICULATE:
-                                model.addAttribute("texto", contenido.getTexto());
-                                break cicloObjetos;
-                        }
-                    }
-                }
-            }
-            model.addAttribute("objetos", objetos);
-        }
-
-        return "mis_cursos/ver";
-    }
-
-    @RequestMapping(params = "action=verSiguiente")
-    public String verSiguiente(RenderRequest request, Model model, @RequestParam Long cursoId) throws SystemException, PortalException {
-        log.debug("Ver siguiente contenido");
-        User usuario = PortalUtil.getUser(request);
-        AlumnoCurso alumnoCurso = cursoDao.obtieneAlumnoCurso(usuario.getUserId(), cursoId);
-
-        ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
-        if (alumnoCurso != null) {
-            Curso curso = alumnoCurso.getCurso();
-            model.addAttribute("curso", curso);
-            List<ObjetoAprendizaje> objetos = cursoDao.objetosAlumnoSiguiente(curso.getId(), usuario.getUserId(), themeDisplay);
-            if (cursoDao.haConcluido(usuario.getUserId(), curso.getId())) {
-                model.addAttribute("concluido", true);
-
-//                        try {
-//                            MimeMessage message = mailSender.createMimeMessage();
-//                            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-//                            helper.setTo("lneria@um.edu.mx");
-//                            String titulo = usuario.getFullName() + " ha concluido el curso "+ curso.getNombre();
-//                            helper.setSubject(titulo);
-//                            helper.setText(titulo);
-//                            //helper.addAttachment("Diploma-"+curso.getCodigo()+".pdf", new ByteArrayDataSource(archivo, tipoContenido));
-//                            mailSender.send(message);
-//                        } catch(MessagingException e) {
-//                            log.error("Hubo un error al intentar enviar el correo", e);
-//                        }
-
-            } else {
+            ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+            if (alumnoCurso != null) {
+                Curso curso = alumnoCurso.getCurso();
+                model.addAttribute("curso", curso);
+                List<ObjetoAprendizaje> objetos = cursoDao.objetosAlumno(curso.getId(), contenidoId, usuario.getUserId(), themeDisplay);
                 cicloObjetos:
                 for (ObjetoAprendizaje objeto : objetos) {
                     log.debug("Viendo contenido de objeto {}", objeto);
@@ -231,8 +174,80 @@ public class MisCursosPortlet extends BaseController {
                         }
                     }
                 }
+                model.addAttribute("objetos", objetos);
             }
-            model.addAttribute("objetos", objetos);
+        } else {
+            List<AlumnoCurso> cursos = cursoDao.obtieneCursos(usuario.getUserId());
+            model.addAttribute("cursos", cursos);
+            return "mis_cursos/lista";
+        }
+
+        return "mis_cursos/ver";
+    }
+
+    @RequestMapping(params = "action=verSiguiente")
+    public String verSiguiente(RenderRequest request, Model model, @RequestParam Long cursoId) throws SystemException, PortalException {
+        log.debug("Ver siguiente contenido");
+        User usuario = PortalUtil.getUser(request);
+        AlumnoCurso alumnoCurso = cursoDao.obtieneAlumnoCurso(usuario.getUserId(), cursoId);
+        if (alumnoCurso.getDiasDisponibles() > 0) {
+
+            ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+            if (alumnoCurso != null) {
+                Curso curso = alumnoCurso.getCurso();
+                model.addAttribute("curso", curso);
+                List<ObjetoAprendizaje> objetos = cursoDao.objetosAlumnoSiguiente(curso.getId(), usuario.getUserId(), themeDisplay);
+                if (cursoDao.haConcluido(usuario.getUserId(), curso.getId())) {
+                    model.addAttribute("concluido", true);
+
+    //                        try {
+    //                            MimeMessage message = mailSender.createMimeMessage();
+    //                            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+    //                            helper.setTo("lneria@um.edu.mx");
+    //                            String titulo = usuario.getFullName() + " ha concluido el curso "+ curso.getNombre();
+    //                            helper.setSubject(titulo);
+    //                            helper.setText(titulo);
+    //                            //helper.addAttachment("Diploma-"+curso.getCodigo()+".pdf", new ByteArrayDataSource(archivo, tipoContenido));
+    //                            mailSender.send(message);
+    //                        } catch(MessagingException e) {
+    //                            log.error("Hubo un error al intentar enviar el correo", e);
+    //                        }
+
+                } else {
+                    cicloObjetos:
+                    for (ObjetoAprendizaje objeto : objetos) {
+                        log.debug("Viendo contenido de objeto {}", objeto);
+                        for (Contenido contenido : objeto.getContenidos()) {
+                            log.debug("Contenido : {} : Activo : {}", contenido, contenido.getActivo());
+                            if (contenido.getActivo()) {
+                                log.debug("Encontre el contenido activo {} y el texto {}", contenido, contenido.getTexto());
+                                model.addAttribute("contenidoId", contenido.getId());
+                                switch (contenido.getTipo()) {
+                                    case Constantes.TEXTO:
+                                        model.addAttribute("texto", contenido.getTexto());
+                                        break cicloObjetos;
+                                    case Constantes.VIDEO:
+                                        model.addAttribute("video", contenido.getTexto());
+                                        break cicloObjetos;
+                                    case Constantes.EXAMEN:
+                                        model.addAttribute("texto", contenido.getTexto());
+                                        model.addAttribute("examen", contenido.getExamen());
+                                        model.addAttribute("preguntas", contenido.getExamen().getOtrasPreguntas());
+                                        break cicloObjetos;
+                                    case Constantes.ARTICULATE:
+                                        model.addAttribute("texto", contenido.getTexto());
+                                        break cicloObjetos;
+                                }
+                            }
+                        }
+                    }
+                }
+                model.addAttribute("objetos", objetos);
+            }
+        } else {
+            List<AlumnoCurso> cursos = cursoDao.obtieneCursos(usuario.getUserId());
+            model.addAttribute("cursos", cursos);
+            return "mis_cursos/lista";
         }
 
         return "mis_cursos/ver";
@@ -264,17 +279,15 @@ public class MisCursosPortlet extends BaseController {
             try {
                 Curso curso = alumnoCurso.getCurso();
                 log.debug("Imprimiendo diploma de {} para el curso {}", usuario.getScreenName(), curso.getNombre());
-                JasperDesign jd = JRXmlLoader.load(this.getClass().getResourceAsStream("/reportes/diploma.jrxml"));
-                JasperReport jr = JasperCompileManager.compileReport(jd);
+                JasperReport jr = cursoDao.obtieneReporte(cursoId);
                 Map<String, Object> params = new HashMap<>();
                 params.put("alumno", usuario.getFullName());
                 params.put("curso", curso.getNombre());
-                params.put("fecha", sdf.format(new Date()));
+                params.put("fecha", sdf.format(alumnoCurso.getFechaConclusion()));
                 log.debug("PARAMS: {}", params);
                 JasperPrint jasperPrint = JasperFillManager.fillReport(jr, params, new JREmptyDataSource());
                 byte[] archivo = JasperExportManager.exportReportToPdf(jasperPrint);
                 if (archivo != null) {
-//                    response.addHeader("Content-Disposition", "attachment; filename=diploma.pdf");
                     response.setContentType("application/pdf");
                     response.setContentLength(archivo.length);
                     try (BufferedOutputStream bos = new BufferedOutputStream(response.getPortletOutputStream())) {

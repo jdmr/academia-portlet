@@ -29,6 +29,8 @@ import java.util.Date;
 import java.util.Objects;
 import javax.persistence.*;
 import mx.edu.um.academia.utils.Constantes;
+import org.joda.time.DateTime;
+import org.joda.time.Days;
 
 /**
  *
@@ -59,6 +61,8 @@ public class AlumnoCurso implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ultimo_acceso")
     private Date ultimoAcceso;
+    @Transient
+    private Integer diasDisponibles;
 
     public AlumnoCurso() {
     }
@@ -227,6 +231,22 @@ public class AlumnoCurso implements Serializable {
      */
     public void setUltimoAcceso(Date ultimoAcceso) {
         this.ultimoAcceso = ultimoAcceso;
+    }
+
+    /**
+     * @return the diasDisponibles
+     */
+    public Integer getDiasDisponibles() {
+        if (diasDisponibles == null) {
+            DateTime inicio = new DateTime(fecha);
+            DateTime ahora = new DateTime();
+            int diasTranscurridos = Days.daysBetween(inicio, ahora).getDays();
+            diasDisponibles = id.getCurso().getDias() - diasTranscurridos;
+            if (diasDisponibles < 0) {
+                diasDisponibles = 0;
+            }
+        }
+        return diasDisponibles;
     }
 
     @Override

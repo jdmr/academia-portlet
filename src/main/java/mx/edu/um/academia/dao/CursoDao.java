@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import mx.edu.um.academia.model.*;
+import net.sf.jasperreports.engine.JasperReport;
 
 /**
  *
@@ -87,4 +88,6 @@ public interface CursoDao {
     public List<AlumnoCurso> obtieneCursos(Long alumnoId);
 
     public AlumnoCurso obtieneAlumnoCurso(Long alumnoId, Long cursoId);
+    
+    public JasperReport obtieneReporte(Long cursoId);
 }
