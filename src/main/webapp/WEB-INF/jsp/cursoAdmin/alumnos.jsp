@@ -39,10 +39,19 @@
                 
                 <th><s:message code="estatus" /></th>
                 
+                <th style="text-align: right;"><s:message code="saldo" /></th>
+                
+                <th><s:message code="acciones" /></th>
+                
             </tr>
         </thead>
         <tbody>
             <c:forEach items="${alumnos}" var="alumnoCurso">
+                <portlet:actionURL var="eliminaUrl" >
+                    <portlet:param name="action" value="bajaAlumno" />
+                    <portlet:param name="cursoId" value="${curso.id}" />
+                    <portlet:param name="alumnoId" value="${alumnoCurso.alumno.id}" />
+                </portlet:actionURL>
                 <tr>
 
                     <td>${alumnoCurso.alumno.usuario}</td>
@@ -54,6 +63,10 @@
                     <td>${alumnoCurso.fecha}</td>
 
                     <td><s:message code="${alumnoCurso.estatus}" /></td>
+
+                    <td style="text-align: right;"><fmt:formatNumber value="${alumnoCurso.saldo}" type="currency" currencySymbol="$" /></td>
+                    
+                    <td><a href="${eliminaUrl}" class="btn btn-danger btn-mini"><i class="icon-remove icon-white"></i> <s:message code="baja" /></a></td>
                     
                 </tr>
             </c:forEach>

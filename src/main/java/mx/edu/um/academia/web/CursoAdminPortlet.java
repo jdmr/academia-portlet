@@ -332,6 +332,16 @@ public class CursoAdminPortlet extends BaseController {
         response.setRenderParameter("id", cursoId.toString());
     }
 
+    @RequestMapping(params = "action=bajaAlumno")
+    public void bajaAlumno(ActionRequest request, ActionResponse response, @RequestParam Long cursoId, @RequestParam Long alumnoId) {
+        log.debug("Baja a alumno {} de curso {}", alumnoId, cursoId);
+
+        cursoDao.bajaAlumno(alumnoId, cursoId);
+
+        response.setRenderParameter("action", "alumnos");
+        response.setRenderParameter("cursoId", cursoId.toString());
+    }
+
     @RequestMapping(params = "action=alumnos")
     public String alumnos(RenderRequest request, RenderResponse response, Model modelo, @RequestParam Long cursoId) {
         log.debug("List de alumnos del curso {}", cursoId);
@@ -344,6 +354,17 @@ public class CursoAdminPortlet extends BaseController {
         modelo.addAllAttributes(params);
 
         return "cursoAdmin/alumnos";
+    }
+    
+    @RequestMapping(params = "action=todos")
+    public String todos(RenderRequest request, Model modelo) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("comunidadId", getThemeDisplay(request).getScopeGroupId());
+        params = cursoDao.todosAlumnos(params);
+
+        modelo.addAllAttributes(params);
+        
+        return "cursoAdmin/todos";
     }
 
     @RequestMapping(params = "action=inscribeAlumno")

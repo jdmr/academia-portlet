@@ -90,4 +90,8 @@ public interface CursoDao {
     public AlumnoCurso obtieneAlumnoCurso(Long alumnoId, Long cursoId);
     
     public JasperReport obtieneReporte(Long cursoId);
+
+    public Map<String, Object> todosAlumnos(Map<String, Object> params);
+
+    public void bajaAlumno(Long alumnoId, Long cursoId);
 }

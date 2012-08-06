@@ -33,12 +33,16 @@ import com.liferay.portlet.documentlibrary.model.DLFileEntry;
 import com.liferay.portlet.documentlibrary.service.DLFileEntryLocalServiceUtil;
 import com.liferay.portlet.journal.model.JournalArticle;
 import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.*;
+import java.util.logging.Level;
 import mx.edu.um.academia.dao.CursoDao;
 import mx.edu.um.academia.dao.ExamenDao;
 import mx.edu.um.academia.model.*;
 import mx.edu.um.academia.utils.Constantes;
 import net.sf.jasperreports.engine.JasperReport;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -636,20 +640,28 @@ public class CursoDaoHibernate implements CursoDao {
     @Override
     public Map<String, Object> alumnos(Map<String, Object> params) {
         Long cursoId = (Long) params.get("cursoId");
-        Query query = currentSession().createQuery("select a from AlumnoCurso a where a.id.curso.id = :cursoId");
+        Query query = currentSession().createQuery("select a from AlumnoCurso a join fetch a.id.curso where a.id.curso.id = :cursoId");
         query.setLong("cursoId", cursoId);
-        params.put("alumnos", query.list());
+        List<AlumnoCurso> alumnos =query.list();
+        for(AlumnoCurso alumnoCurso : alumnos) {
+            alumnoCurso.setSaldo(alumnoCurso.getId().getCurso().getPrecio());
+        }
+        params.put("alumnos", alumnos);
 
         Curso curso = (Curso) currentSession().get(Curso.class, cursoId);
         params.put("curso", curso);
         try {
             log.debug("Buscando usuarios en la empresa {}", params.get("companyId"));
             List<User> usuarios = UserLocalServiceUtil.getCompanyUsers((Long) params.get("companyId"), QueryUtil.ALL_POS, QueryUtil.ALL_POS);
+            User x = null; 
             for (User user : usuarios) {
                 if (user.isDefaultUser()) {
-                    usuarios.remove(user);
+                    x = user;
                     break;
                 }
+            }
+            if (x != null) {
+                usuarios.remove(x);
             }
             params.put("disponibles", usuarios);
         } catch (SystemException e) {
@@ -962,5 +974,70 @@ public class CursoDaoHibernate implements CursoDao {
         query.setLong("cursoId", cursoId);
         Reporte reporte = (Reporte) query.uniqueResult();
         return reporte.getReporte();
+    }
+
+    @Override
+    public Map<String, Object> todosAlumnos(Map<String, Object> params) {
+        MathContext mc = new MathContext(16, RoundingMode.HALF_UP);
+        Long comunidadId = (Long) params.get("comunidadId");
+        Query query = currentSession().createQuery("select a from AlumnoCurso a "
+                + "join fetch a.id.alumno "
+                + "join fetch a.id.curso "
+                + "where a.id.curso.comunidadId = :comunidadId");
+        query.setLong("comunidadId", comunidadId);
+        List<AlumnoCurso> lista = query.list();
+        Map<String, AlumnoCurso> map = new TreeMap<>();
+
+        for (AlumnoCurso alumnoCurso : lista) {
+            AlumnoCurso a = map.get(alumnoCurso.getAlumno().getUsuario());
+            if (a == null) {
+                a = alumnoCurso;
+                try {
+                    boolean cambio = false;
+                    User user = UserLocalServiceUtil.getUser(alumnoCurso.getId().getAlumno().getId());
+                    Alumno alumno = a.getAlumno();
+                    if (!alumno.getCorreo().equals(user.getEmailAddress())) {
+                        alumno.setCorreo(user.getEmailAddress());
+                        cambio = true;
+                    }
+                    if (!alumno.getNombreCompleto().equals(user.getFullName())) {
+                        alumno.setNombreCompleto(user.getFullName());
+                        cambio = true;
+                    }
+                    if (!alumno.getUsuario().equals(user.getScreenName())) {
+                        alumno.setUsuario(user.getScreenName());
+                        cambio = true;
+                    }
+                    if (cambio) {
+                        currentSession().update(alumno);
+                    }
+                } catch (PortalException | SystemException ex) {
+                    log.error("No se pudo obtener al usuario", ex);
+                }
+            }
+            StringBuilder sb = new StringBuilder();
+            if (StringUtils.isNotBlank(a.getCursos())) {
+                sb.append(a.getCursos());
+                sb.append(", ");
+            }
+            sb.append(alumnoCurso.getCurso().getCodigo());
+            a.setCursos(sb.toString());
+            a.setSaldo(a.getSaldo().add(alumnoCurso.getCurso().getPrecio(), mc).setScale(2, RoundingMode.HALF_UP));
+            map.put(alumnoCurso.getAlumno().getUsuario(), a);
+        }
+
+        params.put("alumnos", map.values());
+
+        return params;
+    }
+
+    @Override
+    public void bajaAlumno(Long alumnoId, Long cursoId) {
+        log.debug("Baja a alumno {} de curso {}", alumnoId, cursoId);
+        Curso curso = (Curso) currentSession().load(Curso.class, cursoId);
+        Alumno alumno = (Alumno) currentSession().load(Alumno.class, alumnoId);
+        AlumnoCursoPK pk = new AlumnoCursoPK(alumno, curso);
+        AlumnoCurso alumnoCurso = (AlumnoCurso) currentSession().load(AlumnoCurso.class, pk);
+        currentSession().delete(alumnoCurso);
     }
 }

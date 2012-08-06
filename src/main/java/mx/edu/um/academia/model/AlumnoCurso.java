@@ -56,13 +56,17 @@ public class AlumnoCurso implements Serializable {
     @Column(nullable = false, length = 32)
     private String estatus = Constantes.PENDIENTE;
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="fecha_conclusion")
+    @Column(name = "fecha_conclusion")
     private Date fechaConclusion;
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="ultimo_acceso")
+    @Column(name = "ultimo_acceso")
     private Date ultimoAcceso;
     @Transient
     private Integer diasDisponibles;
+    @Transient
+    private String cursos;
+    @Transient
+    private BigDecimal saldo = BigDecimal.ZERO;
 
     public AlumnoCurso() {
     }
@@ -247,6 +251,34 @@ public class AlumnoCurso implements Serializable {
             }
         }
         return diasDisponibles;
+    }
+
+    /**
+     * @return the cursos
+     */
+    public String getCursos() {
+        return cursos;
+    }
+
+    /**
+     * @param cursos the cursos to set
+     */
+    public void setCursos(String cursos) {
+        this.cursos = cursos;
+    }
+
+    /**
+     * @return the saldo
+     */
+    public BigDecimal getSaldo() {
+        return saldo;
+    }
+
+    /**
+     * @param saldo the saldo to set
+     */
+    public void setSaldo(BigDecimal saldo) {
+        this.saldo = saldo;
     }
 
     @Override
