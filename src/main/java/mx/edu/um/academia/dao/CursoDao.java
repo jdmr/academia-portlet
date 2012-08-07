@@ -94,4 +94,8 @@ public interface CursoDao {
     public Map<String, Object> todosAlumnos(Map<String, Object> params);
 
     public void bajaAlumno(Long alumnoId, Long cursoId);
+
+    public Curso obtiene(String codigo, Long comunidadId);
+    
+    public void asignaIntro(Curso curso);
 }

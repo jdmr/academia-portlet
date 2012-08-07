@@ -33,7 +33,16 @@ import com.liferay.portlet.journal.model.JournalArticle;
 import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +57,7 @@ import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -105,7 +115,57 @@ public class CursoPortlet extends BaseController {
 
             } else {
                 AlumnoCurso alumnoCurso = cursoDao.obtieneAlumnoCurso(usuario.getUserId(), curso.getId());
-                if (alumnoCurso != null 
+                // Valida si el usuario se acaba de inscribir
+                if (alumnoCurso == null && curso.getComercio().equals("UM")) {
+                    log.debug("Buscando si el alumno {} esta inscrito", usuario.getScreenName());
+                    MathContext mc = new MathContext(16, RoundingMode.HALF_UP);
+                    Calendar cal = Calendar.getInstance();
+                    cal.add(Calendar.DAY_OF_YEAR, -7);
+                    try {
+                        Class.forName("com.mysql.jdbc.Driver");
+                        Connection conn = DriverManager.getConnection("jdbc:mysql://rigel.um.edu.mx/store", "tomcat", "tomcat00");
+                        PreparedStatement ps = conn.prepareStatement("select autorizacion, comentario, cantidad from movimientos where producto = 'umvirtual' and fecha > ? and email = ? and autorizacion is not null order by fecha desc");
+                        ps.setTimestamp(1, new java.sql.Timestamp(cal.getTimeInMillis()));
+                        ps.setString(2, usuario.getEmailAddress());
+                        ResultSet rs = ps.executeQuery();
+                        BigDecimal total = BigDecimal.ZERO;
+                        log.debug("Entrando a iteracion");
+                        while (rs.next()) {
+                            String autorizacion = rs.getString("autorizacion");
+                            if (StringUtils.startsWith(autorizacion, "\"Y")) {
+                                String comentario = rs.getString("comentario");
+                                log.debug("Comentario: {} : {}", comentario, StringUtils.contains(comentario, usuario.getScreenName()));
+                                if (StringUtils.contains(comentario, usuario.getScreenName())) {
+                                    log.debug("Codigo : {} : {}", curso.getCodigo(),  StringUtils.contains(comentario, curso.getCodigo()));
+                                    if (StringUtils.contains(comentario, curso.getCodigo())) {
+                                        BigDecimal cantidad = rs.getBigDecimal("cantidad");
+                                        log.debug("Cantidad: {}", cantidad);
+                                        if (cantidad != null) {
+                                            total = total.add(cantidad, mc).setScale(2, RoundingMode.HALF_UP);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        log.debug("Total: {}, {} , {}", new Object[]{total, curso.getPrecio(), total.compareTo(curso.getPrecio())});
+                        if (total.doubleValue() > 0 && total.compareTo(curso.getPrecio()) >= 0) {
+                            log.debug("Inscribiendo alumno");
+                            Alumno alumno = cursoDao.obtieneAlumno(usuario.getUserId());
+                            boolean creaUsuario = false;
+                            if (alumno == null) {
+                                alumno = new Alumno(usuario);
+                                creaUsuario = true;
+                            }
+                            cursoDao.inscribe(curso, alumno, creaUsuario, Constantes.INSCRITO);
+                            alumnoCurso = cursoDao.obtieneAlumnoCurso(usuario.getUserId(), curso.getId());
+                        }
+                    } catch (ClassNotFoundException | SQLException e) {
+                        log.error("No pude validar si esta inscrito contra la base de datos de la UM", e);
+                    }
+                }
+                // Termina validacion de alumno recien inscrito
+
+                if (alumnoCurso != null
                         && (alumnoCurso.getEstatus().equals(Constantes.INSCRITO) || alumnoCurso.getEstatus().equals(Constantes.CONCLUIDO))
                         && alumnoCurso.getDiasDisponibles() > 0) {
                     List<ObjetoAprendizaje> objetos = cursoDao.objetosAlumno(curso.getId(), usuario.getUserId(), themeDisplay);
@@ -142,6 +202,10 @@ public class CursoPortlet extends BaseController {
                     }
                     model.addAttribute("objetos", objetos);
                 } else {
+                    log.debug("Asignando valores para Pago UM {} - {} - {}", new String[] {usuario.getScreenName(), usuario.getEmailAddress(), usuario.getFullName()});
+                    model.addAttribute("username", usuario.getScreenName());
+                    model.addAttribute("correo", usuario.getEmailAddress());
+                    model.addAttribute("nombreAlumno", usuario.getFullName());
                     if (curso.getIntro() != null) {
                         JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(curso.getIntro());
                         if (ja != null) {
@@ -190,7 +254,7 @@ public class CursoPortlet extends BaseController {
 
             } else {
                 AlumnoCurso alumnoCurso = cursoDao.obtieneAlumnoCurso(usuario.getUserId(), curso.getId());
-                if (alumnoCurso != null 
+                if (alumnoCurso != null
                         && (alumnoCurso.getEstatus().equals(Constantes.INSCRITO) || alumnoCurso.getEstatus().equals(Constantes.CONCLUIDO))
                         && alumnoCurso.getDiasDisponibles() > 0) {
                     List<ObjetoAprendizaje> objetos = cursoDao.objetosAlumno(curso.getId(), contenidoId, usuario.getUserId(), themeDisplay);
@@ -271,7 +335,7 @@ public class CursoPortlet extends BaseController {
 
             } else {
                 AlumnoCurso alumnoCurso = cursoDao.obtieneAlumnoCurso(usuario.getUserId(), curso.getId());
-                if (alumnoCurso != null 
+                if (alumnoCurso != null
                         && (alumnoCurso.getEstatus().equals(Constantes.INSCRITO) || alumnoCurso.getEstatus().equals(Constantes.CONCLUIDO))
                         && alumnoCurso.getDiasDisponibles() > 0) {
                     List<ObjetoAprendizaje> objetos = cursoDao.objetosAlumnoSiguiente(curso.getId(), usuario.getUserId(), themeDisplay);

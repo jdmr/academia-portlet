@@ -149,6 +149,15 @@ public class CursoDaoHibernate implements CursoDao {
     }
 
     @Override
+    public Curso obtiene(String codigo, Long comunidadId) {
+        log.debug("Obteniendo curso por codigo {} y comunidad {}", codigo, comunidadId);
+        Query query = currentSession().createQuery("select c from Curso c where c.codigo = :codigo and c.comunidadId = :comunidadId");
+        query.setString("codigo", codigo);
+        query.setLong("comunidadId", comunidadId);
+        return (Curso) query.uniqueResult();
+    }
+
+    @Override
     public Curso crea(Curso curso, User creador) {
         log.debug("Creando curso {} por usuario", curso, creador);
         Date fecha = new Date();
@@ -175,7 +184,12 @@ public class CursoDaoHibernate implements CursoDao {
     public Curso actualiza(Curso otro, User creador) {
         log.debug("Actualizando curso {} por usuario {}", otro, creador);
         Curso curso = (Curso) currentSession().get(Curso.class, otro.getId());
+        currentSession().refresh(curso);
+        Long intro = curso.getIntro();
+        log.debug("CursoIntro:", curso.getIntro());
         BeanUtils.copyProperties(otro, curso, new String[]{"id", "version", "fechaCreacion", "objetos"});
+        log.debug("CursoIntro:", curso.getIntro());
+        curso.setIntro(intro);
         curso.setFechaModificacion(new Date());
         if (creador != null) {
             curso.setCreador(creador.getScreenName());
@@ -191,6 +205,14 @@ public class CursoDaoHibernate implements CursoDao {
         }
         currentSession().flush();
         return curso;
+    }
+    
+    public void asignaIntro(Curso curso) {
+        Query query = currentSession().createQuery("update Curso set intro = :intro where id = :id and version = :version");
+        query.setLong("intro", curso.getIntro());
+        query.setLong("id", curso.getId());
+        query.setLong("version", curso.getVersion());
+        query.executeUpdate();
     }
 
     @Override
@@ -653,17 +675,13 @@ public class CursoDaoHibernate implements CursoDao {
         try {
             log.debug("Buscando usuarios en la empresa {}", params.get("companyId"));
             List<User> usuarios = UserLocalServiceUtil.getCompanyUsers((Long) params.get("companyId"), QueryUtil.ALL_POS, QueryUtil.ALL_POS);
-            User x = null; 
+            List<User> lista = new ArrayList<>();
             for (User user : usuarios) {
-                if (user.isDefaultUser()) {
-                    x = user;
-                    break;
+                if (!user.isDefaultUser()) {
+                    lista.add(user);
                 }
             }
-            if (x != null) {
-                usuarios.remove(x);
-            }
-            params.put("disponibles", usuarios);
+            params.put("disponibles", lista);
         } catch (SystemException e) {
             log.error("No se pudo obtener lista de usuarios", e);
         }
@@ -937,9 +955,11 @@ public class CursoDaoHibernate implements CursoDao {
         query.setLong("alumnoId", alumnoId);
         query.setLong("cursoId", cursoId);
         AlumnoCurso alumnoCurso = (AlumnoCurso) query.uniqueResult();
-        alumnoCurso.setUltimoAcceso(new Date());
-        currentSession().save(alumnoCurso);
-        currentSession().flush();
+        if (alumnoCurso != null) {
+            alumnoCurso.setUltimoAcceso(new Date());
+            currentSession().save(alumnoCurso);
+            currentSession().flush();
+        }
 
         return alumnoCurso;
     }

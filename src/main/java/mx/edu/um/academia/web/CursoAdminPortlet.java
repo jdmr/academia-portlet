@@ -312,7 +312,7 @@ public class CursoAdminPortlet extends BaseController {
 
             log.debug("Asignando intro {} a curso {}", article.getId(), curso);
             curso.setIntro(article.getId());
-            cursoDao.actualiza(curso, creador);
+            cursoDao.asignaIntro(curso);
 
         } catch (PortalException | SystemException | DataAccessException e) {
             log.error("No se pudo crear la intro", e);
@@ -491,7 +491,7 @@ public class CursoAdminPortlet extends BaseController {
     private List<String> obtieneTiposDeComercio() {
         List<String> comercios = new ArrayList<>();
         comercios.add("PAYPAL");
-        comercios.add("DINEROMAIL");
+        comercios.add("UM");
         return comercios;
     }
 }

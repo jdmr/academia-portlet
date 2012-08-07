@@ -118,37 +118,51 @@
                 <a href="${sign_in_url}" class="btn btn-primary btn-large"><i class="icon-key icon-white"></i> <s:message code="curso.registrar.primero" /></a>
             </c:when>
             <c:when test="${not empty curso.tipo && curso.tipo eq 'PAGADO'}">
-                <portlet:actionURL var="notificaUrl" >
-                    <portlet:param name="action" value="inscribeAlumno" />
-                    <portlet:param name="cursoId" value="${curso.id}" />
-                </portlet:actionURL>
-                <portlet:renderURL var="pagoAprobadoUrl" >
-                    <portlet:param name="action" value="pagoAprobado" />
-                    <portlet:param name="cursoId" value="${curso.id}" />
-                </portlet:renderURL>
-                <portlet:renderURL var="pagoDenegadoUrl" >
-                    <portlet:param name="action" value="pagoDenegado" />
-                    <portlet:param name="cursoId" value="${curso.id}" />
-                </portlet:renderURL>
+                <c:choose>
+                    <c:when test="${curso.comercio eq 'UM'}">
+                        <c:url var="pagoURL" value="https://secure.um.edu.mx/umvirtual">
+                            <c:param name="cuentaProyecto" value="${curso.comercioId}" />
+                            <c:param name="nomina" value="${curso.codigo}" />
+                            <c:param name="matricula" value="${username}" />
+                            <c:param name="email" value="${correo}" />
+                            <c:param name="nombreAlumno" value="${nombreAlumno}" />
+                        </c:url>
+                        <a href="${pagoURL}" class="btn btn-primary btn-large"><i class="icon-plus icon-white"></i> <s:message code="curso.inscribe" /></a>
+                    </c:when>
+                    <c:otherwise>
+                        <portlet:actionURL var="notificaUrl" >
+                            <portlet:param name="action" value="inscribeAlumno" />
+                            <portlet:param name="cursoId" value="${curso.id}" />
+                        </portlet:actionURL>
+                        <portlet:renderURL var="pagoAprobadoUrl" >
+                            <portlet:param name="action" value="pagoAprobado" />
+                            <portlet:param name="cursoId" value="${curso.id}" />
+                        </portlet:renderURL>
+                        <portlet:renderURL var="pagoDenegadoUrl" >
+                            <portlet:param name="action" value="pagoDenegado" />
+                            <portlet:param name="cursoId" value="${curso.id}" />
+                        </portlet:renderURL>
 
-                <form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post">
-                    <input type="hidden" name="cmd" value="_xclick">
-                    <input type="hidden" name="business" value="VNC2SSQ79K5WN">
-                    <input type="hidden" name="notify_url" value="${notificaUrl}">
-                    <input type="hidden" name="return" value="${pagoAprobadoUrl}">
-                    <input type="hidden" name="cancel_return" value="${pagoDenegadoUrl}">
-                    <input type="hidden" name="lc" value="US">
-                    <input type="hidden" name="item_name" value="TEST Course">
-                    <input type="hidden" name="item_number" value="205">
-                    <input type="hidden" name="amount" value="10.00">
-                    <input type="hidden" name="currency_code" value="USD">
-                    <input type="hidden" name="button_subtype" value="services">
-                    <input type="hidden" name="no_note" value="1">
-                    <input type="hidden" name="no_shipping" value="1">
-                    <input type="hidden" name="bn" value="PP-BuyNowBF:btn_paynowCC_LG.gif:NonHosted">
-                    <input type="image" src="https://www.sandbox.paypal.com/en_US/i/btn/btn_paynowCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-                    <img alt="" border="0" src="https://www.sandbox.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
-                </form>
+                        <form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post">
+                            <input type="hidden" name="cmd" value="_xclick">
+                            <input type="hidden" name="business" value="VNC2SSQ79K5WN">
+                            <input type="hidden" name="notify_url" value="${notificaUrl}">
+                            <input type="hidden" name="return" value="${pagoAprobadoUrl}">
+                            <input type="hidden" name="cancel_return" value="${pagoDenegadoUrl}">
+                            <input type="hidden" name="lc" value="US">
+                            <input type="hidden" name="item_name" value="TEST Course">
+                            <input type="hidden" name="item_number" value="205">
+                            <input type="hidden" name="amount" value="10.00">
+                            <input type="hidden" name="currency_code" value="USD">
+                            <input type="hidden" name="button_subtype" value="services">
+                            <input type="hidden" name="no_note" value="1">
+                            <input type="hidden" name="no_shipping" value="1">
+                            <input type="hidden" name="bn" value="PP-BuyNowBF:btn_paynowCC_LG.gif:NonHosted">
+                            <input type="image" src="https://www.sandbox.paypal.com/en_US/i/btn/btn_paynowCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+                            <img alt="" border="0" src="https://www.sandbox.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
+                        </form>
+                    </c:otherwise>
+                </c:choose>
             </c:when>
             <c:otherwise>
                 <portlet:actionURL var="inscribeAlumnoUrl" >

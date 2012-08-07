@@ -31,12 +31,24 @@ import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 import javax.portlet.*;
 import mx.edu.um.academia.dao.CursoDao;
+import mx.edu.um.academia.model.Alumno;
 import mx.edu.um.academia.model.AlumnoCurso;
 import mx.edu.um.academia.model.Contenido;
 import mx.edu.um.academia.model.Curso;
@@ -48,8 +60,8 @@ import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -66,8 +78,6 @@ public class MisCursosPortlet extends BaseController {
 
     @Autowired
     private CursoDao cursoDao;
-    @Autowired
-    private ResourceBundleMessageSource messageSource;
 
     public MisCursosPortlet() {
         log.info("Nueva instancia de Mis Curso Portlet");
@@ -78,6 +88,62 @@ public class MisCursosPortlet extends BaseController {
         log.debug("Lista de mis cursos");
         User usuario = PortalUtil.getUser(request);
         if (usuario != null) {
+            ThemeDisplay themeDisplay = this.getThemeDisplay(request);
+            // Valida si el usuario se acaba de inscribir
+            log.debug("Buscando si el alumno {} esta inscrito", usuario.getScreenName());
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.DAY_OF_YEAR, -7);
+            try {
+                Class.forName("com.mysql.jdbc.Driver");
+                Connection conn = DriverManager.getConnection("jdbc:mysql://rigel.um.edu.mx/store", "tomcat", "tomcat00");
+                PreparedStatement ps = conn.prepareStatement("select autorizacion, comentario, cantidad from movimientos where producto = 'umvirtual' and fecha > ? and email = ? and autorizacion is not null order by fecha desc");
+                ps.setTimestamp(1, new java.sql.Timestamp(cal.getTimeInMillis()));
+                ps.setString(2, usuario.getEmailAddress());
+                ResultSet rs = ps.executeQuery();
+                Map<String, BigDecimal> totales = new HashMap<>();
+                Map<String, Curso> mapa = new HashMap<>();
+                log.debug("Entrando a iteracion");
+                while (rs.next()) {
+                    String autorizacion = rs.getString("autorizacion");
+                    if (StringUtils.startsWith(autorizacion, "\"Y")) {
+                        String comentario = rs.getString("comentario");
+                        String[] tokens = StringUtils.splitByWholeSeparator(comentario, ", ");
+                        String codigo = tokens[4];
+                        Curso curso = mapa.get(codigo);
+                        if (curso == null) {
+                            curso = cursoDao.obtiene(codigo, themeDisplay.getScopeGroupId());
+                            mapa.put(codigo, curso);
+                        }
+                        AlumnoCurso alumnoCurso = cursoDao.obtieneAlumnoCurso(usuario.getUserId(), curso.getId());
+                        if (alumnoCurso == null && tokens[0].equals(usuario.getScreenName())) {
+                            BigDecimal cantidad = rs.getBigDecimal("cantidad");
+                            log.debug("Cantidad: {}", cantidad);
+                            if (cantidad != null) {
+                                totales.put(codigo, cantidad.setScale(2, RoundingMode.HALF_UP));
+                            }
+                        }
+                    }
+                }
+                for (Curso curso : mapa.values()) {
+                    BigDecimal total = totales.get(curso.getCodigo());
+                    if (total != null && total.doubleValue() > 0 && total.compareTo(curso.getPrecio()) >= 0) {
+                        log.debug("Inscribiendo alumno");
+                        Alumno alumno = cursoDao.obtieneAlumno(usuario.getUserId());
+                        boolean creaUsuario = false;
+                        if (alumno == null) {
+                            alumno = new Alumno(usuario);
+                            creaUsuario = true;
+                        }
+                        cursoDao.inscribe(curso, alumno, creaUsuario, Constantes.INSCRITO);
+                        cursoDao.obtieneAlumnoCurso(usuario.getUserId(), curso.getId());
+                    }
+                }
+            } catch (ClassNotFoundException | SQLException e) {
+                log.error("No pude validar si esta inscrito contra la base de datos de la UM", e);
+            }
+            // Termina validacion de alumno recien inscrito
+
+
             List<AlumnoCurso> cursos = cursoDao.obtieneCursos(usuario.getUserId());
             model.addAttribute("cursos", cursos);
         }
@@ -200,18 +266,18 @@ public class MisCursosPortlet extends BaseController {
                 if (cursoDao.haConcluido(usuario.getUserId(), curso.getId())) {
                     model.addAttribute("concluido", true);
 
-    //                        try {
-    //                            MimeMessage message = mailSender.createMimeMessage();
-    //                            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-    //                            helper.setTo("lneria@um.edu.mx");
-    //                            String titulo = usuario.getFullName() + " ha concluido el curso "+ curso.getNombre();
-    //                            helper.setSubject(titulo);
-    //                            helper.setText(titulo);
-    //                            //helper.addAttachment("Diploma-"+curso.getCodigo()+".pdf", new ByteArrayDataSource(archivo, tipoContenido));
-    //                            mailSender.send(message);
-    //                        } catch(MessagingException e) {
-    //                            log.error("Hubo un error al intentar enviar el correo", e);
-    //                        }
+                    //                        try {
+                    //                            MimeMessage message = mailSender.createMimeMessage();
+                    //                            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+                    //                            helper.setTo("lneria@um.edu.mx");
+                    //                            String titulo = usuario.getFullName() + " ha concluido el curso "+ curso.getNombre();
+                    //                            helper.setSubject(titulo);
+                    //                            helper.setText(titulo);
+                    //                            //helper.addAttachment("Diploma-"+curso.getCodigo()+".pdf", new ByteArrayDataSource(archivo, tipoContenido));
+                    //                            mailSender.send(message);
+                    //                        } catch(MessagingException e) {
+                    //                            log.error("Hubo un error al intentar enviar el correo", e);
+                    //                        }
 
                 } else {
                     cicloObjetos:
