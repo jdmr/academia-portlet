@@ -960,6 +960,7 @@ public class CursoDaoHibernate implements CursoDao {
             currentSession().save(alumnoCurso);
             currentSession().flush();
         }
+        log.debug("Regresando el alumnoCurso {}", alumnoCurso);
 
         return alumnoCurso;
     }
