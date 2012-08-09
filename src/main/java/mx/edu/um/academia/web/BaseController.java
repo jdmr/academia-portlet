@@ -75,6 +75,9 @@ public class BaseController {
 
     private List<Long> paginacion(Long pagina, Long cantidad, Integer max) {
         Long cantidadDePaginas = cantidad / max;
+        if (cantidad % max > 0) {
+            cantidadDePaginas++;
+        }
         log.debug("Paginacion: {} {} {} {}", new Object[]{pagina, cantidad, max, cantidadDePaginas});
         Set<Long> paginas = new LinkedHashSet<>();
         long h = pagina - 1;
@@ -170,13 +173,13 @@ public class BaseController {
                 }
             }
         } while (i++ < cantidadDePaginas);
-        if (cantidadDePaginas > 0) {
-            paginas.add(cantidadDePaginas);
-        }
-
-        if (cantidad > max && paginas.size() == 1) {
-            paginas.add(2l);
-        }
+//        if (cantidadDePaginas > 0) {
+//            paginas.add(cantidadDePaginas);
+//        }
+//
+//        if (cantidad > max && paginas.size() == 1) {
+//            paginas.add(2l);
+//        }
 
         log.debug("Paginas {}: {}", pagina, paginas);
         return new ArrayList<>(paginas);
