@@ -518,8 +518,8 @@ public class CursoPortlet extends BaseController {
     }
 
     @ResourceMapping(value = "diploma")
-    public void diploma(ResourceRequest request, ResourceResponse response) throws SystemException, PortalException {
-        log.debug("Obteniendo diploma");
+    public void diploma(ResourceRequest request, ResourceResponse response, @RequestParam Long cursoId) throws SystemException, PortalException {
+        log.debug("Obteniendo diploma para curso {}", cursoId);
 
         PortletCurso portletCurso = cursoDao.obtienePortlet(PortalUtil.getPortletId(request));
         if (portletCurso != null) {
@@ -527,23 +527,27 @@ public class CursoPortlet extends BaseController {
             SimpleDateFormat sdf = new SimpleDateFormat("EEEE dd MMMM yyyy", themeDisplay.getLocale());
             try {
                 Curso curso = portletCurso.getCurso();
-                User usuario = PortalUtil.getUser(request);
-                AlumnoCurso alumnoCurso = cursoDao.obtieneAlumnoCurso(usuario.getUserId(), curso.getId());
-                log.debug("Imprimiendo diploma de {} para el curso {}", usuario.getScreenName(), curso.getNombre());
-                JasperReport jr = cursoDao.obtieneReporte(curso.getId());
-                Map<String, Object> params = new HashMap<>();
-                params.put("alumno", usuario.getFullName());
-                params.put("curso", curso.getNombre());
-                params.put("fecha", sdf.format(alumnoCurso.getFechaConclusion()));
-                log.debug("PARAMS: {}", params);
-                JasperPrint jasperPrint = JasperFillManager.fillReport(jr, params, new JREmptyDataSource());
-                byte[] archivo = JasperExportManager.exportReportToPdf(jasperPrint);
-                if (archivo != null) {
-                    response.setContentType("application/pdf");
-                    response.setContentLength(archivo.length);
-                    try (BufferedOutputStream bos = new BufferedOutputStream(response.getPortletOutputStream())) {
-                        bos.write(archivo);
-                        bos.flush();
+                if (curso != null && curso.getId().equals(cursoId)) {
+                    User usuario = PortalUtil.getUser(request);
+                    AlumnoCurso alumnoCurso = cursoDao.obtieneAlumnoCurso(usuario.getUserId(), curso.getId());
+                    if (alumnoCurso != null) {
+                        log.debug("Imprimiendo diploma de {} para el curso {}", usuario.getScreenName(), curso.getNombre());
+                        JasperReport jr = cursoDao.obtieneReporte(curso.getId());
+                        Map<String, Object> params = new HashMap<>();
+                        params.put("alumno", usuario.getFullName());
+                        params.put("curso", curso.getNombre());
+                        params.put("fecha", sdf.format(alumnoCurso.getFechaConclusion()));
+                        log.debug("PARAMS: {}", params);
+                        JasperPrint jasperPrint = JasperFillManager.fillReport(jr, params, new JREmptyDataSource());
+                        byte[] archivo = JasperExportManager.exportReportToPdf(jasperPrint);
+                        if (archivo != null) {
+                            response.setContentType("application/pdf");
+                            response.setContentLength(archivo.length);
+                            try (BufferedOutputStream bos = new BufferedOutputStream(response.getPortletOutputStream())) {
+                                bos.write(archivo);
+                                bos.flush();
+                            }
+                        }
                     }
                 }
 

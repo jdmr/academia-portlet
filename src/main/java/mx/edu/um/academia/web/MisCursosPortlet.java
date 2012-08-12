@@ -335,7 +335,7 @@ public class MisCursosPortlet extends BaseController {
 
     @ResourceMapping(value = "diploma")
     public void diploma(ResourceRequest request, ResourceResponse response, @RequestParam Long cursoId) throws SystemException, PortalException {
-        log.debug("Obteniendo diploma");
+        log.debug("Obteniendo diploma para curso {}", cursoId);
 
         User usuario = PortalUtil.getUser(request);
         AlumnoCurso alumnoCurso = cursoDao.obtieneAlumnoCurso(usuario.getUserId(), cursoId);
