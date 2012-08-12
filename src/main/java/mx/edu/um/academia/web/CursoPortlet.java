@@ -518,8 +518,8 @@ public class CursoPortlet extends BaseController {
     }
 
     @ResourceMapping(value = "diploma")
-    public void diploma(ResourceRequest request, ResourceResponse response, @RequestParam Long cursoId) throws SystemException, PortalException {
-        log.debug("Obteniendo diploma para curso {}", cursoId);
+    public void diploma(ResourceRequest request, ResourceResponse response) throws SystemException, PortalException {
+        log.debug("Obteniendo diploma");
 
         PortletCurso portletCurso = cursoDao.obtienePortlet(PortalUtil.getPortletId(request));
         if (portletCurso != null) {
@@ -527,7 +527,7 @@ public class CursoPortlet extends BaseController {
             SimpleDateFormat sdf = new SimpleDateFormat("EEEE dd MMMM yyyy", themeDisplay.getLocale());
             try {
                 Curso curso = portletCurso.getCurso();
-                if (curso != null && curso.getId().equals(cursoId)) {
+                if (curso != null) {
                     User usuario = PortalUtil.getUser(request);
                     AlumnoCurso alumnoCurso = cursoDao.obtieneAlumnoCurso(usuario.getUserId(), curso.getId());
                     if (alumnoCurso != null) {
