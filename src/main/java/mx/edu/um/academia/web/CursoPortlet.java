@@ -31,8 +31,10 @@ import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.journal.model.JournalArticle;
 import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
+import com.liferay.util.mail.MailEngine;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
@@ -46,6 +48,9 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.mail.internet.InternetAddress;
 import javax.portlet.*;
 import mx.edu.um.academia.dao.CursoDao;
 import mx.edu.um.academia.model.*;
@@ -341,19 +346,25 @@ public class CursoPortlet extends BaseController {
                     List<ObjetoAprendizaje> objetos = cursoDao.objetosAlumnoSiguiente(curso.getId(), usuario.getUserId(), themeDisplay);
                     if (cursoDao.haConcluido(usuario.getUserId(), curso.getId())) {
                         model.addAttribute("concluido", true);
-
-//                        try {
-//                            MimeMessage message = mailSender.createMimeMessage();
-//                            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-//                            helper.setTo("lneria@um.edu.mx");
-//                            String titulo = usuario.getFullName() + " ha concluido el curso "+ curso.getNombre();
-//                            helper.setSubject(titulo);
-//                            helper.setText(titulo);
-//                            //helper.addAttachment("Diploma-"+curso.getCodigo()+".pdf", new ByteArrayDataSource(archivo, tipoContenido));
-//                            mailSender.send(message);
-//                        } catch(MessagingException e) {
-//                            log.error("Hubo un error al intentar enviar el correo", e);
-//                        }
+//                                try {
+//                                    InternetAddress destinatario = new InternetAddress(usuario.getEmailAddress(), usuario.getFullName());
+//                                    MailEngine.send(destinatario, destinatario, null, null);
+//
+//            //                        try {
+//            //                            MimeMessage message = mailSender.createMimeMessage();
+//            //                            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+//            //                            helper.setTo("lneria@um.edu.mx");
+//            //                            String titulo = usuario.getFullName() + " ha concluido el curso "+ curso.getNombre();
+//            //                            helper.setSubject(titulo);
+//            //                            helper.setText(titulo);
+//            //                            //helper.addAttachment("Diploma-"+curso.getCodigo()+".pdf", new ByteArrayDataSource(archivo, tipoContenido));
+//            //                            mailSender.send(message);
+//            //                        } catch(MessagingException e) {
+//            //                            log.error("Hubo un error al intentar enviar el correo", e);
+//            //                        }
+//                                } catch (UnsupportedEncodingException e) {
+//                                    log.error("Hubo un problema al intentar enviar correo", e);
+//                                }
 
                     } else {
                         cicloObjetos:

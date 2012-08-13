@@ -123,6 +123,7 @@
                         <c:url var="pagoURL" value="https://secure.um.edu.mx/umvirtual">
                             <c:param name="cuentaProyecto" value="${curso.comercioId}" />
                             <c:param name="nomina" value="${curso.codigo}" />
+                            <c:param name="amount" value="${curso.precio}" />
                             <c:param name="matricula" value="${username}" />
                             <c:param name="email" value="${correo}" />
                             <c:param name="nombreAlumno" value="${nombreAlumno}" />
