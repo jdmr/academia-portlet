@@ -52,6 +52,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,6 +69,8 @@ public class CursoDaoHibernate implements CursoDao {
     private SessionFactory sessionFactory;
     @Autowired
     private ExamenDao examenDao;
+    @Autowired
+    private ResourceBundleMessageSource messages;
 
     public CursoDaoHibernate() {
         log.info("Nueva instancia del dao de cursos");
@@ -737,15 +740,25 @@ public class CursoDaoHibernate implements CursoDao {
                     List<Pregunta> preguntas = new ArrayList<>();
                     for (Pregunta pregunta : examenDao.preguntas(examen.getId())) {
                         for (Respuesta respuesta : pregunta.getRespuestas()) {
-                            ja = JournalArticleLocalServiceUtil.getArticle(respuesta.getContenido());
-                            if (ja != null) {
-                                String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+                            if (respuesta.getContenido() != null) {
+                                ja = JournalArticleLocalServiceUtil.getArticle(respuesta.getContenido());
+                                if (ja != null) {
+                                    String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+                                    respuesta.setTexto(texto);
+                                }
+                            } else {
+                                String texto = messages.getMessage("respuesta.requiere.texto", new String[] {respuesta.getNombre()}, themeDisplay.getLocale());
                                 respuesta.setTexto(texto);
                             }
                         }
-                        ja = JournalArticleLocalServiceUtil.getArticle(pregunta.getContenido());
-                        if (ja != null) {
-                            String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+                        if (pregunta.getContenido()!= null) {
+                            ja = JournalArticleLocalServiceUtil.getArticle(pregunta.getContenido());
+                            if (ja != null) {
+                                String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+                                pregunta.setTexto(texto);
+                            }
+                        } else {
+                            String texto = messages.getMessage("pregunta.requiere.texto", new String[] {pregunta.getNombre()}, themeDisplay.getLocale());
                             pregunta.setTexto(texto);
                         }
                         preguntas.add(pregunta);
