@@ -144,23 +144,26 @@
                             <portlet:param name="cursoId" value="${curso.id}" />
                         </portlet:renderURL>
 
-                        <form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post">
+<!--                        <form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post">-->
+                        <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
                             <input type="hidden" name="cmd" value="_xclick">
-                            <input type="hidden" name="business" value="VNC2SSQ79K5WN">
+                            <input type="hidden" name="business" value="${curso.comercioId}">
                             <input type="hidden" name="notify_url" value="${notificaUrl}">
                             <input type="hidden" name="return" value="${pagoAprobadoUrl}">
                             <input type="hidden" name="cancel_return" value="${pagoDenegadoUrl}">
                             <input type="hidden" name="lc" value="US">
-                            <input type="hidden" name="item_name" value="TEST Course">
-                            <input type="hidden" name="item_number" value="205">
-                            <input type="hidden" name="amount" value="10.00">
+                            <input type="hidden" name="item_name" value="${curso.nombre}">
+                            <input type="hidden" name="item_number" value="${curso.codigo}">
+                            <input type="hidden" name="amount" value="${curso.precio}">
                             <input type="hidden" name="currency_code" value="USD">
                             <input type="hidden" name="button_subtype" value="services">
                             <input type="hidden" name="no_note" value="1">
                             <input type="hidden" name="no_shipping" value="1">
                             <input type="hidden" name="bn" value="PP-BuyNowBF:btn_paynowCC_LG.gif:NonHosted">
-                            <input type="image" src="https://www.sandbox.paypal.com/en_US/i/btn/btn_paynowCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-                            <img alt="" border="0" src="https://www.sandbox.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
+                            <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_paynowCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+                            <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+<!--                            <input type="image" src="https://www.sandbox.paypal.com/en_US/i/btn/btn_paynowCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+                            <img alt="" border="0" src="https://www.sandbox.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">-->
                         </form>
                     </c:otherwise>
                 </c:choose>
