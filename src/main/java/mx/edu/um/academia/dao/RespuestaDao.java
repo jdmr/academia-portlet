@@ -24,6 +24,7 @@
 package mx.edu.um.academia.dao;
 
 import com.liferay.portal.model.User;
+import java.util.List;
 import java.util.Map;
 import mx.edu.um.academia.model.Respuesta;
 
@@ -44,4 +45,6 @@ public interface RespuestaDao {
     public Respuesta obtiene(Long respuestaId);
     
     public Respuesta actualizaContenido(Respuesta respuesta, User creador);
+
+    public List<Respuesta> listaSinTexto(long comunidadId);
 }

@@ -28,6 +28,7 @@ import java.util.*;
 import mx.edu.um.academia.dao.RespuestaDao;
 import mx.edu.um.academia.model.Respuesta;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.*;
@@ -185,5 +186,12 @@ public class RespuestaDaoHibernate implements RespuestaDao {
         }
         currentSession().update(respuesta);
         return respuesta;
+    }
+
+    @Override
+    public List<Respuesta> listaSinTexto(long comunidadId) {
+        Query query = currentSession().createQuery("select r from Respuesta r where comunidadId = :comunidadId and contenido is null");
+        query.setLong("comunidadId", comunidadId);
+        return query.list();
     }
 }

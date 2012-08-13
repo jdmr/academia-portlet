@@ -9,6 +9,7 @@
     <input type="hidden" name="<portlet:namespace />sort" id="<portlet:namespace />sort" value="${param.sort}" />
     <div class="well">
         <a class="btn btn-primary" href='<portlet:renderURL windowState="<%= WindowState.MAXIMIZED.toString() %>" ><portlet:param name="action" value="nuevo"/></portlet:renderURL>'><i class="icon-file icon-white"></i> <s:message code="respuesta.nuevo" /></a>
+        <a class="btn btn-primary" href='<portlet:actionURL ><portlet:param name="action" value="asignaTextoATodas"/></portlet:actionURL>'><i class="icon-edit icon-white"></i> <s:message code="respuesta.asigna.texto" /></a>
         <input name="<portlet:namespace />filtro" id="<portlet:namespace />filtro" type="text" class="input-medium search-query" value="${param.filtro}">
         <button type="submit" class="btn" name="<portlet:namespace />_busca" id="<portlet:namespace />_busca"><i class="icon-search"></i> <s:message code="buscar" /></button>
     </div>

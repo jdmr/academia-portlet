@@ -55,7 +55,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  *
@@ -249,6 +248,53 @@ public class RespuestaPortlet extends BaseController {
 
         response.setRenderParameter("action", "ver");
         response.setRenderParameter("id", respuesta.getId().toString());
+    }
+
+    @RequestMapping(params = "action=asignaTextoATodas")
+    public void asignaTextoATodas(ActionRequest request, ActionResponse response) throws SystemException, PortalException {
+        log.debug("Asignando texto a todas las que no tienen");
+        int cont = 0;
+        ThemeDisplay themeDisplay = getThemeDisplay(request);
+        Calendar displayDate;
+        if (themeDisplay != null) {
+            displayDate = CalendarFactoryUtil.getCalendar(themeDisplay.getTimeZone(), themeDisplay.getLocale());
+        } else {
+            displayDate = CalendarFactoryUtil.getCalendar();
+        }
+        List<Respuesta> respuestas = respuestaDao.listaSinTexto(themeDisplay.getScopeGroupId());
+        for(Respuesta respuesta : respuestas) {
+            String texto = respuesta.getNombre();
+            StringBuilder sb = new StringBuilder();
+            sb.append("<?xml version='1.0' encoding='UTF-8'?><root><static-content><![CDATA[");
+            sb.append(texto);
+            sb.append("]]></static-content></root>");
+            texto = sb.toString();
+            User creador = PortalUtil.getUser(request);
+            ServiceContext serviceContext = ServiceContextFactory.getInstance(JournalArticle.class.getName(), request);
+            if (respuesta.getContenido() != null) {
+                JournalArticleLocalServiceUtil.deleteJournalArticle(respuesta.getContenido());
+            }
+
+            JournalArticle article = textoUtil.crea(
+                    respuesta.getNombre(),
+                    respuesta.getNombre(),
+                    texto,
+                    displayDate,
+                    creador.getUserId(),
+                    respuesta.getComunidadId(),
+                    serviceContext);
+            respuesta.setContenido(article.getId());
+            respuesta = respuestaDao.actualizaContenido(respuesta, creador);
+            cont++;
+        }
+        
+        log.debug("##################");
+        log.debug("##################");
+        log.debug("##################");
+        log.debug("Termino de asignar texto a {} respuestas", cont);
+        log.debug("##################");
+        log.debug("##################");
+        log.debug("##################");
     }
 
     @RequestMapping(params = "action=editaTexto")
