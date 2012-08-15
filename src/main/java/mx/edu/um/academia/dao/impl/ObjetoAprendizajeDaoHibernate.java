@@ -120,13 +120,13 @@ public class ObjetoAprendizajeDaoHibernate implements ObjetoAprendizajeDao {
                     }
                 } else {
                     log.debug("Creando archivo {}", entryName);
-                    FileOutputStream outstream = new FileOutputStream(file);
-                    int n;
+                    try (FileOutputStream outstream = new FileOutputStream(file)) {
+                        int n;
 
-                    while ((n = zinstream.read(buf, 0, size)) > -1) {
-                        outstream.write(buf, 0, n);
+                        while ((n = zinstream.read(buf, 0, size)) > -1) {
+                            outstream.write(buf, 0, n);
+                        }
                     }
-                    outstream.close();
                 }
 
                 if (entryName.endsWith("player.html")) {
@@ -134,6 +134,12 @@ public class ObjetoAprendizajeDaoHibernate implements ObjetoAprendizajeDao {
                     contenido.setRuta(entryName);
                     contenido.setComunidadId(objetoAprendizaje.getComunidadId());
                     contenido.setTipo(Constantes.ARTICULATE);
+                    contenido = contenidoDao.crea(contenido, creador);
+                } else if (entryName.endsWith("story.html")) {
+                    contenido = new Contenido(objetoAprendizaje.getCodigo(), objetoAprendizaje.getNombre(), null);
+                    contenido.setRuta(entryName);
+                    contenido.setComunidadId(objetoAprendizaje.getComunidadId());
+                    contenido.setTipo(Constantes.STORYLINE);
                     contenido = contenidoDao.crea(contenido, creador);
                 }
 

@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.*;
+import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
@@ -79,6 +80,10 @@ public class Curso implements Serializable {
     private Integer dias = 365;
     @Transient
     private Reporte reporte;
+    @Email
+    private String correo;
+    @Column(name="correo_id")
+    private Long correoId;
 
     public Curso() {
     }
@@ -311,6 +316,34 @@ public class Curso implements Serializable {
      */
     public void setReporte(Reporte reporte) {
         this.reporte = reporte;
+    }
+
+    /**
+     * @return the correo
+     */
+    public String getCorreo() {
+        return correo;
+    }
+
+    /**
+     * @param correo the correo to set
+     */
+    public void setCorreo(String correo) {
+        this.correo = correo;
+    }
+
+    /**
+     * @return the correoId
+     */
+    public Long getCorreoId() {
+        return correoId;
+    }
+
+    /**
+     * @param correoId the correoId to set
+     */
+    public void setCorreoId(Long correoId) {
+        this.correoId = correoId;
     }
 
     @Override

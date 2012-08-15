@@ -417,10 +417,10 @@ public class CursoAdminPortlet extends BaseController {
         sb.append("</div>");
         Contenido contenido = objetos.get(posicionObjeto).getContenidos().get(posicionContenido);
         sb.append("<div class='span9'>");
+        ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
         switch (contenido.getTipo()) {
             case Constantes.TEXTO:
                 if (contenido.getContenidoId() != null) {
-                    ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
                     JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(contenido.getContenidoId());
                     if (ja != null) {
                         String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
@@ -442,13 +442,20 @@ public class CursoAdminPortlet extends BaseController {
                 }
                 break;
             case Constantes.ARTICULATE:
-                ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
                 sb.append("<iframe src='").append(request.getContextPath());
                 sb.append("/contenido/player.html?contenidoId=").append(contenido.getId());
                 sb.append("&cursoId=").append(cursoId);
                 sb.append("&userId=").append(themeDisplay.getUserId());
                 sb.append("&admin=true");
                 sb.append("' style='width:100%;height:600px;'></iframe>");
+                break;
+            case Constantes.STORYLINE:
+                sb.append("<iframe src='").append(request.getContextPath());
+                sb.append("/contenido/story.html?contenidoId=").append(contenido.getId());
+                sb.append("&cursoId=").append(cursoId);
+                sb.append("&userId=").append(themeDisplay.getUserId());
+                sb.append("&admin=true");
+                sb.append("' style='width:100%;height:650px;'></iframe>");
         }
         sb.append("</div>");
         PrintWriter writer = response.getWriter();

@@ -32,9 +32,9 @@ import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.journal.model.JournalArticle;
 import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
 import com.liferay.util.mail.MailEngine;
+import com.liferay.util.mail.MailEngineException;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
@@ -48,8 +48,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.portlet.*;
 import mx.edu.um.academia.dao.CursoDao;
@@ -141,7 +140,7 @@ public class CursoPortlet extends BaseController {
                                 String comentario = rs.getString("comentario");
                                 log.debug("Comentario: {} : {}", comentario, StringUtils.contains(comentario, usuario.getScreenName()));
                                 if (StringUtils.contains(comentario, usuario.getScreenName())) {
-                                    log.debug("Codigo : {} : {}", curso.getCodigo(),  StringUtils.contains(comentario, curso.getCodigo()));
+                                    log.debug("Codigo : {} : {}", curso.getCodigo(), StringUtils.contains(comentario, curso.getCodigo()));
                                     if (StringUtils.contains(comentario, curso.getCodigo())) {
                                         BigDecimal cantidad = rs.getBigDecimal("cantidad");
                                         log.debug("Cantidad: {}", cantidad);
@@ -197,6 +196,7 @@ public class CursoPortlet extends BaseController {
                                             model.addAttribute("preguntas", contenido.getExamen().getOtrasPreguntas());
                                             break;
                                         case Constantes.ARTICULATE:
+                                        case Constantes.STORYLINE:
                                             model.addAttribute("texto", contenido.getTexto());
                                             break;
                                     }
@@ -207,7 +207,7 @@ public class CursoPortlet extends BaseController {
                     }
                     model.addAttribute("objetos", objetos);
                 } else {
-                    log.debug("Asignando valores para Pago UM {} - {} - {}", new String[] {usuario.getScreenName(), usuario.getEmailAddress(), usuario.getFullName()});
+                    log.debug("Asignando valores para Pago UM {} - {} - {}", new String[]{usuario.getScreenName(), usuario.getEmailAddress(), usuario.getFullName()});
                     model.addAttribute("username", usuario.getScreenName());
                     model.addAttribute("correo", usuario.getEmailAddress());
                     model.addAttribute("nombreAlumno", usuario.getFullName());
@@ -284,6 +284,7 @@ public class CursoPortlet extends BaseController {
                                         model.addAttribute("preguntas", contenido.getExamen().getOtrasPreguntas());
                                         break cicloObjetos;
                                     case Constantes.ARTICULATE:
+                                    case Constantes.STORYLINE:
                                         model.addAttribute("texto", contenido.getTexto());
                                         break cicloObjetos;
                                 }
@@ -346,25 +347,34 @@ public class CursoPortlet extends BaseController {
                     List<ObjetoAprendizaje> objetos = cursoDao.objetosAlumnoSiguiente(curso.getId(), usuario.getUserId(), themeDisplay);
                     if (cursoDao.haConcluido(usuario.getUserId(), curso.getId())) {
                         model.addAttribute("concluido", true);
-//                                try {
-//                                    InternetAddress destinatario = new InternetAddress(usuario.getEmailAddress(), usuario.getFullName());
-//                                    MailEngine.send(destinatario, destinatario, null, null);
-//
-//            //                        try {
-//            //                            MimeMessage message = mailSender.createMimeMessage();
-//            //                            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-//            //                            helper.setTo("lneria@um.edu.mx");
-//            //                            String titulo = usuario.getFullName() + " ha concluido el curso "+ curso.getNombre();
-//            //                            helper.setSubject(titulo);
-//            //                            helper.setText(titulo);
-//            //                            //helper.addAttachment("Diploma-"+curso.getCodigo()+".pdf", new ByteArrayDataSource(archivo, tipoContenido));
-//            //                            mailSender.send(message);
-//            //                        } catch(MessagingException e) {
-//            //                            log.error("Hubo un error al intentar enviar el correo", e);
-//            //                        }
-//                                } catch (UnsupportedEncodingException e) {
-//                                    log.error("Hubo un problema al intentar enviar correo", e);
-//                                }
+
+                        if (curso.getCorreo() != null && curso.getCorreoId() != null) {
+                            try {
+                                JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(curso.getCorreoId());
+                                if (ja != null) {
+                                    String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+                                    InternetAddress from = new InternetAddress(curso.getCorreo());
+                                    InternetAddress destinatario = new InternetAddress(usuario.getEmailAddress(), usuario.getFullName());
+                                    MailEngine.send(from, destinatario, messageSource.getMessage("conclusion.titulo.correo", new String[]{curso.getNombre()}, themeDisplay.getLocale()), texto, true);
+                                }
+    //
+    //            //                        try {
+    //            //                            MimeMessage message = mailSender.createMimeMessage();
+    //            //                            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+    //            //                            helper.setTo("lneria@um.edu.mx");
+    //            //                            String titulo = usuario.getFullName() + " ha concluido el curso "+ curso.getNombre();
+    //            //                            helper.setSubject(titulo);
+    //            //                            helper.setText(titulo);
+    //            //                            //helper.addAttachment("Diploma-"+curso.getCodigo()+".pdf", new ByteArrayDataSource(archivo, tipoContenido));
+    //            //                            mailSender.send(message);
+    //            //                        } catch(MessagingException e) {
+    //            //                            log.error("Hubo un error al intentar enviar el correo", e);
+    //            //                        }
+                            } catch (MailEngineException | AddressException | IOException e) {
+                                log.error("Hubo un problema al intentar enviar correo", e);
+                            }
+                            
+                        }
 
                     } else {
                         cicloObjetos:
@@ -388,6 +398,7 @@ public class CursoPortlet extends BaseController {
                                             model.addAttribute("preguntas", contenido.getExamen().getOtrasPreguntas());
                                             break cicloObjetos;
                                         case Constantes.ARTICULATE:
+                                        case Constantes.STORYLINE:
                                             model.addAttribute("texto", contenido.getTexto());
                                             break cicloObjetos;
                                     }

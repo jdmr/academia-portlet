@@ -40,4 +40,5 @@ public class Constantes {
     public static final String RECHAZADO = "RECHAZADO";
     public static final String CONCLUIDO = "CONCLUIDO";
     public static final String ARTICULATE = "ARTICULATE";
+    public static final String STORYLINE = "STORYLINE";
 }

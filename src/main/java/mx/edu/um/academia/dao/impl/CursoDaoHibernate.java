@@ -706,6 +706,16 @@ public class CursoDaoHibernate implements CursoDao {
                     sb.append("' style='width:100%;height:600px;'></iframe>");
                     contenido.setTexto(sb.toString());
                     break;
+                case Constantes.STORYLINE:
+                    sb = new StringBuilder();
+                    sb.append("<iframe src='/academia-portlet");
+                    sb.append("/contenido/story.html?contenidoId=").append(contenido.getId());
+                    sb.append("&cursoId=").append(cursoId);
+                    sb.append("&userId=").append(themeDisplay.getUserId());
+                    sb.append("&admin=true");
+                    sb.append("' style='width:100%;height:650px;'></iframe>");
+                    contenido.setTexto(sb.toString());
+                    break;
                 case Constantes.TEXTO:
                     ja = JournalArticleLocalServiceUtil.getArticle(contenido.getContenidoId());
                     if (ja != null) {
