@@ -66,7 +66,6 @@ import net.sf.jasperreports.engine.JasperReport;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -84,8 +83,6 @@ public class CursoPortlet extends BaseController {
     private CursoDao cursoDao;
     @Autowired
     private ResourceBundleMessageSource messageSource;
-    @Autowired
-    protected JavaMailSender mailSender;
 
     public CursoPortlet() {
         log.info("Nueva instancia de Curso Portlet");
