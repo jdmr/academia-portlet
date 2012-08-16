@@ -36,7 +36,6 @@ import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.*;
-import java.util.logging.Level;
 import mx.edu.um.academia.dao.CursoDao;
 import mx.edu.um.academia.dao.ExamenDao;
 import mx.edu.um.academia.model.*;
@@ -190,7 +189,7 @@ public class CursoDaoHibernate implements CursoDao {
         currentSession().refresh(curso);
         Long intro = curso.getIntro();
         log.debug("CursoIntro:", curso.getIntro());
-        BeanUtils.copyProperties(otro, curso, new String[]{"id", "version", "fechaCreacion", "objetos"});
+        BeanUtils.copyProperties(otro, curso, new String[]{"id", "version", "fechaCreacion", "objetos", "intro", "correoId"});
         log.debug("CursoIntro:", curso.getIntro());
         curso.setIntro(intro);
         curso.setFechaModificacion(new Date());
@@ -209,7 +208,8 @@ public class CursoDaoHibernate implements CursoDao {
         currentSession().flush();
         return curso;
     }
-    
+
+    @Override
     public void asignaIntro(Curso curso) {
         Query query = currentSession().createQuery("update Curso set intro = :intro where id = :id and version = :version");
         query.setLong("intro", curso.getIntro());
@@ -1083,5 +1083,14 @@ public class CursoDaoHibernate implements CursoDao {
         AlumnoCursoPK pk = new AlumnoCursoPK(alumno, curso);
         AlumnoCurso alumnoCurso = (AlumnoCurso) currentSession().load(AlumnoCurso.class, pk);
         currentSession().delete(alumnoCurso);
+    }
+
+    @Override
+    public void asignaCorreo(Curso curso) {
+        Query query = currentSession().createQuery("update Curso set correoId = :correoId where id = :id and version = :version");
+        query.setLong("correoId", curso.getCorreoId());
+        query.setLong("id", curso.getId());
+        query.setLong("version", curso.getVersion());
+        query.executeUpdate();
     }
 }

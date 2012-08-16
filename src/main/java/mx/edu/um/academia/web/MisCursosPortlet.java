@@ -29,23 +29,28 @@ import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.model.User;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
+import com.liferay.portlet.journal.model.JournalArticle;
+import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
+import com.liferay.util.mail.MailEngine;
+import com.liferay.util.mail.MailEngineException;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.math.RoundingMode;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import javax.portlet.*;
 import mx.edu.um.academia.dao.CursoDao;
 import mx.edu.um.academia.model.Alumno;
@@ -62,6 +67,7 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -78,6 +84,8 @@ public class MisCursosPortlet extends BaseController {
 
     @Autowired
     private CursoDao cursoDao;
+    @Autowired
+    private ResourceBundleMessageSource messageSource;
 
     public MisCursosPortlet() {
         log.info("Nueva instancia de Mis Curso Portlet");
@@ -266,18 +274,40 @@ public class MisCursosPortlet extends BaseController {
                 if (cursoDao.haConcluido(usuario.getUserId(), curso.getId())) {
                     model.addAttribute("concluido", true);
 
-                    //                        try {
-                    //                            MimeMessage message = mailSender.createMimeMessage();
-                    //                            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-                    //                            helper.setTo("lneria@um.edu.mx");
-                    //                            String titulo = usuario.getFullName() + " ha concluido el curso "+ curso.getNombre();
-                    //                            helper.setSubject(titulo);
-                    //                            helper.setText(titulo);
-                    //                            //helper.addAttachment("Diploma-"+curso.getCodigo()+".pdf", new ByteArrayDataSource(archivo, tipoContenido));
-                    //                            mailSender.send(message);
-                    //                        } catch(MessagingException e) {
-                    //                            log.error("Hubo un error al intentar enviar el correo", e);
-                    //                        }
+                        if (curso.getCorreo() != null && curso.getCorreoId() != null) {
+                            try {
+                                JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(curso.getCorreoId());
+                                if (ja != null) {
+                                    DateFormat df = DateFormat.getDateInstance(DateFormat.MEDIUM, themeDisplay.getLocale());
+                                    String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+                                    InternetAddress from = new InternetAddress(curso.getCorreo());
+                                    InternetAddress destinatario = new InternetAddress(usuario.getEmailAddress(), usuario.getFullName());
+                                    MailEngine.send(from, destinatario, messageSource.getMessage("conclusion.titulo.correo", new String[]{curso.getNombre()}, themeDisplay.getLocale()), texto, true);
+                                    log.debug("Enviando correo con siguientes parametros: ");
+                                    log.debug("Codigo: {}", curso.getCodigo());
+                                    log.debug("username: {}", usuario.getScreenName());
+                                    log.debug("fullName: {}", usuario.getFullName());
+                                    log.debug("birthday: {} : {}", usuario.getBirthday(), df.format(usuario.getBirthday()));
+                                    log.debug("Curso: {}", curso.getNombre());
+                                    log.debug("Inicio: {}", alumnoCurso.getFecha());
+                                    log.debug("Termina: {}", new Date());
+                                    MailEngine.send(
+                                            destinatario, 
+                                            from, 
+                                            messageSource.getMessage("conclusion.admin.titulo.correo", 
+                                                new String[]{curso.getCodigo(), usuario.getScreenName()}, 
+                                                themeDisplay.getLocale()), 
+                                            messageSource.getMessage("conclusion.admin.mensaje.correo", 
+                                                new String[]{curso.getCodigo(), usuario.getScreenName(), usuario.getFullName(), df.format(usuario.getBirthday()), StringUtils.EMPTY, curso.getNombre(), df.format(alumnoCurso.getFecha()), df.format(new Date())}, 
+                                                themeDisplay.getLocale()), 
+                                            true);
+                                }
+                            } catch (MailEngineException | AddressException | IOException e) {
+                                log.error("Hubo un problema al intentar enviar correo", e);
+                            }
+                            
+                        }
+
 
                 } else {
                     cicloObjetos:

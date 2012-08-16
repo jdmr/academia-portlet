@@ -82,13 +82,13 @@ public interface CursoDao {
     public Examen obtieneExamen(Long examenId);
 
     public Map<String, Object> califica(Map<String, String[]> params, ThemeDisplay themeDisplay, User usuario);
-    
+
     public Boolean haConcluido(Long alumnoId, Long cursoId);
 
     public List<AlumnoCurso> obtieneCursos(Long alumnoId);
 
     public AlumnoCurso obtieneAlumnoCurso(Long alumnoId, Long cursoId);
-    
+
     public JasperReport obtieneReporte(Long cursoId);
 
     public Map<String, Object> todosAlumnos(Map<String, Object> params);
@@ -96,6 +96,8 @@ public interface CursoDao {
     public void bajaAlumno(Long alumnoId, Long cursoId);
 
     public Curso obtiene(String codigo, Long comunidadId);
-    
+
     public void asignaIntro(Curso curso);
+
+    public void asignaCorreo(Curso curso);
 }

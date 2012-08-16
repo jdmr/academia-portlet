@@ -57,6 +57,11 @@
             <form:input path="dias" type="number" min="0" step="1" />
             <form:errors cssClass="errors" path="nombre" cssStyle="color:red;" />
         </div>
+        <div class="control-group">
+            <label for="correo"><s:message code="correo" /></label>
+            <form:input path="correo" type="email" />
+            <form:errors cssClass="errors" path="correo" cssStyle="color:red;" />
+        </div>
 
         <div>
             <button type="submit" name="<portlet:namespace />_crea" class="btn btn-primary btn-large" id="<portlet:namespace />_crea" ><i class="icon-ok icon-white"></i>&nbsp;<s:message code='curso.crea' /></button>
