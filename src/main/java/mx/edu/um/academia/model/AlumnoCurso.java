@@ -46,7 +46,7 @@ public class AlumnoCurso implements Serializable {
     private Integer version;
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     @Column(nullable = false)
-    private Date fecha;
+    private Date fecha = new Date();
     @Column(scale = 3, precision = 8)
     private BigDecimal evaluacion;
     @Column(name = "cantidad_evaluaciones")
@@ -74,13 +74,11 @@ public class AlumnoCurso implements Serializable {
     public AlumnoCurso(Alumno alumno, Curso curso, String estatus) {
         this.id = new AlumnoCursoPK(alumno, curso);
         this.estatus = estatus;
-        this.fecha = new Date();
     }
 
     public AlumnoCurso(AlumnoCursoPK id, String estatus) {
         this.id = id;
         this.estatus = estatus;
-        this.fecha = new Date();
     }
 
     /**

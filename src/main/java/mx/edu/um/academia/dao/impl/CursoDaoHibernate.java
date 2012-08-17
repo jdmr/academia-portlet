@@ -36,6 +36,7 @@ import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.logging.Level;
 import mx.edu.um.academia.dao.CursoDao;
 import mx.edu.um.academia.dao.ExamenDao;
 import mx.edu.um.academia.model.*;
@@ -221,7 +222,40 @@ public class CursoDaoHibernate implements CursoDao {
     @Override
     public String elimina(Long cursoId, User creador) {
         log.debug("Eliminando curso {} por usuario {}", cursoId, creador);
+        // Dando de baja alumnos
+        Query query = currentSession().createQuery("delete from AlumnoCurso where id.curso.id = :cursoId");
+        query.setLong("cursoId", cursoId);
+        query.executeUpdate();
+
+        query = currentSession().createQuery("delete from Reporte where curso.id = :cursoId");
+        query.setLong("cursoId", cursoId);
+        query.executeUpdate();
+        
+        query = currentSession().createQuery("delete from PortletCurso where curso.id = :cursoId");
+        query.setLong("cursoId", cursoId);
+        query.executeUpdate();
+
+        // Dando de baja los objetos
         Curso curso = (Curso) currentSession().get(Curso.class, cursoId);
+        curso.getObjetos().clear();
+        currentSession().update(curso);
+
+        if (curso.getIntro() != null) {
+            try {
+                JournalArticleLocalServiceUtil.deleteJournalArticle(curso.getIntro());
+            } catch (PortalException | SystemException ex) {
+                log.error("No se pudo eliminar el articulo de introduccion", ex);
+            }
+        }
+
+        if (curso.getCorreoId() != null) {
+            try {
+                JournalArticleLocalServiceUtil.deleteJournalArticle(curso.getCorreoId());
+            } catch (PortalException | SystemException ex) {
+                log.error("No se pudo eliminar el articulo de correo", ex);
+            }
+        }
+
         String nombre = curso.getNombre();
         currentSession().delete(curso);
         return nombre;
@@ -667,8 +701,8 @@ public class CursoDaoHibernate implements CursoDao {
         Long cursoId = (Long) params.get("cursoId");
         Query query = currentSession().createQuery("select a from AlumnoCurso a join fetch a.id.curso where a.id.curso.id = :cursoId");
         query.setLong("cursoId", cursoId);
-        List<AlumnoCurso> alumnos =query.list();
-        for(AlumnoCurso alumnoCurso : alumnos) {
+        List<AlumnoCurso> alumnos = query.list();
+        for (AlumnoCurso alumnoCurso : alumnos) {
             alumnoCurso.setSaldo(alumnoCurso.getId().getCurso().getPrecio());
         }
         params.put("alumnos", alumnos);
@@ -757,18 +791,18 @@ public class CursoDaoHibernate implements CursoDao {
                                     respuesta.setTexto(texto);
                                 }
                             } else {
-                                String texto = messages.getMessage("respuesta.requiere.texto", new String[] {respuesta.getNombre()}, themeDisplay.getLocale());
+                                String texto = messages.getMessage("respuesta.requiere.texto", new String[]{respuesta.getNombre()}, themeDisplay.getLocale());
                                 respuesta.setTexto(texto);
                             }
                         }
-                        if (pregunta.getContenido()!= null) {
+                        if (pregunta.getContenido() != null) {
                             ja = JournalArticleLocalServiceUtil.getArticle(pregunta.getContenido());
                             if (ja != null) {
                                 String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
                                 pregunta.setTexto(texto);
                             }
                         } else {
-                            String texto = messages.getMessage("pregunta.requiere.texto", new String[] {pregunta.getNombre()}, themeDisplay.getLocale());
+                            String texto = messages.getMessage("pregunta.requiere.texto", new String[]{pregunta.getNombre()}, themeDisplay.getLocale());
                             pregunta.setTexto(texto);
                         }
                         preguntas.add(pregunta);
