@@ -49,6 +49,13 @@
         <h3>${objeto.fechaModificacion}</h3>
     </div>
 </div>
+<%--    
+<div class="row-fluid">
+    <div class="span12">
+        <h3><%= request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort() %><c:url value="/contenido/player.html?contenidoId=${seleccionados[0].id}&admin=true" /></h3>
+    </div>
+</div>
+--%>
 <portlet:actionURL var="agregaContenidoURL">
     <portlet:param name="action" value="agregaContenido"/>
 </portlet:actionURL>

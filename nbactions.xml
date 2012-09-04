@@ -5,6 +5,9 @@
             <goals>
                 <goal>package</goal>
             </goals>
+            <properties>
+                <skipTests>true</skipTests>
+            </properties>
         </action>
         <action>
             <actionName>rebuild</actionName>

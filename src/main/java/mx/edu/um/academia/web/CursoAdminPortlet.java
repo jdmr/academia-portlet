@@ -36,10 +36,15 @@ import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.documentlibrary.model.DLFileEntry;
 import com.liferay.portlet.documentlibrary.service.DLFileEntryLocalServiceUtil;
 import com.liferay.portlet.journal.model.JournalArticle;
-import com.liferay.portlet.journal.model.JournalArticleConstants;
 import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.*;
 import javax.portlet.*;
 import javax.validation.Valid;
@@ -47,11 +52,14 @@ import mx.edu.um.academia.dao.ContenidoDao;
 import mx.edu.um.academia.dao.CursoDao;
 import mx.edu.um.academia.model.Contenido;
 import mx.edu.um.academia.model.Curso;
+import mx.edu.um.academia.model.Grabacion;
 import mx.edu.um.academia.model.ObjetoAprendizaje;
 import mx.edu.um.academia.model.Reporte;
+import mx.edu.um.academia.model.Salon;
 import mx.edu.um.academia.utils.ComunidadUtil;
 import mx.edu.um.academia.utils.Constantes;
 import mx.edu.um.academia.utils.TextoUtil;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -636,5 +644,231 @@ public class CursoAdminPortlet extends BaseController {
         comercios.add("PAYPAL");
         comercios.add("UM");
         return comercios;
+    }
+
+    @RequestMapping(params = "action=salon")
+    public String salon(RenderRequest request, Model modelo, @RequestParam Long cursoId) {
+        Curso curso = cursoDao.obtiene(cursoId);
+        modelo.addAttribute("curso", curso);
+
+        Salon salon = cursoDao.obtieneSalon(cursoId);
+        if (salon == null) {
+            try {
+                Properties props = new Properties();
+                String home = System.getProperty("user.home");
+                File propsFile = new File(home, "portal-ext.properties");
+                props.load(new FileInputStream(propsFile));
+                StringBuilder params = new StringBuilder();
+                params.append("name=").append(java.net.URLEncoder.encode(curso.getNombre(), "UTF-8"));
+                params.append("&meetingID=").append(java.net.URLEncoder.encode(curso.getCodigo() + "-" + curso.getComunidadId(), "UTF-8"));
+                params.append("&record=").append(java.net.URLEncoder.encode("true", "UTF-8"));
+                String checksum = DigestUtils.shaHex("create" + params.toString() + props.getProperty("bbb.salt"));
+                params.append("&checksum=").append(checksum);
+                String bbb = "http://bbb.um.edu.mx/bigbluebutton/api/create?" + params.toString();
+                log.debug("URL: {}", bbb);
+                URL url = new URL(bbb);
+                URLConnection urlConn = url.openConnection();
+                BufferedReader in = new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
+                String linea = in.readLine();
+                while (StringUtils.isNotBlank(linea)) {
+                    log.debug("out: {}", linea);
+                    String returnCode = StringUtils.substringBetween(linea, "<returncode>", "</returncode>");
+                    if (returnCode.equals("SUCCESS")) {
+                        String meetingID = StringUtils.substringBetween(linea, "<meetingID>", "</meetingID>");
+                        String attendeePW = StringUtils.substringBetween(linea, "<attendeePW>", "</attendeePW>");
+                        String moderatorPW = StringUtils.substringBetween(linea, "<moderatorPW>", "</moderatorPW>");
+                        String createTime = StringUtils.substringBetween(linea, "<createTime>", "</createTime>");
+                        salon = new Salon();
+                        salon.setName(curso.getNombre());
+                        salon.setMeetingID(meetingID);
+                        salon.setAttendeePW(attendeePW);
+                        salon.setModeratorPW(moderatorPW);
+                        salon.setCreateTime(createTime);
+                        salon.setCurso(curso);
+                        salon = cursoDao.creaSalon(salon);
+                    }
+                    linea = in.readLine();
+                }
+            } catch (IOException ex) {
+                log.error("No se pudo crear el salon", ex);
+            }
+        } else {
+            try {
+                Properties props = new Properties();
+                String home = System.getProperty("user.home");
+                File propsFile = new File(home, "portal-ext.properties");
+                props.load(new FileInputStream(propsFile));
+                StringBuilder params = new StringBuilder();
+                params.append("meetingID=").append(java.net.URLEncoder.encode(curso.getCodigo() + "-" + curso.getComunidadId(), "UTF-8"));
+                String checksum = DigestUtils.shaHex("getRecordings" + params.toString() + props.getProperty("bbb.salt"));
+                params.append("&checksum=").append(checksum);
+                String bbb = "http://bbb.um.edu.mx/bigbluebutton/api/getRecordings?" + params.toString();
+                log.debug("URL: {}", bbb);
+                URL url = new URL(bbb);
+                URLConnection urlConn = url.openConnection();
+                BufferedReader in = new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
+                String linea = in.readLine();
+                while (StringUtils.isNotBlank(linea)) {
+                    log.debug("out: {}", linea);
+                    String returnCode = StringUtils.substringBetween(linea, "<returncode>", "</returncode>");
+                    if (returnCode.equals("SUCCESS")) {
+                        String[] ids = StringUtils.substringsBetween(linea, "<recordID>", "</recordID>");
+                        String[] urls = StringUtils.substringsBetween(linea, "<url>", "</url>");
+                        String[] starts = StringUtils.substringsBetween(linea, "<startTime>", "</startTime>");
+                        String[] ends = StringUtils.substringsBetween(linea, "<endTime>", "</endTime>");
+                        String[] lengths = StringUtils.substringsBetween(linea, "<length>", "</length>");
+                        List<Grabacion> grabaciones = new ArrayList<>();
+                        for (int i = 0; i < ids.length; i++) {
+                            Grabacion grabacion = new Grabacion(ids[i], new Date(new Long(starts[i])), new Date(new Long(ends[i])), new Integer(lengths[i]), urls[i]);
+                            params = new StringBuilder();
+                            params.append("recordID=").append(java.net.URLEncoder.encode(grabacion.getId(), "UTF-8"));
+                            checksum = DigestUtils.shaHex("deleteRecordings" + params.toString() + props.getProperty("bbb.salt"));
+                            params.append("&checksum=").append(checksum);
+                            bbb = "http://bbb.um.edu.mx/bigbluebutton/api/deleteRecordings?" + params.toString();
+                            grabacion.setElimina(bbb);
+                            grabaciones.add(grabacion);
+                        }
+                        modelo.addAttribute("grabaciones", grabaciones);
+                        modelo.addAttribute("timeZone", getThemeDisplay(request).getTimeZone().getDisplayName());
+                    }
+                    linea = in.readLine();
+                }
+            } catch (IOException ex) {
+                log.error("No se pudo crear el salon", ex);
+            }
+        }
+
+        modelo.addAttribute("salon", salon);
+
+        try {
+            User creador = PortalUtil.getUser(request);
+            Properties props = new Properties();
+            String home = System.getProperty("user.home");
+            File propsFile = new File(home, "portal-ext.properties");
+            props.load(new FileInputStream(propsFile));
+            StringBuilder params = new StringBuilder();
+            params.append("fullName=").append(java.net.URLEncoder.encode(creador.getFullName(), "UTF-8"));
+            params.append("&meetingID=").append(java.net.URLEncoder.encode(curso.getCodigo() + "-" + curso.getComunidadId(), "UTF-8"));
+            params.append("&password=").append(java.net.URLEncoder.encode(salon.getModeratorPW(), "UTF-8"));
+            params.append("&createTime=").append(java.net.URLEncoder.encode(salon.getCreateTime(), "UTF-8"));
+            String checksum = DigestUtils.shaHex("join" + params.toString() + props.getProperty("bbb.salt"));
+            params.append("&checksum=").append(checksum);
+            String bbb = "http://bbb.um.edu.mx/bigbluebutton/api/join?" + params.toString();
+            salon.setLigaAcceso(bbb);
+        } catch (PortalException | SystemException | IOException ex) {
+            log.error("No se pudo crear la liga del maestro", ex);
+        }
+
+        return "cursoAdmin/salon";
+    }
+
+    @RequestMapping(params = "action=invitacion")
+    public String invitacion(RenderRequest request, Model modelo, @RequestParam Long salonId) throws PortalException, SystemException {
+        Salon salon = cursoDao.obtieneSalonPorId(salonId);
+        modelo.addAttribute("salon", salon);
+        if (salon.getContentId() != null) {
+            ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+            JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(salon.getContentId());
+            if (ja != null) {
+                String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+                modelo.addAttribute("texto", texto);
+                modelo.addAttribute("textoUnicode", UnicodeFormatter.toString(texto));
+            }
+        }
+        return "cursoAdmin/salonCorreo";
+    }
+
+    @RequestMapping(params = "action=enviaInvitacion")
+    public void enviaInvitacion(ActionRequest request, ActionResponse response,
+            @ModelAttribute Salon salon) throws SystemException, PortalException {
+
+        String asunto = salon.getSubject();
+        String texto = salon.getTexto();
+        log.debug("ASUNTO: {}", asunto);
+        log.debug("TEXTO: {}", texto);
+
+        salon = cursoDao.obtieneSalonPorId(salon.getId());
+        User creador = PortalUtil.getUser(request);
+        if (salon.getContentId() == null) {
+            ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+            Calendar displayDate;
+            if (themeDisplay != null) {
+                displayDate = CalendarFactoryUtil.getCalendar(themeDisplay.getTimeZone(), themeDisplay.getLocale());
+            } else {
+                displayDate = CalendarFactoryUtil.getCalendar();
+            }
+            ServiceContext serviceContext = ServiceContextFactory.getInstance(JournalArticle.class.getName(), request);
+
+            JournalArticle article = textoUtil.crea(
+                    salon.getCurso().getNombre() + " - CLASSROOM EMAIL",
+                    salon.getCurso().getNombre() + " - CLASSROOM EMAIL",
+                    texto,
+                    displayDate,
+                    creador.getUserId(),
+                    salon.getCurso().getComunidadId(),
+                    serviceContext);
+
+            salon.setContentId(article.getId());
+        } else {
+            StringBuilder sb = new StringBuilder();
+            sb.append("<?xml version='1.0' encoding='UTF-8'?><root><static-content><![CDATA[");
+            sb.append(texto);
+            sb.append("]]></static-content></root>");
+            texto = sb.toString();
+
+            JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(salon.getContentId());
+            ja.setUserId(creador.getUserId());
+            ja.setContent(texto);
+            ja.setVersion(ja.getVersion() + 1);
+            JournalArticleLocalServiceUtil.updateJournalArticle(ja);
+        }
+
+        cursoDao.actualizaSalon(salon);
+        log.debug("Enviando correo");
+
+        response.setRenderParameter("action", "salon");
+        response.setRenderParameter("cursoId", salon.getCurso().getId().toString());
+    }
+
+    @RequestMapping(params = "action=eliminaSalon")
+    public void eliminaSalon(ActionRequest request, ActionResponse response,
+            @RequestParam Long salonId) throws SystemException, PortalException {
+
+        Salon salon = cursoDao.obtieneSalonPorId(salonId);
+        if (salon != null) {
+            try {
+                Properties props = new Properties();
+                String home = System.getProperty("user.home");
+                File propsFile = new File(home, "portal-ext.properties");
+                props.load(new FileInputStream(propsFile));
+                StringBuilder params = new StringBuilder();
+                params.append("meetingID=").append(java.net.URLEncoder.encode(salon.getMeetingID(), "UTF-8"));
+                params.append("&password=").append(java.net.URLEncoder.encode(salon.getModeratorPW(), "UTF-8"));
+                String checksum = DigestUtils.shaHex("end" + params.toString() + props.getProperty("bbb.salt"));
+                params.append("&checksum=").append(checksum);
+                String bbb = "http://bbb.um.edu.mx/bigbluebutton/api/end?" + params.toString();
+                log.debug("URL: {}", bbb);
+                URL url = new URL(bbb);
+                URLConnection urlConn = url.openConnection();
+                BufferedReader in = new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
+                String linea = in.readLine();
+                while (StringUtils.isNotBlank(linea)) {
+                    log.debug("out: {}", linea);
+                    String returnCode = StringUtils.substringBetween(linea, "<returncode>", "</returncode>");
+                    if (returnCode.equals("SUCCESS")) {
+                        log.info("Se ha enviado la peticion al servidor para cerrar el salon {}", salonId);
+                    }
+                    linea = in.readLine();
+                }
+            } catch (IOException ex) {
+                log.error("No se pudo crear el salon", ex);
+            }
+
+            cursoDao.eliminaSalon(salon);
+
+            response.setRenderParameter("action", "ver");
+            response.setRenderParameter("id", salon.getCurso().getId().toString());
+
+        }
     }
 }

@@ -28,7 +28,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Enumeration;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -68,15 +67,15 @@ public class ContenidoServlet extends HttpServlet {
         log.debug("Buscando {}", req.getPathInfo());
         String userIdString = req.getParameter("userId");
         String cursoIdString = req.getParameter("cursoId");
+        String esAdmin = req.getParameter("admin");
+        String contenidoIdString = req.getParameter("contenidoId");
         log.debug("CursoId: {}", cursoIdString);
         if (StringUtils.isNotBlank(userIdString)
                 && StringUtils.isNotBlank(cursoIdString)) {
-            String esAdmin = req.getParameter("admin");
             Long userId = new Long(userIdString);
             Long cursoId = new Long(cursoIdString);
             boolean estaInscrito = cursoDao.estaInscrito(cursoId, userId);
             if (estaInscrito || StringUtils.isNotBlank(esAdmin)) {
-                String contenidoIdString = req.getParameter("contenidoId");
                 log.debug("ContenidoId: {}", contenidoIdString);
                 if (StringUtils.isNotBlank(contenidoIdString)) {
                     Long contenidoId = new Long(contenidoIdString);
@@ -94,6 +93,22 @@ public class ContenidoServlet extends HttpServlet {
                             out.flush();
                         }
                     }
+                }
+            }
+        } else if (StringUtils.isNotBlank(esAdmin) && StringUtils.isNotBlank(contenidoIdString)) {
+            Long contenidoId = new Long(contenidoIdString);
+            Contenido contenido = contenidoDao.obtiene(contenidoId);
+            if (StringUtils.isNotBlank(contenido.getRuta())) {
+                log.debug("Subiendo ruta {}", contenido.getRuta());
+                req.getSession().setAttribute("ruta", contenido.getRuta());
+                BufferedOutputStream out = new BufferedOutputStream(resp.getOutputStream());
+                try (InputStream in = new FileInputStream(contenido.getRuta())) {
+                    byte[] buf = new byte[1024];
+                    int len;
+                    while ((len = in.read(buf)) > 0) {
+                        out.write(buf, 0, len);
+                    }
+                    out.flush();
                 }
             }
         } else {

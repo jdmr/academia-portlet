@@ -14,6 +14,10 @@
     <portlet:param name="action" value="elimina" />
     <portlet:param name="id" value="${curso.id}" />
 </portlet:actionURL>
+<portlet:renderURL var="salonUrl" >
+    <portlet:param name="action" value="salon" />
+    <portlet:param name="cursoId" value="${curso.id}" />
+</portlet:renderURL>
 
 <div class="well">
     <a class="btn btn-primary" href="<portlet:renderURL portletMode='view'/>"><i class="icon-list icon-white"></i> <s:message code="curso.lista" /></a>
@@ -52,6 +56,7 @@
         </c:otherwise>
     </c:choose>
     <a class="btn btn-primary" href="${alumnosUrl}"><i class="icon-edit icon-white"></i> <s:message code="curso.alumnos" /></a>
+    <a class="btn btn-primary" href="${salonUrl}"><i class="icon-edit icon-white"></i> <s:message code="curso.salon" /></a>
     <a class="btn btn-danger"  href="${eliminaUrl}" onclick="return confirm('<s:message code="curso.elimina.confirma"/>')"><i class="icon-ban-circle icon-white"></i> <s:message code="curso.elimina" /></a>
 </div>
 <c:if test="${not empty message}">

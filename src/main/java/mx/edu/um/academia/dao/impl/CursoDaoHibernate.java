@@ -36,7 +36,6 @@ import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.*;
-import java.util.logging.Level;
 import mx.edu.um.academia.dao.CursoDao;
 import mx.edu.um.academia.dao.ExamenDao;
 import mx.edu.um.academia.model.*;
@@ -230,7 +229,7 @@ public class CursoDaoHibernate implements CursoDao {
         query = currentSession().createQuery("delete from Reporte where curso.id = :cursoId");
         query.setLong("cursoId", cursoId);
         query.executeUpdate();
-        
+
         query = currentSession().createQuery("delete from PortletCurso where curso.id = :cursoId");
         query.setLong("cursoId", cursoId);
         query.executeUpdate();
@@ -1126,5 +1125,40 @@ public class CursoDaoHibernate implements CursoDao {
         query.setLong("id", curso.getId());
         query.setLong("version", curso.getVersion());
         query.executeUpdate();
+    }
+
+    @Override
+    public Salon obtieneSalon(Long cursoId) {
+        log.debug("Obtiene salon por el curso {}", cursoId);
+        Query query = currentSession().createQuery("select s from Salon s where s.curso.id = :cursoId");
+        query.setLong("cursoId", cursoId);
+        return (Salon) query.uniqueResult();
+    }
+
+    @Override
+    public Salon creaSalon(Salon salon) {
+        log.debug("Creando salon {}", salon);
+        currentSession().save(salon);
+        return salon;
+    }
+
+    @Override
+    public Salon obtieneSalonPorId(Long salonId) {
+        log.debug("Obtiene salon por su id {}", salonId);
+        Salon salon = (Salon) currentSession().get(Salon.class, salonId);
+        return salon;
+    }
+    
+    @Override
+    public Salon actualizaSalon(Salon salon) {
+        log.debug("Actualizando el salon {}", salon);
+        currentSession().update(salon);
+        return salon;
+    }
+    
+    @Override
+    public void eliminaSalon(Salon salon) {
+        log.debug("Eliminando salon {}", salon);
+        currentSession().delete(salon);
     }
 }

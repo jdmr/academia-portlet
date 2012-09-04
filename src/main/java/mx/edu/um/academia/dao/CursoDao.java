@@ -100,4 +100,14 @@ public interface CursoDao {
     public void asignaIntro(Curso curso);
 
     public void asignaCorreo(Curso curso);
+
+    public Salon obtieneSalon(Long cursoId);
+    
+    public Salon obtieneSalonPorId(Long salonId);
+    
+    public Salon creaSalon(Salon salon);
+    
+    public Salon actualizaSalon(Salon salon);
+    
+    public void eliminaSalon(Salon salon);
 }
