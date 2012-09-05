@@ -31,25 +31,33 @@ import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextFactory;
+import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.documentlibrary.model.DLFileEntry;
 import com.liferay.portlet.documentlibrary.service.DLFileEntryLocalServiceUtil;
 import com.liferay.portlet.journal.model.JournalArticle;
 import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
+import com.liferay.util.mail.MailEngine;
+import com.liferay.util.mail.MailEngineException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.*;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import javax.portlet.*;
 import javax.validation.Valid;
 import mx.edu.um.academia.dao.ContenidoDao;
 import mx.edu.um.academia.dao.CursoDao;
+import mx.edu.um.academia.model.Alumno;
+import mx.edu.um.academia.model.AlumnoCurso;
 import mx.edu.um.academia.model.Contenido;
 import mx.edu.um.academia.model.Curso;
 import mx.edu.um.academia.model.Grabacion;
@@ -786,11 +794,12 @@ public class CursoAdminPortlet extends BaseController {
         String texto = salon.getTexto();
         log.debug("ASUNTO: {}", asunto);
         log.debug("TEXTO: {}", texto);
+        String mensaje = salon.getTexto();
 
         salon = cursoDao.obtieneSalonPorId(salon.getId());
         User creador = PortalUtil.getUser(request);
+        ThemeDisplay themeDisplay = getThemeDisplay(request);
         if (salon.getContentId() == null) {
-            ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
             Calendar displayDate;
             if (themeDisplay != null) {
                 displayDate = CalendarFactoryUtil.getCalendar(themeDisplay.getTimeZone(), themeDisplay.getLocale());
@@ -825,6 +834,18 @@ public class CursoAdminPortlet extends BaseController {
 
         cursoDao.actualizaSalon(salon);
         log.debug("Enviando correo");
+        List<AlumnoCurso> alumnos = cursoDao.alumnos(salon.getCurso().getId());
+        for (AlumnoCurso alumnoCurso : alumnos) {
+            User usuario = UserLocalServiceUtil.getUser(alumnoCurso.getAlumno().getId());
+            try {
+                InternetAddress from = new InternetAddress(alumnoCurso.getCurso().getCorreo());
+                InternetAddress destinatario = new InternetAddress(usuario.getEmailAddress(), usuario.getFullName());
+                log.info("Enviando invitacion a {} para salon {}", usuario.getFullName(), salon);
+                MailEngine.send(from, destinatario, asunto, mensaje, true);
+            } catch (AddressException | UnsupportedEncodingException | MailEngineException e) {
+                log.error("No se le pudo enviar el correo a " + alumnoCurso.getAlumno(), e);
+            }
+        }
 
         response.setRenderParameter("action", "salon");
         response.setRenderParameter("cursoId", salon.getCurso().getId().toString());
