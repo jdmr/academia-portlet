@@ -582,7 +582,7 @@ public class CursoAdminPortlet extends BaseController {
                 sb.append("&cursoId=").append(cursoId);
                 sb.append("&userId=").append(themeDisplay.getUserId());
                 sb.append("&admin=true");
-                sb.append("' style='width:100%;height:600px;'></iframe>");
+                sb.append("' style='width:100%;height:650px;'></iframe>");
                 break;
             case Constantes.STORYLINE:
                 sb.append("<iframe src='").append(request.getContextPath());
@@ -841,11 +841,24 @@ public class CursoAdminPortlet extends BaseController {
         for (AlumnoCurso alumnoCurso : alumnos) {
             User usuario = UserLocalServiceUtil.getUser(alumnoCurso.getAlumno().getId());
             try {
+                Properties props = new Properties();
+                String home = System.getProperty("user.home");
+                File propsFile = new File(home, "portal-ext.properties");
+                props.load(new FileInputStream(propsFile));
+                StringBuilder params = new StringBuilder();
+                params.append("fullName=").append(java.net.URLEncoder.encode(usuario.getFullName(), "UTF-8"));
+                params.append("&meetingID=").append(java.net.URLEncoder.encode(salon.getCurso().getCodigo() + "-" + salon.getCurso().getComunidadId(), "UTF-8"));
+                params.append("&password=").append(java.net.URLEncoder.encode(salon.getAttendeePW(), "UTF-8"));
+                params.append("&createTime=").append(java.net.URLEncoder.encode(salon.getCreateTime(), "UTF-8"));
+                String checksum = DigestUtils.shaHex("join" + params.toString() + props.getProperty("bbb.salt"));
+                params.append("&checksum=").append(checksum);
+                String bbb = "http://bbb.um.edu.mx/bigbluebutton/api/join?" + params.toString();
+                mensaje = mensaje + "<p><a href='"+bbb+"' target='_blank'>"+messages.getMessage("salon.entrar.clic", null, themeDisplay.getLocale()) +"</a></p>";
                 InternetAddress from = new InternetAddress(alumnoCurso.getCurso().getCorreo());
                 InternetAddress destinatario = new InternetAddress(usuario.getEmailAddress(), usuario.getFullName());
                 log.info("Enviando invitacion a {} para salon {}", usuario.getFullName(), salon);
                 MailEngine.send(from, destinatario, asunto, mensaje, true);
-            } catch (AddressException | UnsupportedEncodingException | MailEngineException e) {
+            } catch (MailEngineException | IOException | AddressException e) {
                 log.error("No se le pudo enviar el correo a " + alumnoCurso.getAlumno(), e);
             }
         }

@@ -36,8 +36,10 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.validation.Valid;
 import mx.edu.um.academia.dao.ObjetoAprendizajeDao;
+import mx.edu.um.academia.model.Contenido;
 import mx.edu.um.academia.model.ObjetoAprendizaje;
 import mx.edu.um.academia.utils.ComunidadUtil;
+import mx.edu.um.academia.utils.Constantes;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -140,6 +142,31 @@ public class ObjetoAprendizajePortlet extends BaseController {
 
         Map<Long, String> comunidades = ComunidadUtil.obtieneComunidades(request);
         Map<String, Object> contenidos = objetoAprendizajeDao.contenidos(id, comunidades.keySet());
+        List<Contenido> disponibles = (List<Contenido>) contenidos.get("disponibles");
+        cicloContenidos:
+        for (Contenido contenido : disponibles) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(request.getScheme())
+                    .append("://")
+                    .append(request.getServerName())
+                    .append(":")
+                    .append(request.getServerPort())
+                    .append(request.getContextPath());
+            switch (contenido.getTipo()) {
+                case Constantes.ARTICULATE:
+                    sb.append("/contenido/player.html?contenidoId=").append(contenido.getId());
+                    sb.append("&admin=true");
+                    log.debug("vistaPrevia: {}", sb.toString());
+                    modelo.addAttribute("vistaPrevia", sb.toString());
+                    break cicloContenidos;
+                case Constantes.STORYLINE:
+                    sb.append("/contenido/story.html?contenidoId=").append(contenido.getId());
+                    sb.append("&admin=true");
+                    log.debug("vistaPrevia: {}", sb.toString());
+                    modelo.addAttribute("vistaPrevia", sb.toString());
+                    break cicloContenidos;
+            }
+        }
         modelo.addAttribute("disponibles", contenidos.get("disponibles"));
         modelo.addAttribute("seleccionados", contenidos.get("seleccionados"));
 

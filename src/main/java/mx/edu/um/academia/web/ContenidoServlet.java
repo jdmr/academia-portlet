@@ -129,7 +129,7 @@ public class ContenidoServlet extends HttpServlet {
                     }
                 }
             } else {
-                log.debug("No encontre una ruta en la session");
+                log.error("No encontre una ruta en la session");
             }
         }
     }

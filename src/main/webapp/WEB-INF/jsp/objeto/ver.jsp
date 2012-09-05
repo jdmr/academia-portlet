@@ -49,13 +49,13 @@
         <h3>${objeto.fechaModificacion}</h3>
     </div>
 </div>
-<%--    
-<div class="row-fluid">
-    <div class="span12">
-        <h3><%= request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort() %><c:url value="/contenido/player.html?contenidoId=${seleccionados[0].id}&admin=true" /></h3>
+<c:if test="${not empty vistaPrevia}">
+    <div class="row-fluid">
+        <div class="span12">
+            <h3>${vistaPrevia}</h3>
+        </div>
     </div>
-</div>
---%>
+</c:if>
 <portlet:actionURL var="agregaContenidoURL">
     <portlet:param name="action" value="agregaContenido"/>
 </portlet:actionURL>
