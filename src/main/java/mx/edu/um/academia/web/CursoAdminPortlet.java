@@ -720,24 +720,27 @@ public class CursoAdminPortlet extends BaseController {
                     log.debug("out: {}", linea);
                     String returnCode = StringUtils.substringBetween(linea, "<returncode>", "</returncode>");
                     if (returnCode.equals("SUCCESS")) {
-                        String[] ids = StringUtils.substringsBetween(linea, "<recordID>", "</recordID>");
-                        String[] urls = StringUtils.substringsBetween(linea, "<url>", "</url>");
-                        String[] starts = StringUtils.substringsBetween(linea, "<startTime>", "</startTime>");
-                        String[] ends = StringUtils.substringsBetween(linea, "<endTime>", "</endTime>");
-                        String[] lengths = StringUtils.substringsBetween(linea, "<length>", "</length>");
-                        List<Grabacion> grabaciones = new ArrayList<>();
-                        for (int i = 0; i < ids.length; i++) {
-                            Grabacion grabacion = new Grabacion(ids[i], new Date(new Long(starts[i])), new Date(new Long(ends[i])), new Integer(lengths[i]), urls[i]);
-                            params = new StringBuilder();
-                            params.append("recordID=").append(java.net.URLEncoder.encode(grabacion.getId(), "UTF-8"));
-                            checksum = DigestUtils.shaHex("deleteRecordings" + params.toString() + props.getProperty("bbb.salt"));
-                            params.append("&checksum=").append(checksum);
-                            bbb = "http://bbb.um.edu.mx/bigbluebutton/api/deleteRecordings?" + params.toString();
-                            grabacion.setElimina(bbb);
-                            grabaciones.add(grabacion);
+                        String messageKey = StringUtils.substringBetween(linea, "<messageKey>", "</messageKey>");
+                        if (StringUtils.isBlank(messageKey) || !messageKey.equals("noRecordings")) {
+                            String[] ids = StringUtils.substringsBetween(linea, "<recordID>", "</recordID>");
+                            String[] urls = StringUtils.substringsBetween(linea, "<url>", "</url>");
+                            String[] starts = StringUtils.substringsBetween(linea, "<startTime>", "</startTime>");
+                            String[] ends = StringUtils.substringsBetween(linea, "<endTime>", "</endTime>");
+                            String[] lengths = StringUtils.substringsBetween(linea, "<length>", "</length>");
+                            List<Grabacion> grabaciones = new ArrayList<>();
+                            for (int i = 0; i < ids.length; i++) {
+                                Grabacion grabacion = new Grabacion(ids[i], new Date(new Long(starts[i])), new Date(new Long(ends[i])), new Integer(lengths[i]), urls[i]);
+                                params = new StringBuilder();
+                                params.append("recordID=").append(java.net.URLEncoder.encode(grabacion.getId(), "UTF-8"));
+                                checksum = DigestUtils.shaHex("deleteRecordings" + params.toString() + props.getProperty("bbb.salt"));
+                                params.append("&checksum=").append(checksum);
+                                bbb = "http://bbb.um.edu.mx/bigbluebutton/api/deleteRecordings?" + params.toString();
+                                grabacion.setElimina(bbb);
+                                grabaciones.add(grabacion);
+                            }
+                            modelo.addAttribute("grabaciones", grabaciones);
+                            modelo.addAttribute("timeZone", getThemeDisplay(request).getTimeZone().getDisplayName());
                         }
-                        modelo.addAttribute("grabaciones", grabaciones);
-                        modelo.addAttribute("timeZone", getThemeDisplay(request).getTimeZone().getDisplayName());
                     }
                     linea = in.readLine();
                 }
