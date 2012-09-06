@@ -19,9 +19,9 @@
         </triggeringPolicy>
     </appender>
     <logger name="mx.edu.um.academia" level="DEBUG"/>
-    <logger name="org.springframework" level="DEBUG"/>
-    <!--
     <logger name="org.hibernate.SQL" level="TRACE"/>
+    <!--
+    <logger name="org.springframework" level="DEBUG"/>
     <logger name="org.hibernate.type" level="TRACE"/>
     -->
     <root level="WARN">

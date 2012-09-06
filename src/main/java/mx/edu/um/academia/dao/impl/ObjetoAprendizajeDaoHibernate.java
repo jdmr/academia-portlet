@@ -37,6 +37,7 @@ import mx.edu.um.academia.model.ObjetoAprendizaje;
 import mx.edu.um.academia.utils.Constantes;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.*;
@@ -247,22 +248,28 @@ public class ObjetoAprendizajeDaoHibernate implements ObjetoAprendizajeDao {
     @Override
     public Map<String, Object> contenidos(Long id, Set<Long> comunidades) {
         log.debug("Buscando los contenidos del objeto de aprendizaje {}", id);
-        Query query = currentSession().createQuery("select contenido from ObjetoAprendizaje oa inner join oa.contenidos as contenido where oa.id = :objetoId");
+        Query query = currentSession().createQuery("select oa from ObjetoAprendizaje oa inner join fetch oa.contenidos where oa.id = :objetoId");
         query.setLong("objetoId", id);
         Map<String, Object> resultado = new HashMap<>();
-        List<Contenido> contenidos = query.list();
-        log.debug("Lista de seleccionados");
-        for (Contenido contenido : contenidos) {
-            log.debug("Seleccionado: " + contenido.getNombre());
+        ObjetoAprendizaje objetoAprendizaje = (ObjetoAprendizaje) query.uniqueResult();
+        List<Contenido> contenidos = null;
+        if (objetoAprendizaje != null) {
+            contenidos = objetoAprendizaje.getContenidos();
+            log.debug("Lista de seleccionados");
+            for (Contenido contenido : contenidos) {
+                log.debug("Seleccionado: " + contenido.getNombre());
+            }
+            resultado.put("seleccionados", contenidos);
         }
-        resultado.put("seleccionados", contenidos);
 
         Criteria criteria = currentSession().createCriteria(Contenido.class);
         criteria.add(Restrictions.in("comunidadId", (Set<Long>) comunidades));
         criteria.addOrder(Order.asc("codigo"));
         log.debug("Lista de disponibles");
         List<Contenido> disponibles = criteria.list();
-        disponibles.removeAll(contenidos);
+        if (contenidos != null) {
+            disponibles.removeAll(contenidos);
+        }
         for (Contenido contenido : disponibles) {
             log.debug("Disponible: " + contenido.getNombre());
         }
@@ -274,12 +281,20 @@ public class ObjetoAprendizajeDaoHibernate implements ObjetoAprendizajeDao {
     @Override
     public void agregaContenido(Long objetoId, Long[] contenidosArray) {
         log.debug("Agregando contenido a objeto {}", objetoId);
+//        SQLQuery query = currentSession().createSQLQuery("delete from aca_objetos_aca_contenidos where objetos_id = :objetoId");
+//        query.setLong("objetoId", objetoId);
+//        query.executeUpdate();
+//        currentSession().flush();
         ObjetoAprendizaje objeto = (ObjetoAprendizaje) currentSession().get(ObjetoAprendizaje.class, objetoId);
         objeto.getContenidos().clear();
-        for (Long contenidoId : contenidosArray) {
-            objeto.getContenidos().add((Contenido) currentSession().load(Contenido.class, contenidoId));
-        }
         currentSession().update(objeto);
         currentSession().flush();
+        if (contenidosArray != null) {
+            for (Long contenidoId : contenidosArray) {
+                objeto.getContenidos().add((Contenido) currentSession().load(Contenido.class, contenidoId));
+            }
+            currentSession().update(objeto);
+            currentSession().flush();
+        }
     }
 }

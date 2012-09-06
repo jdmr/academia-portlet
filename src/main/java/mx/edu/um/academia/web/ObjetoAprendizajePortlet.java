@@ -142,33 +142,36 @@ public class ObjetoAprendizajePortlet extends BaseController {
 
         Map<Long, String> comunidades = ComunidadUtil.obtieneComunidades(request);
         Map<String, Object> contenidos = objetoAprendizajeDao.contenidos(id, comunidades.keySet());
-        List<Contenido> disponibles = (List<Contenido>) contenidos.get("disponibles");
-        cicloContenidos:
-        for (Contenido contenido : disponibles) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(request.getScheme())
-                    .append("://")
-                    .append(request.getServerName())
-                    .append(":")
-                    .append(request.getServerPort())
-                    .append(request.getContextPath());
-            switch (contenido.getTipo()) {
-                case Constantes.ARTICULATE:
-                    sb.append("/contenido/player.html?contenidoId=").append(contenido.getId());
-                    sb.append("&admin=true");
-                    log.debug("vistaPrevia: {}", sb.toString());
-                    modelo.addAttribute("vistaPrevia", sb.toString());
-                    break cicloContenidos;
-                case Constantes.STORYLINE:
-                    sb.append("/contenido/story.html?contenidoId=").append(contenido.getId());
-                    sb.append("&admin=true");
-                    log.debug("vistaPrevia: {}", sb.toString());
-                    modelo.addAttribute("vistaPrevia", sb.toString());
-                    break cicloContenidos;
+        List<Contenido> seleccionados = (List<Contenido>) contenidos.get("seleccionados");
+        if (seleccionados != null) {
+            cicloContenidos:
+            for (Contenido contenido : seleccionados) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(request.getScheme())
+                        .append("://")
+                        .append(request.getServerName());
+                if (request.getServerPort() != 80) {
+                    sb.append(":").append(request.getServerPort());
+                }
+                sb.append(request.getContextPath());
+                switch (contenido.getTipo()) {
+                    case Constantes.ARTICULATE:
+                        sb.append("/contenido/player.html?contenidoId=").append(contenido.getId());
+                        sb.append("&admin=true");
+                        log.debug("vistaPrevia: {}", sb.toString());
+                        modelo.addAttribute("vistaPrevia", sb.toString());
+                        break cicloContenidos;
+                    case Constantes.STORYLINE:
+                        sb.append("/contenido/story.html?contenidoId=").append(contenido.getId());
+                        sb.append("&admin=true");
+                        log.debug("vistaPrevia: {}", sb.toString());
+                        modelo.addAttribute("vistaPrevia", sb.toString());
+                        break cicloContenidos;
+                }
             }
+            modelo.addAttribute("seleccionados", seleccionados);
         }
         modelo.addAttribute("disponibles", contenidos.get("disponibles"));
-        modelo.addAttribute("seleccionados", contenidos.get("seleccionados"));
 
         return "objeto/ver";
     }
@@ -215,8 +218,11 @@ public class ObjetoAprendizajePortlet extends BaseController {
     }
 
     @RequestMapping(params = "action=agregaContenido")
-    public void agregaContenido(ActionRequest request, ActionResponse response, @RequestParam Long objetoId, @RequestParam Long[] contenidos) {
+    public void agregaContenido(ActionRequest request, ActionResponse response, @RequestParam Long objetoId, @RequestParam(required = false) Long[] contenidos) {
         log.debug("Agregando contenido {} a {}", contenidos, objetoId);
+        for(String key : request.getParameterMap().keySet()) {
+            log.debug("{} : {}", key, request.getParameterMap().get(key));
+        }
 
         objetoAprendizajeDao.agregaContenido(objetoId, contenidos);
 

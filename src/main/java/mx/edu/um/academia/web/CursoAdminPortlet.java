@@ -46,7 +46,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.*;
@@ -56,7 +55,6 @@ import javax.portlet.*;
 import javax.validation.Valid;
 import mx.edu.um.academia.dao.ContenidoDao;
 import mx.edu.um.academia.dao.CursoDao;
-import mx.edu.um.academia.model.Alumno;
 import mx.edu.um.academia.model.AlumnoCurso;
 import mx.edu.um.academia.model.Contenido;
 import mx.edu.um.academia.model.Curso;
@@ -672,7 +670,7 @@ public class CursoAdminPortlet extends BaseController {
                 params.append("&record=").append(java.net.URLEncoder.encode("true", "UTF-8"));
                 String checksum = DigestUtils.shaHex("create" + params.toString() + props.getProperty("bbb.salt"));
                 params.append("&checksum=").append(checksum);
-                String bbb = "http://bbb.um.edu.mx/bigbluebutton/api/create?" + params.toString();
+                String bbb = props.getProperty("bbb.url") + "/create?" + params.toString();
                 log.debug("URL: {}", bbb);
                 URL url = new URL(bbb);
                 URLConnection urlConn = url.openConnection();
@@ -710,7 +708,7 @@ public class CursoAdminPortlet extends BaseController {
                 params.append("meetingID=").append(java.net.URLEncoder.encode(curso.getCodigo() + "-" + curso.getComunidadId(), "UTF-8"));
                 String checksum = DigestUtils.shaHex("getRecordings" + params.toString() + props.getProperty("bbb.salt"));
                 params.append("&checksum=").append(checksum);
-                String bbb = "http://bbb.um.edu.mx/bigbluebutton/api/getRecordings?" + params.toString();
+                String bbb = props.getProperty("bbb.url") + "/getRecordings?" + params.toString();
                 log.debug("URL: {}", bbb);
                 URL url = new URL(bbb);
                 URLConnection urlConn = url.openConnection();
@@ -734,7 +732,7 @@ public class CursoAdminPortlet extends BaseController {
                                 params.append("recordID=").append(java.net.URLEncoder.encode(grabacion.getId(), "UTF-8"));
                                 checksum = DigestUtils.shaHex("deleteRecordings" + params.toString() + props.getProperty("bbb.salt"));
                                 params.append("&checksum=").append(checksum);
-                                bbb = "http://bbb.um.edu.mx/bigbluebutton/api/deleteRecordings?" + params.toString();
+                                bbb = props.getProperty("bbb.url") + "/deleteRecordings?" + params.toString();
                                 grabacion.setElimina(bbb);
                                 grabaciones.add(grabacion);
                             }
@@ -764,7 +762,7 @@ public class CursoAdminPortlet extends BaseController {
             params.append("&createTime=").append(java.net.URLEncoder.encode(salon.getCreateTime(), "UTF-8"));
             String checksum = DigestUtils.shaHex("join" + params.toString() + props.getProperty("bbb.salt"));
             params.append("&checksum=").append(checksum);
-            String bbb = "http://bbb.um.edu.mx/bigbluebutton/api/join?" + params.toString();
+            String bbb = props.getProperty("bbb.url") + "/join?" + params.toString();
             salon.setLigaAcceso(bbb);
         } catch (PortalException | SystemException | IOException ex) {
             log.error("No se pudo crear la liga del maestro", ex);
@@ -852,8 +850,8 @@ public class CursoAdminPortlet extends BaseController {
                 params.append("&createTime=").append(java.net.URLEncoder.encode(salon.getCreateTime(), "UTF-8"));
                 String checksum = DigestUtils.shaHex("join" + params.toString() + props.getProperty("bbb.salt"));
                 params.append("&checksum=").append(checksum);
-                String bbb = "http://bbb.um.edu.mx/bigbluebutton/api/join?" + params.toString();
-                mensaje = mensaje + "<p><a href='"+bbb+"' target='_blank'>"+messages.getMessage("salon.entrar.clic", null, themeDisplay.getLocale()) +"</a></p>";
+                String bbb = props.getProperty("bbb.url") + "/join?" + params.toString();
+                mensaje = mensaje + "<p><a href='" + bbb + "' target='_blank'>" + messages.getMessage("salon.entrar.clic", null, themeDisplay.getLocale()) + "</a></p>";
                 InternetAddress from = new InternetAddress(alumnoCurso.getCurso().getCorreo());
                 InternetAddress destinatario = new InternetAddress(usuario.getEmailAddress(), usuario.getFullName());
                 log.info("Enviando invitacion a {} para salon {}", usuario.getFullName(), salon);
@@ -883,7 +881,7 @@ public class CursoAdminPortlet extends BaseController {
                 params.append("&password=").append(java.net.URLEncoder.encode(salon.getModeratorPW(), "UTF-8"));
                 String checksum = DigestUtils.shaHex("end" + params.toString() + props.getProperty("bbb.salt"));
                 params.append("&checksum=").append(checksum);
-                String bbb = "http://bbb.um.edu.mx/bigbluebutton/api/end?" + params.toString();
+                String bbb = props.getProperty("bbb.url") + "/end?" + params.toString();
                 log.debug("URL: {}", bbb);
                 URL url = new URL(bbb);
                 URLConnection urlConn = url.openConnection();
