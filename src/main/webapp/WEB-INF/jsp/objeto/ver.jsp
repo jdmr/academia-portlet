@@ -78,5 +78,12 @@
 <script type="text/javascript">
     $(document).ready(function() {
         $("select#<portlet:namespace />contenidos").chosen();
+        <%--
+        var objetoId = $("input#<portlet:namespace />objetoId").val();
+        $("select#<portlet:namespace />contenidos").chosen().change(function() {
+            var data = $("select#<portlet:namespace />contenidos").val();
+            $.post("<portlet:resourceURL id='actualizaContenido'/>", {'contenidos': data, 'objetoId': objetoId});
+        });
+        --%>
     });
 </script>

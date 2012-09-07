@@ -34,6 +34,8 @@ import java.util.Map;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
+import javax.portlet.ResourceRequest;
+import javax.portlet.ResourceResponse;
 import javax.validation.Valid;
 import mx.edu.um.academia.dao.ObjetoAprendizajeDao;
 import mx.edu.um.academia.model.Contenido;
@@ -48,6 +50,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 
 /**
  *
@@ -228,5 +231,12 @@ public class ObjetoAprendizajePortlet extends BaseController {
 
         response.setRenderParameter("action", "ver");
         response.setRenderParameter("id", objetoId.toString());
+    }
+
+    @ResourceMapping(value = "actualizaContenido")
+    public void actualizaContenido(ResourceRequest request, ResourceResponse response, @RequestParam Long id, @RequestParam(value="contenidos[]", required = false) Long[] contenidos) {
+        log.debug("Actualizando contenidos {} para el objeto {}", contenidos, id);
+
+        objetoAprendizajeDao.agregaContenido(id, contenidos);
     }
 }
