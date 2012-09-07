@@ -851,11 +851,11 @@ public class CursoAdminPortlet extends BaseController {
                 String checksum = DigestUtils.shaHex("join" + params.toString() + props.getProperty("bbb.salt"));
                 params.append("&checksum=").append(checksum);
                 String bbb = props.getProperty("bbb.url") + "/join?" + params.toString();
-                mensaje = mensaje + "<p><a href='" + bbb + "' target='_blank'>" + messages.getMessage("salon.entrar.clic", null, themeDisplay.getLocale()) + "</a></p>";
+                String correo = mensaje + "<h1 style='font-size:1.5em;'><a href='" + bbb + "' target='_blank'>" + messages.getMessage("salon.entrar.clic", null, themeDisplay.getLocale()) + "</a></h1>";
                 InternetAddress from = new InternetAddress(alumnoCurso.getCurso().getCorreo());
                 InternetAddress destinatario = new InternetAddress(usuario.getEmailAddress(), usuario.getFullName());
                 log.info("Enviando invitacion a {} para salon {}", usuario.getFullName(), salon);
-                MailEngine.send(from, destinatario, asunto, mensaje, true);
+                MailEngine.send(from, destinatario, asunto, correo, true);
             } catch (MailEngineException | IOException | AddressException e) {
                 log.error("No se le pudo enviar el correo a " + alumnoCurso.getAlumno(), e);
             }
