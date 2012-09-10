@@ -37,7 +37,6 @@ import mx.edu.um.academia.model.ObjetoAprendizaje;
 import mx.edu.um.academia.utils.Constantes;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
-import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.*;
@@ -296,5 +295,26 @@ public class ObjetoAprendizajeDaoHibernate implements ObjetoAprendizajeDao {
             currentSession().update(objeto);
             currentSession().flush();
         }
+    }
+    
+    @Override
+    public List<Contenido> buscaContenidos(Long objetoId, String filtro) {
+        Query query = currentSession().createQuery("select comunidadId from ObjetoAprendizaje where id = :objetoId");
+        query.setLong("objetoId", objetoId);
+        Long comunidadId = (Long) query.uniqueResult();
+        query = currentSession().createQuery ("select c.id from ObjetoAprendizaje oa inner join oa.contenidos as c where oa.id = :objetoId");
+        query.setLong("objetoId", objetoId);
+        List<Long> idsDeContenido = query.list();
+        Criteria criteria = currentSession().createCriteria(Contenido.class);
+        criteria.add(Restrictions.eq("comunidadId", comunidadId));
+        if (idsDeContenido != null && idsDeContenido.size() > 0) {
+            criteria.add(Restrictions.not(Restrictions.in("id", idsDeContenido)));
+        }
+        Disjunction propiedades = Restrictions.disjunction();
+        propiedades.add(Restrictions.ilike("codigo", filtro, MatchMode.ANYWHERE));
+        propiedades.add(Restrictions.ilike("nombre", filtro, MatchMode.ANYWHERE));
+        criteria.add(propiedades);
+        criteria.addOrder(Order.asc("codigo"));
+        return criteria.list();
     }
 }

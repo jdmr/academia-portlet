@@ -25,9 +25,14 @@ package mx.edu.um.academia.web;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.model.User;
 import com.liferay.portal.util.PortalUtil;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -233,10 +238,43 @@ public class ObjetoAprendizajePortlet extends BaseController {
         response.setRenderParameter("id", objetoId.toString());
     }
 
-    @ResourceMapping(value = "actualizaContenido")
-    public void actualizaContenido(ResourceRequest request, ResourceResponse response, @RequestParam Long id, @RequestParam(value="contenidos[]", required = false) Long[] contenidos) {
+    @ResourceMapping(value = "actualizaContenidos")
+    public void actualizaContenidos(ResourceRequest request, ResourceResponse response, @RequestParam Long id, @RequestParam(value="contenidos[]", required = false) String[] contenidos) {
         log.debug("Actualizando contenidos {} para el objeto {}", contenidos, id);
 
-        objetoAprendizajeDao.agregaContenido(id, contenidos);
+        List<Long> contenidosArray = new ArrayList<>();
+        int j = 0;
+        for(int i = 0;i<contenidos.length;i++) {
+            log.debug("Contenido: {}", contenidos[i]);
+            String[] x = StringUtils.split(contenidos[i], ",");
+            if (x != null) {
+                for(String y : x) {
+                    contenidosArray.add(new Long(y));
+                }
+            } else {
+                contenidosArray.add(new Long(contenidos[i]));
+            }
+        }
+        
+        objetoAprendizajeDao.agregaContenido(id, contenidosArray.toArray(new Long[0]));
+    }
+    
+    @ResourceMapping(value = "buscaContenidos")
+    public void buscaContenidos(ResourceRequest request, ResourceResponse response, @RequestParam Long id, @RequestParam(value="term", required=false) String filtro) throws IOException {
+        log.debug("Busca contenidos para objeto {} con filtro {}", id, filtro);
+        JSONArray results = JSONFactoryUtil.createJSONArray();
+        
+        List<Contenido> contenidos = objetoAprendizajeDao.buscaContenidos(id, filtro);
+        for(Contenido contenido : contenidos) {
+            JSONObject listEntry = JSONFactoryUtil.createJSONObject();
+
+            listEntry.put("id", contenido.getId());
+            listEntry.put("value", contenido.getCodigo() + " | "+ contenido.getNombre());
+
+            results.put(listEntry);
+        }
+        
+        PrintWriter writer = response.getWriter();
+        writer.println(results.toString());
     }
 }

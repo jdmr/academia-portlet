@@ -59,31 +59,75 @@
 <portlet:actionURL var="agregaContenidoURL">
     <portlet:param name="action" value="agregaContenido"/>
 </portlet:actionURL>
-<form id="<portlet:namespace />agregaContenidoForm" action="${agregaContenidoURL}" method="post" class="form-vertical">
-    <input type="hidden" id="<portlet:namespace />objetoId" name="<portlet:namespace />objetoId" value="${objeto.id}"/>
-    <div class="row-fluid">
-        <select id="<portlet:namespace />contenidos" name="<portlet:namespace />contenidos" multiple="multiple" data-placeholder="<s:message code="objeto.elija.contenido" />" class="span4">
+<div class="row-fluid">
+    <div class="span6">
+        <label>
+            <h3><s:message code="objeto.agrega.contenido" /></h3>
+            <input type="text" name="<portlet:namespace />contenidoAC" id="<portlet:namespace />contenidoAC" class="span12" />
+        </label>
+        <div class="alert alert-block alert-success" id="successMessageDiv" style="display:none;">
+            <p id="successMessage">This is a test</p>
+        </div>
+    </div>
+</div>
+<div class="row-fluid">
+    <div class="span6" id="contenidos">
+        <div id="<portlet:namespace />contenidosDiv">
             <c:forEach items="${seleccionados}" var="contenido">
-                <option value="${contenido.id}" selected="selected">${contenido.codigo} | ${contenido.nombre}</option>
+                <div class="ui-state-default" id="${contenido.id}" data-id="${contenido.id}"><span class="ui-icon ui-icon-arrowthick-2-n-s" style="float: left; margin-top: 5px;"></span> ${contenido.codigo} | ${contenido.nombre} <a class="close" data-dismiss="alert">×</a></div>
             </c:forEach>
-            <c:forEach items="${disponibles}" var="contenido">
-                <option value="${contenido.id}">${contenido.codigo} | ${contenido.nombre}</option>
-            </c:forEach>
-        </select>
+        </div>
     </div>
-    <div class="row-fluid">
-        <button type="submit" class="btn btn-primary"><i class="icon-file icon-white"></i> <s:message code="objeto.agrega.contenido" /></button>
-    </div>
-</form>
+</div>
 <script type="text/javascript">
     $(document).ready(function() {
-        $("select#<portlet:namespace />contenidos").chosen();
-        <%--
-        var objetoId = $("input#<portlet:namespace />objetoId").val();
-        $("select#<portlet:namespace />contenidos").chosen().change(function() {
-            var data = $("select#<portlet:namespace />contenidos").val();
-            $.post("<portlet:resourceURL id='actualizaContenido'/>", {'contenidos': data, 'objetoId': objetoId});
+        $("div#contenidos").on('closed', 'div.ui-state-default',function() {
+            $($(this).data('id')).remove();
+            setTimeout(function(){
+                var contenidosOrder = $("div#<portlet:namespace />contenidosDiv").sortable('toArray').toString();
+                $.post("<portlet:resourceURL id='actualizaContenidos'/>", {id:${objeto.id}, 'contenidos[]':contenidosOrder}, function() {
+                    $("p#successMessage").text('<s:message code="objetoAprendizaje.contenido.eliminar" />');
+                    var div = $("div#successMessageDiv");
+                    div.show('slow', function() {
+                        setTimeout(function() {
+                            div.hide('slow');
+                        }, 2000);
+                    });
+                });
+            }, 500);
         });
-        --%>
+        $("div#<portlet:namespace />contenidosDiv").sortable({
+            update: function(event, ui) {
+                var contenidosOrder = $(this).sortable('toArray').toString();
+                $.post("<portlet:resourceURL id='actualizaContenidos'/>", {id:${objeto.id}, 'contenidos[]':contenidosOrder}, function() {
+                    $("p#successMessage").text('<s:message code="objetoAprendizaje.contenido.mover" />');
+                    $("div#successMessageDiv").toggle().delay(500).toggle();
+                    var div = $("div#successMessageDiv");
+                    div.show('slow', function() {
+                        setTimeout(function() {
+                            div.hide('slow');
+                        }, 2000);
+                    });
+                });
+            }
+        });
+        $("input#<portlet:namespace />contenidoAC").autocomplete({
+            source: "<portlet:resourceURL id='buscaContenidos'/>",
+            select: function(event, ui) {
+                $("div#<portlet:namespace />contenidosDiv").append("<div class='ui-state-default' id='"+ui.item.id+"'><span class='ui-icon ui-icon-arrowthick-2-n-s' style='float: left; margin-top: 5px;'></span> " + ui.item.value + "<a class='close' data-dismiss='alert'>×</a></div>");
+                $("input#<portlet:namespace />contenidoAC").val("");
+                var contenidosOrder = $("div#<portlet:namespace />contenidosDiv").sortable('toArray').toString();
+                $.post("<portlet:resourceURL id='actualizaContenidos'/>", {id:${objeto.id}, 'contenidos[]':contenidosOrder}, function() {
+                    $("p#successMessage").text('<s:message code="objetoAprendizaje.contenido.agregar" />');
+                    var div = $("div#successMessageDiv");
+                    div.show('slow', function() {
+                        setTimeout(function() {
+                            div.hide('slow');
+                        }, 2000);
+                    });
+                });
+                return false;
+            }
+        });
     });
 </script>

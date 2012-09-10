@@ -25,8 +25,10 @@ package mx.edu.um.academia.dao;
 
 import com.liferay.portal.model.User;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import mx.edu.um.academia.model.Contenido;
 import mx.edu.um.academia.model.ObjetoAprendizaje;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -49,4 +51,6 @@ public interface ObjetoAprendizajeDao {
     public Map<String, Object> contenidos(Long id, Set<Long> comunidades);
 
     public void agregaContenido(Long objetoId, Long[] contenidos);
+    
+    public List<Contenido> buscaContenidos(Long objetoId, String filtro);
 }

@@ -37,14 +37,7 @@
             </tbody>
         </table>
         <div class="row-fluid">
-            <div class="pagination">
-                <li class="disabled"><a href="#"><s:message code="mensaje.paginacion" arguments="${paginacion}" /></a></li>
-                <c:forEach items="${paginas}" var="paginaId">
-                    <li <c:if test="${pagina == paginaId}" >class="active"</c:if>>
-                        <a href="javascript:buscaPagina(${paginaId});" >${paginaId}</a>
-                    </li>
-                </c:forEach>
-            </div>
+            <%@ include file="/WEB-INF/jsp/paginacion.jsp" %>        
         </div>
     </c:if>
 </form>
