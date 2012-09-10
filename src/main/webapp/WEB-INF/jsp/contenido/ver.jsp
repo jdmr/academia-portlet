@@ -60,6 +60,12 @@
     <a class="btn btn-danger"  href="${eliminaUrl}" onclick="return confirm('<s:message code="contenido.elimina.confirma"/>')"><i class="icon-ban-circle icon-white"></i> <s:message code="contenido.elimina" /></a>
     
 </div>
+<c:if test="${not empty message}">
+    <div class="alert alert-block ${messageClass} fade in">
+        <a class="close" data-dismiss="alert">×</a>
+        <s:message code="${message}" />
+    </div>
+</c:if>
 <div class="row-fluid">
     <div class="span6">
         <h5><s:message code="codigo" /></h5>
@@ -92,6 +98,7 @@
 </div>
 <c:if test="${not empty texto}">
     <div class="row-fluid">
+        <h5><s:message code="vistaPrevia" /></h5>
         <div>${texto}</div>
     </div>
 </c:if>

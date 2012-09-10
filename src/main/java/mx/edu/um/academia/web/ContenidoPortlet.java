@@ -163,6 +163,8 @@ public class ContenidoPortlet extends BaseController {
                         String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
                         modelo.addAttribute("texto", texto);
                     }
+                } else {
+                    modelo.addAttribute("message", "contenido.sin.texto.mensaje");
                 }
                 break;
             case Constantes.VIDEO:
@@ -176,6 +178,8 @@ public class ContenidoPortlet extends BaseController {
                     videoLink.append("/");
                     videoLink.append(fileEntry.getTitle());
                     modelo.addAttribute("video", videoLink);
+                } else {
+                    modelo.addAttribute("message", "contenido.sin.video.mensaje");
                 }
                 break;
             case Constantes.EXAMEN:
@@ -183,10 +187,13 @@ public class ContenidoPortlet extends BaseController {
                 modelo.addAttribute("examenes", examenes);
                 if (contenido.getExamen() != null) {
                     modelo.addAttribute("examen", contenido.getExamen());
+                } else {
+                    modelo.addAttribute("message", "contenido.sin.examen.mensaje");
                 }
         }
         modelo.addAttribute("contenido", contenido);
         modelo.addAttribute("themeRoot", getThemeDisplay(request).getPathThemeRoot());
+        
 
         return "contenido/ver";
     }

@@ -414,8 +414,16 @@ public class CursoDaoHibernate implements CursoDao {
         List<ObjetoAprendizaje> objetos = curso.getObjetos();
         boolean noAsignado = true;
         boolean activo = false;
+        Date fecha = new Date();
         for (ObjetoAprendizaje objeto : objetos) {
             boolean bandera = true;
+            AlumnoObjetoAprendizajePK pk2 = new AlumnoObjetoAprendizajePK(alumno, objeto);
+            AlumnoObjetoAprendizaje alumnoObjeto = (AlumnoObjetoAprendizaje) currentSession().get(AlumnoObjetoAprendizaje.class, pk2);
+            if (alumnoObjeto == null) {
+                alumnoObjeto = new AlumnoObjetoAprendizaje(alumno, objeto);
+                currentSession().save(alumnoObjeto);
+                currentSession().flush();
+            }
             for (Contenido contenido : objeto.getContenidos()) {
                 log.debug("Cargando contenido {} del objeto {} : activo : {}", new Object[]{contenido, objeto, contenido.getActivo()});
                 AlumnoContenidoPK pk = new AlumnoContenidoPK(alumno, contenido);
@@ -431,8 +439,14 @@ public class CursoDaoHibernate implements CursoDao {
                     log.debug("Activando a {}", contenido.getNombre());
                     contenido.setActivo(bandera);
                     activo = true;
-                    alumnoContenido.setIniciado(new Date());
+                    alumnoContenido.setIniciado(fecha);
                     currentSession().update(alumnoContenido);
+                    
+                    if (alumnoObjeto.getIniciado() == null) {
+                        alumnoObjeto.setIniciado(fecha);
+                        currentSession().update(alumnoObjeto);
+                    }
+                    
                     currentSession().flush();
                     bandera = false;
                     noAsignado = false;
@@ -445,6 +459,13 @@ public class CursoDaoHibernate implements CursoDao {
             log.debug("No asignado >> asignando");
             for (ObjetoAprendizaje objeto : objetos) {
                 boolean bandera = true;
+                AlumnoObjetoAprendizajePK pk2 = new AlumnoObjetoAprendizajePK(alumno, objeto);
+                AlumnoObjetoAprendizaje alumnoObjeto = (AlumnoObjetoAprendizaje) currentSession().get(AlumnoObjetoAprendizaje.class, pk2);
+                if (alumnoObjeto == null) {
+                    alumnoObjeto = new AlumnoObjetoAprendizaje(alumno, objeto);
+                    currentSession().save(alumnoObjeto);
+                    currentSession().flush();
+                }
                 for (Contenido contenido : objeto.getContenidos()) {
                     log.debug("Cargando contenido {} del objeto {}", contenido, objeto);
                     AlumnoContenidoPK pk = new AlumnoContenidoPK(alumno, contenido);
@@ -459,8 +480,14 @@ public class CursoDaoHibernate implements CursoDao {
                         log.debug("Activando a {}", contenido.getNombre());
                         contenido.setActivo(true);
                         activo = true;
-                        alumnoContenido.setIniciado(new Date());
+                        alumnoContenido.setIniciado(fecha);
                         currentSession().update(alumnoContenido);
+                        
+                        if (alumnoObjeto.getIniciado() == null) {
+                            alumnoObjeto.setIniciado(fecha);
+                            currentSession().update(alumnoObjeto);
+                        }
+                        
                         currentSession().flush();
                         bandera = false;
                     }
@@ -489,7 +516,15 @@ public class CursoDaoHibernate implements CursoDao {
         boolean terminado = true;
         boolean noAsignado = true;
         boolean activo = false;
+        Date fecha = new Date();
         for (ObjetoAprendizaje objeto : objetos) {
+            AlumnoObjetoAprendizajePK pk2 = new AlumnoObjetoAprendizajePK(alumno, objeto);
+            AlumnoObjetoAprendizaje alumnoObjeto = (AlumnoObjetoAprendizaje) currentSession().get(AlumnoObjetoAprendizaje.class, pk2);
+            if (alumnoObjeto == null) {
+                alumnoObjeto = new AlumnoObjetoAprendizaje(alumno, objeto);
+                currentSession().save(alumnoObjeto);
+                currentSession().flush();
+            }
             for (Contenido contenido : objeto.getContenidos()) {
                 log.debug("Cargando contenido {} del objeto {}", contenido, objeto);
                 AlumnoContenidoPK pk = new AlumnoContenidoPK(alumno, contenido);
@@ -506,8 +541,14 @@ public class CursoDaoHibernate implements CursoDao {
                     activo = true;
                     log.debug("Validando si ha sido iniciado {}", alumnoContenido.getIniciado());
                     if (alumnoContenido.getIniciado() == null) {
-                        alumnoContenido.setIniciado(new Date());
+                        alumnoContenido.setIniciado(fecha);
                         currentSession().update(alumnoContenido);
+                        
+                        if (alumnoObjeto.getIniciado() == null) {
+                            alumnoObjeto.setIniciado(fecha);
+                            currentSession().update(alumnoObjeto);
+                        }
+                        
                         currentSession().flush();
                     }
                 }
@@ -520,6 +561,13 @@ public class CursoDaoHibernate implements CursoDao {
         if (noAsignado) {
             for (ObjetoAprendizaje objeto : objetos) {
                 boolean bandera = true;
+                AlumnoObjetoAprendizajePK pk2 = new AlumnoObjetoAprendizajePK(alumno, objeto);
+                AlumnoObjetoAprendizaje alumnoObjeto = (AlumnoObjetoAprendizaje) currentSession().get(AlumnoObjetoAprendizaje.class, pk2);
+                if (alumnoObjeto == null) {
+                    alumnoObjeto = new AlumnoObjetoAprendizaje(alumno, objeto);
+                    currentSession().save(alumnoObjeto);
+                    currentSession().flush();
+                }
                 for (Contenido contenido : objeto.getContenidos()) {
                     AlumnoContenidoPK pk = new AlumnoContenidoPK(alumno, contenido);
                     AlumnoContenido alumnoContenido = (AlumnoContenido) currentSession().get(AlumnoContenido.class, pk);
@@ -535,8 +583,14 @@ public class CursoDaoHibernate implements CursoDao {
                         activo = true;
                         noAsignado = false;
                         if (alumnoContenido.getIniciado() == null) {
-                            alumnoContenido.setIniciado(new Date());
+                            alumnoContenido.setIniciado(fecha);
                             currentSession().update(alumnoContenido);
+
+                            if (alumnoObjeto.getIniciado() == null) {
+                                alumnoObjeto.setIniciado(fecha);
+                                currentSession().update(alumnoObjeto);
+                            }
+
                             currentSession().flush();
                         }
                     }
@@ -547,6 +601,13 @@ public class CursoDaoHibernate implements CursoDao {
         if (noAsignado) {
             for (ObjetoAprendizaje objeto : objetos) {
                 boolean bandera = true;
+                AlumnoObjetoAprendizajePK pk2 = new AlumnoObjetoAprendizajePK(alumno, objeto);
+                AlumnoObjetoAprendizaje alumnoObjeto = (AlumnoObjetoAprendizaje) currentSession().get(AlumnoObjetoAprendizaje.class, pk2);
+                if (alumnoObjeto == null) {
+                    alumnoObjeto = new AlumnoObjetoAprendizaje(alumno, objeto);
+                    currentSession().save(alumnoObjeto);
+                    currentSession().flush();
+                }
                 for (Contenido contenido : objeto.getContenidos()) {
                     AlumnoContenidoPK pk = new AlumnoContenidoPK(alumno, contenido);
                     AlumnoContenido alumnoContenido = (AlumnoContenido) currentSession().get(AlumnoContenido.class, pk);
@@ -558,8 +619,14 @@ public class CursoDaoHibernate implements CursoDao {
                     if (bandera && !activo) {
                         this.asignaContenido(cursoId, alumnoContenido, contenido, themeDisplay);
                         contenido.setActivo(bandera);
-                        alumnoContenido.setIniciado(new Date());
+                        alumnoContenido.setIniciado(fecha);
                         currentSession().update(alumnoContenido);
+
+                        if (alumnoObjeto.getIniciado() == null) {
+                            alumnoObjeto.setIniciado(fecha);
+                            currentSession().update(alumnoObjeto);
+                        }
+
                         currentSession().flush();
                         bandera = false;
                         activo = true;
@@ -588,9 +655,16 @@ public class CursoDaoHibernate implements CursoDao {
         List<ObjetoAprendizaje> objetos = curso.getObjetos();
         boolean noAsignado = true;
         boolean activo = false;
+        Date fecha = new Date();
         for (ObjetoAprendizaje objeto : objetos) {
             boolean bandera = true;
-            boolean bandera2 = false;
+            AlumnoObjetoAprendizajePK pk2 = new AlumnoObjetoAprendizajePK(alumno, objeto);
+            AlumnoObjetoAprendizaje alumnoObjeto = (AlumnoObjetoAprendizaje) currentSession().get(AlumnoObjetoAprendizaje.class, pk2);
+            if (alumnoObjeto == null) {
+                alumnoObjeto = new AlumnoObjetoAprendizaje(alumno, objeto);
+                currentSession().save(alumnoObjeto);
+                currentSession().flush();
+            }
             for (Contenido contenido : objeto.getContenidos()) {
                 log.debug("Cargando contenido {} del objeto {}", contenido, objeto);
                 AlumnoContenidoPK pk = new AlumnoContenidoPK(alumno, contenido);
@@ -601,27 +675,32 @@ public class CursoDaoHibernate implements CursoDao {
                     currentSession().flush();
                 }
                 if (bandera && alumnoContenido.getTerminado() == null && !activo) {
-                    if (bandera2) {
+                    if (alumnoContenido.getIniciado() == null) {
                         this.asignaContenido(cursoId, alumnoContenido, contenido, themeDisplay);
                         contenido.setActivo(bandera);
                         activo = true;
-                        alumnoContenido.setIniciado(new Date());
+                        alumnoContenido.setIniciado(fecha);
                         currentSession().update(alumnoContenido);
+
+                        if (alumnoObjeto.getIniciado() == null) {
+                            alumnoObjeto.setIniciado(fecha);
+                            currentSession().update(alumnoObjeto);
+                        }
+
                         currentSession().flush();
                         bandera = false;
-                        bandera2 = false;
                         noAsignado = false;
                     } else {
-                        alumnoContenido.setTerminado(new Date());
+                        alumnoContenido.setTerminado(fecha);
                         currentSession().update(alumnoContenido);
                         currentSession().flush();
-                        bandera2 = true;
                     }
                 }
                 contenido.setAlumno(alumnoContenido);
             }
         }
         if (noAsignado) {
+            log.debug("Asignando contenido");
             for (ObjetoAprendizaje objeto : objetos) {
                 boolean bandera = true;
                 for (Contenido contenido : objeto.getContenidos()) {
@@ -637,13 +716,19 @@ public class CursoDaoHibernate implements CursoDao {
                         contenido.setActivo(bandera);
                         activo = true;
                         if (alumnoContenido.getIniciado() == null) {
-                            alumnoContenido.setIniciado(new Date());
+                            alumnoContenido.setIniciado(fecha);
                         } else {
                             AlumnoCursoPK pk2 = new AlumnoCursoPK(alumno, curso);
                             AlumnoCurso alumnoCurso = (AlumnoCurso) currentSession().get(AlumnoCurso.class, pk2);
                             alumnoCurso.setEstatus(Constantes.CONCLUIDO);
-                            alumnoCurso.setFechaConclusion(new Date());
+                            alumnoCurso.setFechaConclusion(fecha);
                             currentSession().update(alumnoCurso);
+                            
+                            AlumnoObjetoAprendizajePK pk3 = new AlumnoObjetoAprendizajePK(alumno, objeto);
+                            AlumnoObjetoAprendizaje alumnoObjeto = (AlumnoObjetoAprendizaje) currentSession().get(AlumnoObjetoAprendizaje.class, pk3);
+                            alumnoObjeto.setTerminado(fecha);
+                            currentSession().update(alumnoObjeto);
+                            
                             currentSession().flush();
                         }
                         currentSession().update(alumnoContenido);

@@ -530,7 +530,7 @@ public class CursoAdminPortlet extends BaseController {
             sb.append("</li>");
             for (int j = 0; j < objeto.getContenidos().size(); j++) {
                 sb.append("<li");
-                if (j == posicionContenido) {
+                if (i == posicionObjeto && j == posicionContenido) {
                     sb.append(" class='active'");
                 }
                 sb.append(">");
@@ -542,7 +542,7 @@ public class CursoAdminPortlet extends BaseController {
                 pos = urlsb.indexOf("posicionContenido=");
                 urlsb.replace(pos + 19, pos + 19, new Integer(j).toString());
                 sb.append(urlsb.toString());
-                sb.append("\");return false;'><i class='icon-ok-circle icon-white'></i> ");
+                sb.append("\");return false;'><i class='icon-ok-circle'></i> ");
                 sb.append(contenido.getNombre());
                 sb.append("</a>");
                 sb.append("</li>");

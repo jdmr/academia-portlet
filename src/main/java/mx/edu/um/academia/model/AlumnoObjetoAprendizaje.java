@@ -46,7 +46,6 @@ public class AlumnoObjetoAprendizaje implements Serializable {
     
     public AlumnoObjetoAprendizaje(Alumno alumno, ObjetoAprendizaje objeto) {
         id = new AlumnoObjetoAprendizajePK(alumno, objeto);
-        iniciado = new Date();
     }
 
     /**

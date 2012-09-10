@@ -182,6 +182,10 @@ public class CursoPortlet extends BaseController {
                                 log.debug("Contenido : {} : Activo : {}", contenido, contenido.getActivo());
                                 if (contenido.getActivo()) {
                                     model.addAttribute("contenidoId", contenido.getId());
+                                    model.addAttribute("objetoId", objeto.getId());
+                                    if (contenido.getAlumno().getTerminado() != null) {
+                                        model.addAttribute("terminado", Boolean.TRUE);
+                                    }
                                     switch (contenido.getTipo()) {
                                         case Constantes.TEXTO:
                                             model.addAttribute("texto", contenido.getTexto());
@@ -270,6 +274,10 @@ public class CursoPortlet extends BaseController {
                             if (contenido.getActivo()) {
                                 log.debug("Encontre el contenido activo {} y el texto {}", contenido, contenido.getTexto());
                                 model.addAttribute("contenidoId", contenido.getId());
+                                model.addAttribute("objetoId", objeto.getId());
+                                if (contenido.getAlumno().getTerminado() != null) {
+                                    model.addAttribute("terminado", Boolean.TRUE);
+                                }
                                 switch (contenido.getTipo()) {
                                     case Constantes.TEXTO:
                                         model.addAttribute("texto", contenido.getTexto());
@@ -390,6 +398,10 @@ public class CursoPortlet extends BaseController {
                                 if (contenido.getActivo()) {
                                     log.debug("Encontre el contenido activo {} y el texto {}", contenido, contenido.getTexto());
                                     model.addAttribute("contenidoId", contenido.getId());
+                                    model.addAttribute("objetoId", objeto.getId());
+                                    if (contenido.getAlumno().getTerminado() != null) {
+                                        model.addAttribute("terminado", Boolean.TRUE);
+                                    }
                                     switch (contenido.getTipo()) {
                                         case Constantes.TEXTO:
                                             model.addAttribute("texto", contenido.getTexto());

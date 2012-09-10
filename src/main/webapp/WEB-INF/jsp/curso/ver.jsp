@@ -17,13 +17,15 @@
                 <div class="well" style='padding: 0; padding-bottom: 15px;'>
                     <ul class="nav nav-list" style='margin-right: 0;'>
                         <c:forEach items="${objetos}" var="objeto">
-                            <li class="nav-header"><h5>${objeto.nombre}</h5></li>
+                            <li class="nav-header">
+                                <a class="navHeader" href="#" data-id="obj_${objeto.id}"><h5>${objeto.nombre}</h5></a>
+                            </li>
                             <c:forEach items="${objeto.contenidos}" var="contenido">
                                 <portlet:renderURL var="verContenidoUrl" >
                                     <portlet:param name="action" value="verContenido" />
                                     <portlet:param name="contenidoId" value="${contenido.id}" />
                                 </portlet:renderURL>
-                                <li<c:if test="${contenido.activo}"> class="active"</c:if> style="font-size: 0.8em;">
+                                <li class="<c:if test="${contenido.activo}">active </c:if>obj_${objeto.id}" style="font-size: 0.8em;<c:if test='${objeto.id != objetoId}'>display:none;</c:if>">
                                     <a href="${verContenidoUrl}">
                                         <c:choose>
                                             <c:when test="${contenido.alumno.iniciado != null && contenido.alumno.terminado == null}">
@@ -59,7 +61,9 @@
                         <video id="<portlet:namespace />mediaspace" controls="controls">
                             <source src="${video}" />
                         </video>
-                        <div style="margin-top: 20px;"><a href="${verSiguienteUrl}" class="btn btn-primary btn-large"><s:message code="siguiente" /> <i class="icon-chevron-right" ></i></a></div>
+                        <c:if test="${terminado == null}">
+                            <div style="margin-top: 20px;"><a href="${verSiguienteUrl}" class="btn btn-primary btn-large"><s:message code="siguiente" /> <i class="icon-chevron-right" ></i></a></div>
+                        </c:if>
                         <aui:script>
                             jwplayer('<portlet:namespace />mediaspace').setup({
                                 modes : [
@@ -105,11 +109,22 @@
                     </c:when>
                     <c:otherwise>
                         ${texto}
-                        <div style="margin-top: 20px;"><a href="${verSiguienteUrl}" class="btn btn-primary btn-large"><s:message code="siguiente" /> <i class="icon-chevron-right" ></i></a></div>
+                        <c:if test="${terminado == null}">
+                            <div style="margin-top: 20px;"><a href="${verSiguienteUrl}" class="btn btn-primary btn-large"><s:message code="siguiente" /> <i class="icon-chevron-right" ></i></a></div>
+                        </c:if>
                     </c:otherwise>
                 </c:choose>
             </div>
         </div>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $("a.navHeader").click(function(e) {
+                    e.preventDefault();
+                    var obj = $(this).data("id");
+                    $("li."+obj).toggle('fast');
+                });
+            });
+        </script>
     </c:when>
     <c:otherwise>
         <div>${texto}</div>
