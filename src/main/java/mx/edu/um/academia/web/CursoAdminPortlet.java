@@ -25,6 +25,9 @@ package mx.edu.um.academia.web;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.CalendarFactoryUtil;
 import com.liferay.portal.kernel.util.UnicodeFormatter;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -905,5 +908,46 @@ public class CursoAdminPortlet extends BaseController {
             response.setRenderParameter("id", salon.getCurso().getId().toString());
 
         }
+    }
+
+    @ResourceMapping(value = "actualizaObjetos")
+    public void actualizaObjetos(ResourceRequest request, ResourceResponse response, @RequestParam Long id, @RequestParam(value = "objetos[]", required = false) String[] objetos) {
+        log.debug("Actualizando objetos {} para el curso {}", objetos, id);
+
+        List<Long> objetosArray = new ArrayList<>();
+        int j = 0;
+        for (int i = 0; i < objetos.length; i++) {
+            log.debug("Objeto: {}", objetos[i]);
+            String[] x = StringUtils.split(objetos[i], ",");
+            if (x != null) {
+                for (String y : x) {
+                    objetosArray.add(new Long(y));
+                }
+            } else {
+                objetosArray.add(new Long(objetos[i]));
+            }
+        }
+
+        Long[] ids = objetosArray.toArray(new Long[0]);
+        cursoDao.actualizaObjetos(id, ids);
+    }
+
+    @ResourceMapping(value = "buscaObjetos")
+    public void buscaObjetos(ResourceRequest request, ResourceResponse response, @RequestParam Long id, @RequestParam(value = "term", required = false) String filtro) throws IOException {
+        log.debug("Busca objetos para curso {} con filtro {}", id, filtro);
+        JSONArray results = JSONFactoryUtil.createJSONArray();
+
+        List<ObjetoAprendizaje> objetos = cursoDao.buscaObjetos(id, filtro);
+        for (ObjetoAprendizaje objeto: objetos) {
+            JSONObject listEntry = JSONFactoryUtil.createJSONObject();
+
+            listEntry.put("id", objeto.getId());
+            listEntry.put("value", objeto.getCodigo() + " | " + objeto.getNombre());
+
+            results.put(listEntry);
+        }
+
+        PrintWriter writer = response.getWriter();
+        writer.println(results.toString());
     }
 }

@@ -280,10 +280,6 @@ public class ObjetoAprendizajeDaoHibernate implements ObjetoAprendizajeDao {
     @Override
     public void agregaContenido(Long objetoId, Long[] contenidosArray) {
         log.debug("Agregando contenido a objeto {}", objetoId);
-//        SQLQuery query = currentSession().createSQLQuery("delete from aca_objetos_aca_contenidos where objetos_id = :objetoId");
-//        query.setLong("objetoId", objetoId);
-//        query.executeUpdate();
-//        currentSession().flush();
         ObjetoAprendizaje objeto = (ObjetoAprendizaje) currentSession().get(ObjetoAprendizaje.class, objetoId);
         objeto.getContenidos().clear();
         currentSession().update(objeto);

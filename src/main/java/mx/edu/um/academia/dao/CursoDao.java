@@ -110,4 +110,8 @@ public interface CursoDao {
     public Salon actualizaSalon(Salon salon);
     
     public void eliminaSalon(Salon salon);
+
+    public void actualizaObjetos(Long cursoId, Long[] objetos);
+
+    public List<ObjetoAprendizaje> buscaObjetos(Long cursoId, String filtro);
 }

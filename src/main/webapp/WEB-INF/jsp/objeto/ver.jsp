@@ -56,9 +56,6 @@
         </div>
     </div>
 </c:if>
-<portlet:actionURL var="agregaContenidoURL">
-    <portlet:param name="action" value="agregaContenido"/>
-</portlet:actionURL>
 <div class="row-fluid">
     <div class="span6">
         <label>

@@ -1161,4 +1161,43 @@ public class CursoDaoHibernate implements CursoDao {
         log.debug("Eliminando salon {}", salon);
         currentSession().delete(salon);
     }
+
+    @Override
+    public void actualizaObjetos(Long cursoId, Long[] objetos) {
+        log.debug("Actualizando objetos {} del curso {}", objetos, cursoId);
+        Curso curso = (Curso) currentSession().get(Curso.class, cursoId);
+        curso.getObjetos().clear();
+        currentSession().update(curso);
+        currentSession().flush();
+        if (objetos != null) {
+            for(Long objetoId : objetos) {
+                curso.getObjetos().add((ObjetoAprendizaje) currentSession().load(ObjetoAprendizaje.class, objetoId));
+            }
+            currentSession().update(curso);
+            currentSession().flush();
+        }
+    }
+
+    @Override
+    public List<ObjetoAprendizaje> buscaObjetos(Long cursoId, String filtro) {
+        Query query = currentSession().createQuery("select comunidadId from Curso where id = :cursoId");
+        query.setLong("cursoId", cursoId);
+        Long comunidadId = (Long) query.uniqueResult();
+        
+        query = currentSession().createQuery("select o.id from Curso c inner join c.objetos as o where c.id = :cursoId");
+        query.setLong("cursoId", cursoId);
+        List<Long> ids = query.list();
+        
+        Criteria criteria = currentSession().createCriteria(ObjetoAprendizaje.class);
+        criteria.add(Restrictions.eq("comunidadId", comunidadId));
+        if (ids != null && ids.size() > 0) {
+            criteria.add(Restrictions.not(Restrictions.in("id", ids)));
+        }
+        Disjunction propiedades = Restrictions.disjunction();
+        propiedades.add(Restrictions.ilike("codigo", filtro, MatchMode.ANYWHERE));
+        propiedades.add(Restrictions.ilike("nombre", filtro, MatchMode.ANYWHERE));
+        criteria.add(propiedades);
+        criteria.addOrder(Order.asc("codigo"));
+        return criteria.list();
+    }
 }

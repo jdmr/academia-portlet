@@ -123,26 +123,27 @@
         <h3>${curso.correo}</h3>
     </div>
 </div>
-<portlet:actionURL var="agregaObjetosURL">
-    <portlet:param name="action" value="agregaObjetos"/>
-</portlet:actionURL>
-<form id="<portlet:namespace />agregaObjetosForm" action="${agregaObjetosURL}" method="post" class="form-vertical">
-    <input type="hidden" id="<portlet:namespace />cursoId" name="<portlet:namespace />cursoId" value="${curso.id}"/>
-    <div class="row-fluid">
-        <select id="<portlet:namespace />objetos" name="<portlet:namespace />objetos" multiple="multiple" data-placeholder="<s:message code="curso.elija.objeto" />" class="span4" >
+<div class="row-fluid">
+    <div class="span6">
+        <label>
+            <h3><s:message code="curso.agrega.objeto" /></h3>
+            <input type="text" name="<portlet:namespace />objetoAC" id="<portlet:namespace />objetoAC" class="span12" />
+        </label>
+        <div class="alert alert-block alert-success" id="successMessageDiv" style="display:none;">
+            <p id="successMessage">This is a test</p>
+        </div>
+    </div>
+</div>
+<div class="row-fluid">
+    <div class="span6" id="objetos">
+        <div id="<portlet:namespace />objetosDiv">
             <c:forEach items="${seleccionados}" var="objeto">
-                <option value="${objeto.id}" selected="selected">${objeto.codigo} | ${objeto.nombre}</option>
+                <div class="ui-state-default" id="${objeto.id}" data-id="${objeto.id}"><span class="ui-icon ui-icon-arrowthick-2-n-s" style="float: left; margin-top: 5px;"></span> ${objeto.codigo} | ${objeto.nombre} <a class="close" data-dismiss="alert">×</a></div>
             </c:forEach>
-            <c:forEach items="${disponibles}" var="objeto">
-                <option value="${objeto.id}">${objeto.codigo} | ${objeto.nombre}</option>
-            </c:forEach>
-        </select>
+        </div>
     </div>
-    <div class="row-fluid">
-        <button type="submit" class="btn btn-primary"><i class="icon-file icon-white"></i> <s:message code="curso.agrega.objeto" /></button>
-    </div>
-</form>
-    
+</div>
+
 <portlet:resourceURL var="vistaPreviaUrl" >
     <portlet:param name="action" value="vistaPrevia" />
     <portlet:param name="cursoId" value="${curso.id}" />
@@ -168,8 +169,6 @@
     
 <script type="text/javascript">
     $(document).ready(function() {
-        $("select#<portlet:namespace />objetos").chosen();
-        
         var container = $("div#vistaPrevia");
     
         $("a#vistaPreviaLink").click(function(e) {
@@ -195,6 +194,56 @@
                 container.show("slide",{direction:"up"});
             });
         });
+        
+        $("div#objetos").on('closed', 'div.ui-state-default',function() {
+            $($(this).data('id')).remove();
+            setTimeout(function(){
+                var objetos = $("div#<portlet:namespace />objetosDiv").sortable('toArray').toString();
+                $.post("<portlet:resourceURL id='actualizaObjetos'/>", {id:${curso.id}, 'objetos[]':objetos}, function() {
+                    $("p#successMessage").text('<s:message code="curso.objetoAprendizaje.eliminar" />');
+                    var div = $("div#successMessageDiv");
+                    div.show('slow', function() {
+                        setTimeout(function() {
+                            div.hide('slow');
+                        }, 2000);
+                    });
+                });
+            }, 500);
+        });
+                $("div#<portlet:namespace />objetosDiv").sortable({
+            update: function(event, ui) {
+                var objetos = $(this).sortable('toArray').toString();
+                $.post("<portlet:resourceURL id='actualizaObjetos'/>", {id:${curso.id}, 'objetos[]':objetos}, function() {
+                    $("p#successMessage").text('<s:message code="curso.objetoAprendizaje.mover" />');
+                    $("div#successMessageDiv").toggle().delay(500).toggle();
+                    var div = $("div#successMessageDiv");
+                    div.show('slow', function() {
+                        setTimeout(function() {
+                            div.hide('slow');
+                        }, 2000);
+                    });
+                });
+            }
+        });
+        $("input#<portlet:namespace />objetoAC").autocomplete({
+            source: "<portlet:resourceURL id='buscaObjetos'/>",
+            select: function(event, ui) {
+                $("div#<portlet:namespace />objetosDiv").append("<div class='ui-state-default' id='"+ui.item.id+"'><span class='ui-icon ui-icon-arrowthick-2-n-s' style='float: left; margin-top: 5px;'></span> " + ui.item.value + "<a class='close' data-dismiss='alert'>×</a></div>");
+                $("input#<portlet:namespace />objetoAC").val("");
+                var objetos = $("div#<portlet:namespace />objetosDiv").sortable('toArray').toString();
+                $.post("<portlet:resourceURL id='actualizaObjetos'/>", {id:${curso.id}, 'objetos[]':objetos}, function() {
+                    $("p#successMessage").text('<s:message code="curso.objetoAprendizaje.agregar" />');
+                    var div = $("div#successMessageDiv");
+                    div.show('slow', function() {
+                        setTimeout(function() {
+                            div.hide('slow');
+                        }, 2000);
+                    });
+                });
+                return false;
+            }
+        });
+
     });
     
     function cargaContenido(contenidoUrl) {
