@@ -698,6 +698,10 @@ public class CursoDaoHibernate implements CursoDao {
                 }
                 contenido.setAlumno(alumnoContenido);
             }
+            if (!activo) {
+                alumnoObjeto.setTerminado(fecha);
+                currentSession().update(alumnoObjeto);
+            }
         }
         if (noAsignado) {
             log.debug("Asignando contenido");
