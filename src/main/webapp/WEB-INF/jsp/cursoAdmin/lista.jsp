@@ -14,7 +14,7 @@
         <button type="submit" class="btn" name="<portlet:namespace />_busca" id="<portlet:namespace />_busca"><i class="icon-search"></i> <s:message code="buscar" /></button>
     </div>
     <c:if test="${cursos != null}">
-        <table id="<portlet:namespace />cursos" class="table table-striped">
+        <table id="<portlet:namespace />cursos" class="table table-striped table-hover">
             <thead>
                 <tr>
 

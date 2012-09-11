@@ -25,7 +25,7 @@
 </form>
 
 <c:if test="${alumnos != null}">
-    <table id="<portlet:namespace />alumnos" class="table table-striped">
+    <table id="<portlet:namespace />alumnos" class="table table-striped table-hover">
         <thead>
             <tr>
 

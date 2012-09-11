@@ -82,8 +82,11 @@ public class Curso implements Serializable {
     private Reporte reporte;
     @Email
     private String correo;
+    @Email
+    private String correo2;
     @Column(name="correo_id")
     private Long correoId;
+    private Boolean usarServicioPostal = false;
 
     public Curso() {
     }
@@ -333,6 +336,20 @@ public class Curso implements Serializable {
     }
 
     /**
+     * @return the correo2
+     */
+    public String getCorreo2() {
+        return correo2;
+    }
+
+    /**
+     * @param correo2 the correo2 to set
+     */
+    public void setCorreo2(String correo2) {
+        this.correo2 = correo2;
+    }
+
+    /**
      * @return the correoId
      */
     public Long getCorreoId() {
@@ -344,6 +361,20 @@ public class Curso implements Serializable {
      */
     public void setCorreoId(Long correoId) {
         this.correoId = correoId;
+    }
+
+    /**
+     * @return the usarServicioPostal
+     */
+    public Boolean getUsarServicioPostal() {
+        return usarServicioPostal;
+    }
+
+    /**
+     * @param usarServicioPostal the usarServicioPostal to set
+     */
+    public void setUsarServicioPostal(Boolean usarServicioPostal) {
+        this.usarServicioPostal = usarServicioPostal;
     }
 
     @Override

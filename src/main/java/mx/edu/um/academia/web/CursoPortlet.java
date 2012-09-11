@@ -44,6 +44,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -173,7 +174,10 @@ public class CursoPortlet extends BaseController {
                         && alumnoCurso.getDiasDisponibles() > 0) {
                     List<ObjetoAprendizaje> objetos = cursoDao.objetosAlumno(curso.getId(), usuario.getUserId(), themeDisplay);
                     if (cursoDao.haConcluido(usuario.getUserId(), curso.getId())) {
-                        model.addAttribute("concluido", true);
+                        model.addAttribute("concluido", Boolean.TRUE);
+                        if (!curso.getUsarServicioPostal()) {
+                            model.addAttribute("conDiploma", Boolean.TRUE);
+                        }
                     } else {
                         cicloObjetos:
                         for (ObjetoAprendizaje objeto : objetos) {
@@ -353,40 +357,52 @@ public class CursoPortlet extends BaseController {
                         && alumnoCurso.getDiasDisponibles() > 0) {
                     List<ObjetoAprendizaje> objetos = cursoDao.objetosAlumnoSiguiente(curso.getId(), usuario.getUserId(), themeDisplay);
                     if (cursoDao.haConcluido(usuario.getUserId(), curso.getId())) {
-                        model.addAttribute("concluido", true);
+                        DateFormat df = DateFormat.getDateInstance(DateFormat.MEDIUM, themeDisplay.getLocale());
+                        if (curso.getUsarServicioPostal()) {
+                            model.addAttribute("concluidoPorCorreo", Boolean.TRUE);
+                            model.addAttribute("nombreCompleto", usuario.getFullName());
+                            model.addAttribute("fechaNacimiento", df.format(usuario.getBirthday()));
+                        } else {
+                            model.addAttribute("concluido", Boolean.TRUE);
+                            if (curso.getCorreo() != null && curso.getCorreoId() != null) {
+                                try {
+                                    JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(curso.getCorreoId());
+                                    if (ja != null) {
+                                        String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+                                        InternetAddress from = new InternetAddress(curso.getCorreo());
+                                        InternetAddress destinatario = new InternetAddress(usuario.getEmailAddress(), usuario.getFullName());
+                                        MailEngine.send(from, destinatario, messageSource.getMessage("conclusion.titulo.correo", new String[]{curso.getNombre()}, themeDisplay.getLocale()), texto, true);
 
-                        if (curso.getCorreo() != null && curso.getCorreoId() != null) {
-                            try {
-                                JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(curso.getCorreoId());
-                                if (ja != null) {
-                                    DateFormat df = DateFormat.getDateInstance(DateFormat.MEDIUM, themeDisplay.getLocale());
-                                    String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
-                                    InternetAddress from = new InternetAddress(curso.getCorreo());
-                                    InternetAddress destinatario = new InternetAddress(usuario.getEmailAddress(), usuario.getFullName());
-                                    MailEngine.send(from, destinatario, messageSource.getMessage("conclusion.titulo.correo", new String[]{curso.getNombre()}, themeDisplay.getLocale()), texto, true);
-                                    log.debug("Enviando correo con siguientes parametros: ");
-                                    log.debug("Codigo: {}", curso.getCodigo());
-                                    log.debug("username: {}", usuario.getScreenName());
-                                    log.debug("fullName: {}", usuario.getFullName());
-                                    log.debug("birthday: {} : {}", usuario.getBirthday(), df.format(usuario.getBirthday()));
-                                    log.debug("Curso: {}", curso.getNombre());
-                                    log.debug("Inicio: {}", alumnoCurso.getFecha());
-                                    log.debug("Termina: {}", new Date());
-                                    MailEngine.send(
-                                            destinatario, 
-                                            from, 
-                                            messageSource.getMessage("conclusion.admin.titulo.correo", 
-                                                new String[]{curso.getCodigo(), usuario.getScreenName()}, 
-                                                themeDisplay.getLocale()), 
-                                            messageSource.getMessage("conclusion.admin.mensaje.correo", 
-                                                new String[]{curso.getCodigo(), usuario.getScreenName(), usuario.getFullName(), df.format(usuario.getBirthday()), StringUtils.EMPTY, curso.getNombre(), df.format(alumnoCurso.getFecha()), df.format(new Date())}, 
-                                                themeDisplay.getLocale()), 
-                                            true);
+                                        log.debug("Enviando correo con siguientes parametros: ");
+                                        log.debug("Codigo: {}", curso.getCodigo());
+                                        log.debug("username: {}", usuario.getScreenName());
+                                        log.debug("fullName: {}", usuario.getFullName());
+                                        log.debug("birthday: {} : {}", usuario.getBirthday(), df.format(usuario.getBirthday()));
+                                        log.debug("Curso: {}", curso.getNombre());
+                                        log.debug("Inicio: {}", alumnoCurso.getFecha());
+                                        log.debug("Termina: {}", new Date());
+                                        InternetAddress[] cc;
+                                        if (StringUtils.isNotBlank(curso.getCorreo2())) {
+                                            InternetAddress destinatario2 = new InternetAddress(curso.getCorreo2());
+                                            cc = new InternetAddress[]{from, destinatario2};
+                                        } else {
+                                            cc = new InternetAddress[]{from};
+                                        }
+                                        MailEngine.send(
+                                                destinatario,
+                                                cc,
+                                                messageSource.getMessage("conclusion.admin.titulo.correo",
+                                                new String[]{curso.getCodigo(), usuario.getScreenName()},
+                                                themeDisplay.getLocale()),
+                                                messageSource.getMessage("conclusion.admin.mensaje.correo",
+                                                new String[]{curso.getCodigo(), usuario.getScreenName(), usuario.getFullName(), df.format(usuario.getBirthday()), StringUtils.EMPTY, curso.getNombre(), df.format(alumnoCurso.getFecha()), df.format(new Date())},
+                                                themeDisplay.getLocale()),
+                                                true);
+                                    }
+                                } catch (MailEngineException | AddressException | IOException e) {
+                                    log.error("Hubo un problema al intentar enviar correo", e);
                                 }
-                            } catch (MailEngineException | AddressException | IOException e) {
-                                log.error("Hubo un problema al intentar enviar correo", e);
                             }
-                            
                         }
 
                     } else {
@@ -594,5 +610,62 @@ public class CursoPortlet extends BaseController {
                 log.error("Hubo un problema al general el reporte", e);
             }
         }
+    }
+
+    @RequestMapping(value = "VIEW", params = "action=direccion")
+    public void direccion(ActionRequest request, ActionResponse response, Model model,
+            @RequestParam Long cursoId,
+            @RequestParam String nombreCompleto,
+            @RequestParam String fechaNacimiento,
+            @RequestParam String direccion) throws SystemException, PortalException {
+        log.debug("CursoId: {}", cursoId);
+        log.debug("nombreCompleto: {}", nombreCompleto);
+        log.debug("fechaNacimiento: {}", fechaNacimiento);
+        log.debug("direccion: {}", direccion);
+        Curso curso = cursoDao.obtiene(cursoId);
+        if (curso.getCorreo() != null && curso.getCorreoId() != null) {
+            User usuario = PortalUtil.getUser(request);
+            ThemeDisplay themeDisplay = getThemeDisplay(request);
+            DateFormat df = DateFormat.getDateInstance(DateFormat.MEDIUM, themeDisplay.getLocale());
+            AlumnoCurso alumnoCurso = cursoDao.obtieneAlumnoCurso(usuario.getUserId(), curso.getId());
+            try {
+                JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(curso.getCorreoId());
+                if (ja != null) {
+                    String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+                    InternetAddress from = new InternetAddress(curso.getCorreo());
+                    InternetAddress destinatario = new InternetAddress(usuario.getEmailAddress(), usuario.getFullName());
+                    MailEngine.send(from, destinatario, messageSource.getMessage("conclusion.titulo.correo", new String[]{curso.getNombre()}, themeDisplay.getLocale()), texto, true);
+
+                    log.debug("Enviando correo con siguientes parametros: ");
+                    log.debug("Codigo: {}", curso.getCodigo());
+                    log.debug("username: {}", usuario.getScreenName());
+                    log.debug("fullName: {}", nombreCompleto);
+                    log.debug("birthday: {} : {}", fechaNacimiento, df.parse(fechaNacimiento));
+                    log.debug("Curso: {}", curso.getNombre());
+                    log.debug("Inicio: {}", alumnoCurso.getFecha());
+                    log.debug("Termina: {}", alumnoCurso.getFechaConclusion());
+                    InternetAddress[] cc;
+                    if (StringUtils.isNotBlank(curso.getCorreo2())) {
+                        InternetAddress destinatario2 = new InternetAddress(curso.getCorreo2());
+                        cc = new InternetAddress[]{from, destinatario2};
+                    } else {
+                        cc = new InternetAddress[]{from};
+                    }
+                    MailEngine.send(
+                            destinatario,
+                            cc,
+                            messageSource.getMessage("conclusion.admin.titulo.correo",
+                            new String[]{curso.getCodigo(), usuario.getScreenName()},
+                            themeDisplay.getLocale()),
+                            messageSource.getMessage("conclusion.admin.mensaje.correo",
+                            new String[]{curso.getCodigo(), usuario.getScreenName(), nombreCompleto, fechaNacimiento, direccion, curso.getNombre(), df.format(alumnoCurso.getFecha()), df.format(alumnoCurso.getFechaConclusion())},
+                            themeDisplay.getLocale()),
+                            true);
+                }
+            } catch (MailEngineException | AddressException | IOException | ParseException e) {
+                log.error("Hubo un problema al intentar enviar correo", e);
+            }
+        }
+        response.setRenderParameter("action", "ver");
     }
 }

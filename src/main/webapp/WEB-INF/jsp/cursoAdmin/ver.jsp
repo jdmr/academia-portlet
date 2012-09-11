@@ -118,9 +118,21 @@
     </div>
 </div>
 <div class="row-fluid">
-    <div class="span12">
+    <div class="span6">
         <h5><s:message code="correo" /></h5>
         <h3>${curso.correo}</h3>
+    </div>
+    <div class="span6">
+        <h5><s:message code="correo2" /></h5>
+        <h3>${curso.correo2}</h3>
+    </div>
+</div>
+<div class="row-fluid">
+    <div class="span6">
+        <label class="checkbox">
+            <input type="checkbox" disabled="disabled" <c:if test="${curso.usarServicioPostal}">checked="checked"</c:if> style="margin-top: 14px;" />
+            <h3><s:message code="usarServicioPostal" /></h3>
+        </label>
     </div>
 </div>
 <div class="row-fluid">
@@ -244,6 +256,7 @@
             }
         });
 
+        $("input#<portlet:namespace />objetoAC").focus();
     });
     
     function cargaContenido(contenidoUrl) {

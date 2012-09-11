@@ -25,7 +25,7 @@
                                     <portlet:param name="action" value="verContenido" />
                                     <portlet:param name="contenidoId" value="${contenido.id}" />
                                 </portlet:renderURL>
-                                <li class="<c:if test="${contenido.activo}">active </c:if>obj_${objeto.id}" style="font-size: 0.8em;<c:if test='${objeto.id != objetoId}'>display:none;</c:if>">
+                                <li class="<c:if test="${contenido.activo}">active </c:if>obj_${objeto.id} objs" style="font-size: 0.8em;<c:if test='${objeto.id != objetoId}'>display:none;</c:if>">
                                     <a href="${verContenidoUrl}">
                                         <c:choose>
                                             <c:when test="${contenido.alumno.iniciado != null && contenido.alumno.terminado == null}">
@@ -43,6 +43,12 @@
                                 </li>
                             </c:forEach>
                         </c:forEach>
+                        <li id="<portlet:namespace />expandeObjetosLi" class="nav-header">
+                            <a href="#" id="<portlet:namespace />expandeObjetos"><s:message code="expande.objetos" /></a>
+                        </li>
+                        <li id="<portlet:namespace />contraeObjetosLi" class="nav-header" style="display: none;">
+                            <a href="#" id="<portlet:namespace />contraeObjetos"><s:message code="contrae.objetos" /></a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -51,9 +57,42 @@
                     <c:when test="${concluido}">
                         <h3><s:message code="concluido.titulo" /></h3>
                         <h6><s:message code="concluido.mensaje" /></h6>
-                        <form name="<portlet:namespace />diplomaForm" action="<portlet:resourceURL id='diploma'/>" method="post">
+                        <c:if test="${conDiploma}">
+                            <form name="<portlet:namespace />diplomaForm" action="<portlet:resourceURL id='diploma'/>" method="post">
+                                <div class="control-group">
+                                    <button type="submit" class="btn btn-primary btn-large"><i class="icon-print icon-white"></i> <s:message code="concluido.diploma" /></button>
+                                </div>
+                            </form>
+                        </c:if>
+                    </c:when>
+                    <c:when test="${concluidoPorCorreo}">
+                        <h3><s:message code="concluido.titulo" /></h3>
+                        <p><s:message code="concluido.con.correo.mensaje" /></p>
+                        <portlet:actionURL var="direccionUrl" >
+                            <portlet:param name="action" value="direccion" />
+                            <portlet:param name="cursoId" value="${curso.id}" />
+                        </portlet:actionURL>
+                        <form name="<portlet:namespace />direccionForm" action="${direccionUrl}" method="post">
+                            <div class="control-group row-fluid">
+                                <div class="span6">
+                                    <label for="<portlet:namespace />nombreCompleto"><s:message code="nombreCompleto" /></label>
+                                    <input type="text" id="<portlet:namespace />nombreCompleto" name="<portlet:namespace />nombreCompleto" value="${nombreCompleto}" required="true" class="span12"/>
+                                </div>
+                            </div>
+                            <div class="control-group row-fluid">
+                                <div class="span6">
+                                    <label for="<portlet:namespace />fechaNacimiento"><s:message code="fechaNacimiento" /></label>
+                                    <input type="text" id="<portlet:namespace />fechaNacimiento" name="<portlet:namespace />fechaNacimiento" value="${fechaNacimiento}" required="true" />
+                                </div>
+                            </div>
+                            <div class="control-group row-fluid">
+                                <div class="span12">
+                                    <label for="<portlet:namespace />direccion"><s:message code="direccion" /></label>
+                                    <textarea id="<portlet:namespace />direccion" name="<portlet:namespace />direccion" required="true" class="span12" style="height:100px;"></textarea>
+                                </div>
+                            </div>
                             <div class="control-group">
-                                <button type="submit" class="btn btn-primary btn-large"><i class="icon-print icon-white"></i> <s:message code="concluido.diploma" /></button>
+                                <button type="submit" class="btn btn-primary btn-large"><i class="icon-envelope icon-white"></i> <s:message code="concluido.direccion" /></button>
                             </div>
                         </form>
                     </c:when>
@@ -122,6 +161,27 @@
                     e.preventDefault();
                     var obj = $(this).data("id");
                     $("li."+obj).toggle('fast');
+                });
+                $("a#<portlet:namespace />expandeObjetos").click(function(e){
+                    e.preventDefault();
+                    $("li#<portlet:namespace />contraeObjetosLi").toggle();
+                    $("li#<portlet:namespace />expandeObjetosLi").toggle();
+                    $("li.objs").show('fast');
+                });
+                $("a#<portlet:namespace />contraeObjetos").click(function(e){
+                    e.preventDefault();
+                    $("li#<portlet:namespace />expandeObjetosLi").toggle();
+                    $("li#<portlet:namespace />contraeObjetosLi").toggle();
+                    <c:choose>
+                        <c:when test="${objetoId != null}">
+                            $("li.objs").hide('fast', function() {
+                                $("li.obj_"+${objetoId}).show('fast');
+                            });
+                        </c:when>
+                        <c:otherwise>
+                            $("li.objs").hide('fast');
+                        </c:otherwise>
+                    </c:choose>
                 });
             });
         </script>

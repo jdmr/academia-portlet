@@ -3,7 +3,7 @@
 <div class="row-fluid">
     <h1><s:message code="mis.cursos.label" /></h1>
     <c:if test="${cursos != null}" >
-        <table class="table table-striped">
+        <table class="table table-striped table-hover">
             <thead>
                 <tr>
                     <th><s:message code="curso" /></th>

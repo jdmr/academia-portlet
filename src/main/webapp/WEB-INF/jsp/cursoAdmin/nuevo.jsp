@@ -62,6 +62,18 @@
             <form:input path="correo" type="email" />
             <form:errors cssClass="errors" path="correo" cssStyle="color:red;" />
         </div>
+        <div class="control-group">
+            <label for="correo2"><s:message code="correo2" /></label>
+            <form:input path="correo2" type="email" />
+            <form:errors cssClass="errors" path="correo2" cssStyle="color:red;" />
+        </div>
+        <div class="control-group">
+            <label>
+                <form:checkbox path="usarServicioPostal" />
+                <s:message code="usarServicioPostal" />
+                <form:errors cssClass="errors" path="usarServicioPostal" cssStyle="color:red;" />
+            </label>
+        </div>
 
         <div>
             <button type="submit" name="<portlet:namespace />_crea" class="btn btn-primary btn-large" id="<portlet:namespace />_crea" ><i class="icon-ok icon-white"></i>&nbsp;<s:message code='curso.crea' /></button>
