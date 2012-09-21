@@ -158,7 +158,7 @@ public class Conteni2Servlet extends HttpServlet {
             }
             log.trace("Buscando: {}", sb.toString());
             File file2 = new File(sb.toString());
-            if (file2.exists()) {
+            if (file2.exists() && !file2.isDirectory()) {
                 OutputStream out = response.getOutputStream();
                 FileCopyUtils.copy(new FileInputStream(file2), out);
             } else {
