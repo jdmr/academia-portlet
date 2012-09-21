@@ -41,6 +41,7 @@ import mx.edu.um.academia.dao.ExamenDao;
 import mx.edu.um.academia.model.*;
 import mx.edu.um.academia.utils.Constantes;
 import net.sf.jasperreports.engine.JasperReport;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
@@ -831,7 +832,7 @@ public class CursoDaoHibernate implements CursoDao {
                     sb.append("/admin");
                     sb.append("/").append(cursoId);
                     sb.append("/").append(contenido.getId());
-                    sb.append("/").append(sb2.toString());
+                    sb.append("/").append(DigestUtils.shaHex(sb2.toString()));
                     sb.append("/player.html");
                     sb.append("' style='width:100%;height:600px;'></iframe>");
                     contenido.setTexto(sb.toString());
@@ -843,7 +844,7 @@ public class CursoDaoHibernate implements CursoDao {
                     sb.append("/admin");
                     sb.append("/").append(cursoId);
                     sb.append("/").append(contenido.getId());
-                    sb.append("/").append(sb2.toString());
+                    sb.append("/").append(DigestUtils.shaHex(sb2.toString()));
                     sb.append("/story.html");
                     sb.append("' style='width:100%;height:650px;'></iframe>");
                     contenido.setTexto(sb.toString());

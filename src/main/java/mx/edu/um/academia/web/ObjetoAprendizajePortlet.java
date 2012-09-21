@@ -47,6 +47,7 @@ import mx.edu.um.academia.model.Contenido;
 import mx.edu.um.academia.model.ObjetoAprendizaje;
 import mx.edu.um.academia.utils.ComunidadUtil;
 import mx.edu.um.academia.utils.Constantes;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -173,7 +174,7 @@ public class ObjetoAprendizajePortlet extends BaseController {
                         sb.append("/admin");
                         sb.append("/0");
                         sb.append("/").append(contenido.getId());
-                        sb.append("/").append(sb2.toString());
+                        sb.append("/").append(DigestUtils.shaHex(sb2.toString()));
                         sb.append("/player.html");
                         log.debug("vistaPrevia: {}", sb.toString());
                         modelo.addAttribute("vistaPrevia", sb.toString());
@@ -183,7 +184,7 @@ public class ObjetoAprendizajePortlet extends BaseController {
                         sb.append("/admin");
                         sb.append("/0");
                         sb.append("/").append(contenido.getId());
-                        sb.append("/").append(sb2.toString());
+                        sb.append("/").append(DigestUtils.shaHex(sb2.toString()));
                         sb.append("/story.html");
                         log.debug("vistaPrevia: {}", sb.toString());
                         modelo.addAttribute("vistaPrevia", sb.toString());

@@ -589,7 +589,7 @@ public class CursoAdminPortlet extends BaseController {
                 sb.append("/admin");
                 sb.append("/").append(cursoId);
                 sb.append("/").append(contenido.getId());
-                sb.append("/").append(sb2.toString());
+                sb.append("/").append(DigestUtils.shaHex(sb2.toString()));
                 sb.append("/player.html");
                 sb.append("' style='width:100%;height:650px;'></iframe>");
                 break;
@@ -599,7 +599,7 @@ public class CursoAdminPortlet extends BaseController {
                 sb.append("/admin");
                 sb.append("/").append(cursoId);
                 sb.append("/").append(contenido.getId());
-                sb.append("/").append(sb2.toString());
+                sb.append("/").append(DigestUtils.shaHex(sb2.toString()));
                 sb.append("/story.html");
                 sb.append("' style='width:100%;height:650px;'></iframe>");
         }
