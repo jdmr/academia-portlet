@@ -3,12 +3,6 @@
 
 <liferay-portlet-app>
     <portlet>
-        <portlet-name>Contenido</portlet-name>
-        <instanceable>false</instanceable>
-        <header-portlet-css>/css/contenido.css</header-portlet-css>
-        <header-portlet-javascript>/js/contenido.js</header-portlet-javascript>
-    </portlet>
-    <portlet>
         <portlet-name>ObjetoAprendizaje</portlet-name>
         <instanceable>false</instanceable>
         <header-portlet-css>/css/objeto_aprendizaje.css</header-portlet-css>
