@@ -102,6 +102,7 @@ public class Conteni2Servlet extends HttpServlet {
                 }
                 
             } else {
+                log.warn("EL CHECKSUM NO COINCIDE! Le voy a mostrar el 404");
                 OutputStream out = response.getOutputStream();
                 FileCopyUtils.copy(new FileInputStream(request.getSession().getServletContext().getRealPath("/404.html")), out);
             }
