@@ -28,6 +28,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -35,6 +36,8 @@ import javax.servlet.http.HttpServletResponse;
 import mx.edu.um.academia.dao.ContenidoDao;
 import mx.edu.um.academia.dao.CursoDao;
 import mx.edu.um.academia.model.Contenido;
+import mx.edu.um.academia.utils.Constantes;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,26 +72,40 @@ public class Conteni2Servlet extends HttpServlet {
         String[] params = StringUtils.split(request.getPathInfo(), "/");
         InputStream in = null;
         try {
-//            // Set to expire far in the past.
-//            response.setHeader("Expires", "Sat, 6 May 1995 12:00:00 GMT");
-//            // Set standard HTTP/1.1 no-cache headers.
-//            response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
-//            // Set IE extended HTTP/1.1 no-cache headers (use addHeader).
-//            response.addHeader("Cache-Control", "post-check=0, pre-check=0");
-//            // Set standard HTTP/1.0 no-cache header.
-//            response.setHeader("Pragma", "no-cache");
-            if (params[0].equals("admin")) {
-                log.trace("ADMIN");
-                procesa(params, request, response, in);
-            } else {
-                Long userId = new Long(params[0]);
-                Long cursoId = new Long(params[1]);
-                log.trace("USUARIO: {} | CURSO: {}", userId, cursoId);
-                boolean estaInscrito = cursoDao.estaInscrito(cursoId, userId);
-                if (estaInscrito) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(params[0]);
+            sb.append(params[1]);
+            sb.append(params[2]);
+            sb.append(Constantes.SALT);
+            String checksum = params[3];
+            if (checksum.equals(DigestUtils.shaHex(sb.toString()))) {
+//                // Set to expire far in the past.
+//                response.setHeader("Expires", "Sat, 6 May 1995 12:00:00 GMT");
+//                // Set standard HTTP/1.1 no-cache headers.
+//                response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+//                // Set IE extended HTTP/1.1 no-cache headers (use addHeader).
+//                response.addHeader("Cache-Control", "post-check=0, pre-check=0");
+//                // Set standard HTTP/1.0 no-cache header.
+//                response.setHeader("Pragma", "no-cache");
+                if (params[0].equals("admin")) {
+                    log.trace("ADMIN");
                     procesa(params, request, response, in);
+                } else {
+                    Long userId = new Long(params[0]);
+                    Long cursoId = new Long(params[1]);
+
+                    log.trace("USUARIO: {} | CURSO: {}", userId, cursoId);
+                    boolean estaInscrito = cursoDao.estaInscrito(cursoId, userId);
+                    if (estaInscrito) {
+                        procesa(params, request, response, in);
+                    }
                 }
+                
+            } else {
+                OutputStream out = response.getOutputStream();
+                FileCopyUtils.copy(new FileInputStream(request.getSession().getServletContext().getRealPath("/404.html")), out);
             }
+            
         } catch (IOException e) {
             log.error("Hubo un problema al intentar cargar el contenido", e);
         } finally {
@@ -123,7 +140,7 @@ public class Conteni2Servlet extends HttpServlet {
             File file = new File(ruta);
             StringBuilder sb = new StringBuilder();
             sb.append(file.getParent());
-            for (int i = 3; i < params.length; i++) {
+            for (int i = 4; i < params.length; i++) {
                 sb.append("/").append(params[i]);
             }
             log.trace("Buscando: {}", sb.toString());
@@ -136,7 +153,7 @@ public class Conteni2Servlet extends HttpServlet {
             File file = new File(ruta);
             StringBuilder sb = new StringBuilder();
             sb.append(file.getParent());
-            for (int i = 3; i < params.length; i++) {
+            for (int i = 4; i < params.length; i++) {
                 sb.append("/").append(params[i]);
             }
             log.trace("Buscando: {}", sb.toString());

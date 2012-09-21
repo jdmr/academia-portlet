@@ -41,4 +41,5 @@ public class Constantes {
     public static final String CONCLUIDO = "CONCLUIDO";
     public static final String ARTICULATE = "ARTICULATE";
     public static final String STORYLINE = "STORYLINE";
+    public static final String SALT = "AC4D3m14";
 }

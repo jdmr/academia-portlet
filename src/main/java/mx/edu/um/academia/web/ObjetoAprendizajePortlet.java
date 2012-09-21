@@ -162,12 +162,18 @@ public class ObjetoAprendizajePortlet extends BaseController {
                     sb.append(":").append(request.getServerPort());
                 }
                 sb.append(request.getContextPath());
+                StringBuilder sb2 = new StringBuilder();
+                sb2.append("admin");
+                sb2.append("0");
+                sb2.append(contenido.getId());
+                sb2.append(Constantes.SALT);
                 switch (contenido.getTipo()) {
                     case Constantes.ARTICULATE:
                         sb.append("/conteni2");
                         sb.append("/admin");
                         sb.append("/0");
                         sb.append("/").append(contenido.getId());
+                        sb.append("/").append(sb2.toString());
                         sb.append("/player.html");
                         log.debug("vistaPrevia: {}", sb.toString());
                         modelo.addAttribute("vistaPrevia", sb.toString());
@@ -177,6 +183,7 @@ public class ObjetoAprendizajePortlet extends BaseController {
                         sb.append("/admin");
                         sb.append("/0");
                         sb.append("/").append(contenido.getId());
+                        sb.append("/").append(sb2.toString());
                         sb.append("/story.html");
                         log.debug("vistaPrevia: {}", sb.toString());
                         modelo.addAttribute("vistaPrevia", sb.toString());

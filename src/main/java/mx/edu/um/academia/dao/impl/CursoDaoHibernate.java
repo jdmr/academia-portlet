@@ -816,6 +816,12 @@ public class CursoDaoHibernate implements CursoDao {
 
     private void asignaContenido(Long cursoId, AlumnoContenido alumnoContenido, Contenido contenido, ThemeDisplay themeDisplay) {
         try {
+            StringBuilder sb2 = new StringBuilder();
+            sb2.append("admin");
+            sb2.append(cursoId);
+            sb2.append(contenido.getId());
+            sb2.append(Constantes.SALT);
+
             JournalArticle ja;
             switch (contenido.getTipo()) {
                 case Constantes.ARTICULATE:
@@ -825,6 +831,7 @@ public class CursoDaoHibernate implements CursoDao {
                     sb.append("/admin");
                     sb.append("/").append(cursoId);
                     sb.append("/").append(contenido.getId());
+                    sb.append("/").append(sb2.toString());
                     sb.append("/player.html");
                     sb.append("' style='width:100%;height:600px;'></iframe>");
                     contenido.setTexto(sb.toString());
@@ -836,6 +843,7 @@ public class CursoDaoHibernate implements CursoDao {
                     sb.append("/admin");
                     sb.append("/").append(cursoId);
                     sb.append("/").append(contenido.getId());
+                    sb.append("/").append(sb2.toString());
                     sb.append("/story.html");
                     sb.append("' style='width:100%;height:650px;'></iframe>");
                     contenido.setTexto(sb.toString());

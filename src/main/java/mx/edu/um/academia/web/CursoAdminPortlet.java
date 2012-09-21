@@ -554,6 +554,12 @@ public class CursoAdminPortlet extends BaseController {
         Contenido contenido = objetos.get(posicionObjeto).getContenidos().get(posicionContenido);
         sb.append("<div class='span9'>");
         ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+        StringBuilder sb2 = new StringBuilder();
+        sb2.append("admin");
+        sb2.append(cursoId);
+        sb2.append(contenido.getId());
+        sb2.append(Constantes.SALT);
+
         switch (contenido.getTipo()) {
             case Constantes.TEXTO:
                 if (contenido.getContenidoId() != null) {
@@ -583,6 +589,7 @@ public class CursoAdminPortlet extends BaseController {
                 sb.append("/admin");
                 sb.append("/").append(cursoId);
                 sb.append("/").append(contenido.getId());
+                sb.append("/").append(sb2.toString());
                 sb.append("/player.html");
                 sb.append("' style='width:100%;height:650px;'></iframe>");
                 break;
@@ -592,6 +599,7 @@ public class CursoAdminPortlet extends BaseController {
                 sb.append("/admin");
                 sb.append("/").append(cursoId);
                 sb.append("/").append(contenido.getId());
+                sb.append("/").append(sb2.toString());
                 sb.append("/story.html");
                 sb.append("' style='width:100%;height:650px;'></iframe>");
         }
