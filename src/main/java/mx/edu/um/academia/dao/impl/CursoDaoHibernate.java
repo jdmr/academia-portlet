@@ -441,12 +441,12 @@ public class CursoDaoHibernate implements CursoDao {
                     activo = true;
                     alumnoContenido.setIniciado(fecha);
                     currentSession().update(alumnoContenido);
-                    
+
                     if (alumnoObjeto.getIniciado() == null) {
                         alumnoObjeto.setIniciado(fecha);
                         currentSession().update(alumnoObjeto);
                     }
-                    
+
                     currentSession().flush();
                     bandera = false;
                     noAsignado = false;
@@ -482,12 +482,12 @@ public class CursoDaoHibernate implements CursoDao {
                         activo = true;
                         alumnoContenido.setIniciado(fecha);
                         currentSession().update(alumnoContenido);
-                        
+
                         if (alumnoObjeto.getIniciado() == null) {
                             alumnoObjeto.setIniciado(fecha);
                             currentSession().update(alumnoObjeto);
                         }
-                        
+
                         currentSession().flush();
                         bandera = false;
                     }
@@ -543,12 +543,12 @@ public class CursoDaoHibernate implements CursoDao {
                     if (alumnoContenido.getIniciado() == null) {
                         alumnoContenido.setIniciado(fecha);
                         currentSession().update(alumnoContenido);
-                        
+
                         if (alumnoObjeto.getIniciado() == null) {
                             alumnoObjeto.setIniciado(fecha);
                             currentSession().update(alumnoObjeto);
                         }
-                        
+
                         currentSession().flush();
                     }
                 }
@@ -727,12 +727,12 @@ public class CursoDaoHibernate implements CursoDao {
                             alumnoCurso.setEstatus(Constantes.CONCLUIDO);
                             alumnoCurso.setFechaConclusion(fecha);
                             currentSession().update(alumnoCurso);
-                            
+
                             AlumnoObjetoAprendizajePK pk3 = new AlumnoObjetoAprendizajePK(alumno, objeto);
                             AlumnoObjetoAprendizaje alumnoObjeto = (AlumnoObjetoAprendizaje) currentSession().get(AlumnoObjetoAprendizaje.class, pk3);
                             alumnoObjeto.setTerminado(fecha);
                             currentSession().update(alumnoObjeto);
-                            
+
                             currentSession().flush();
                         }
                         currentSession().update(alumnoContenido);
@@ -821,20 +821,22 @@ public class CursoDaoHibernate implements CursoDao {
                 case Constantes.ARTICULATE:
                     StringBuilder sb = new StringBuilder();
                     sb.append("<iframe src='/academia-portlet");
-                    sb.append("/contenido/player.html?contenidoId=").append(contenido.getId());
-                    sb.append("&cursoId=").append(cursoId);
-                    sb.append("&userId=").append(themeDisplay.getUserId());
-                    sb.append("&admin=true");
+                    sb.append("/conteni2");
+                    sb.append("/admin");
+                    sb.append("/").append(cursoId);
+                    sb.append("/").append(contenido.getId());
+                    sb.append("/player.html");
                     sb.append("' style='width:100%;height:600px;'></iframe>");
                     contenido.setTexto(sb.toString());
                     break;
                 case Constantes.STORYLINE:
                     sb = new StringBuilder();
                     sb.append("<iframe src='/academia-portlet");
-                    sb.append("/contenido/story.html?contenidoId=").append(contenido.getId());
-                    sb.append("&cursoId=").append(cursoId);
-                    sb.append("&userId=").append(themeDisplay.getUserId());
-                    sb.append("&admin=true");
+                    sb.append("/conteni2");
+                    sb.append("/admin");
+                    sb.append("/").append(cursoId);
+                    sb.append("/").append(contenido.getId());
+                    sb.append("/story.html");
                     sb.append("' style='width:100%;height:650px;'></iframe>");
                     contenido.setTexto(sb.toString());
                     break;
@@ -1237,14 +1239,14 @@ public class CursoDaoHibernate implements CursoDao {
         Salon salon = (Salon) currentSession().get(Salon.class, salonId);
         return salon;
     }
-    
+
     @Override
     public Salon actualizaSalon(Salon salon) {
         log.debug("Actualizando el salon {}", salon);
         currentSession().update(salon);
         return salon;
     }
-    
+
     @Override
     public void eliminaSalon(Salon salon) {
         log.debug("Eliminando salon {}", salon);
@@ -1259,7 +1261,7 @@ public class CursoDaoHibernate implements CursoDao {
         currentSession().update(curso);
         currentSession().flush();
         if (objetos != null) {
-            for(Long objetoId : objetos) {
+            for (Long objetoId : objetos) {
                 curso.getObjetos().add((ObjetoAprendizaje) currentSession().load(ObjetoAprendizaje.class, objetoId));
             }
             currentSession().update(curso);
@@ -1272,11 +1274,11 @@ public class CursoDaoHibernate implements CursoDao {
         Query query = currentSession().createQuery("select comunidadId from Curso where id = :cursoId");
         query.setLong("cursoId", cursoId);
         Long comunidadId = (Long) query.uniqueResult();
-        
+
         query = currentSession().createQuery("select o.id from Curso c inner join c.objetos as o where c.id = :cursoId");
         query.setLong("cursoId", cursoId);
         List<Long> ids = query.list();
-        
+
         Criteria criteria = currentSession().createCriteria(ObjetoAprendizaje.class);
         criteria.add(Restrictions.eq("comunidadId", comunidadId));
         if (ids != null && ids.size() > 0) {

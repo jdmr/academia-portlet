@@ -579,18 +579,20 @@ public class CursoAdminPortlet extends BaseController {
                 break;
             case Constantes.ARTICULATE:
                 sb.append("<iframe src='").append(request.getContextPath());
-                sb.append("/contenido/player.html?contenidoId=").append(contenido.getId());
-                sb.append("&cursoId=").append(cursoId);
-                sb.append("&userId=").append(themeDisplay.getUserId());
-                sb.append("&admin=true");
+                sb.append("/conteni2");
+                sb.append("/admin");
+                sb.append("/").append(cursoId);
+                sb.append("/").append(contenido.getId());
+                sb.append("/player.html");
                 sb.append("' style='width:100%;height:650px;'></iframe>");
                 break;
             case Constantes.STORYLINE:
                 sb.append("<iframe src='").append(request.getContextPath());
-                sb.append("/contenido/story.html?contenidoId=").append(contenido.getId());
-                sb.append("&cursoId=").append(cursoId);
-                sb.append("&userId=").append(themeDisplay.getUserId());
-                sb.append("&admin=true");
+                sb.append("/conteni2");
+                sb.append("/admin");
+                sb.append("/").append(cursoId);
+                sb.append("/").append(contenido.getId());
+                sb.append("/story.html");
                 sb.append("' style='width:100%;height:650px;'></iframe>");
         }
         sb.append("</div>");
@@ -938,7 +940,7 @@ public class CursoAdminPortlet extends BaseController {
         JSONArray results = JSONFactoryUtil.createJSONArray();
 
         List<ObjetoAprendizaje> objetos = cursoDao.buscaObjetos(id, filtro);
-        for (ObjetoAprendizaje objeto: objetos) {
+        for (ObjetoAprendizaje objeto : objetos) {
             JSONObject listEntry = JSONFactoryUtil.createJSONObject();
 
             listEntry.put("id", objeto.getId());

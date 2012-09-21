@@ -164,14 +164,20 @@ public class ObjetoAprendizajePortlet extends BaseController {
                 sb.append(request.getContextPath());
                 switch (contenido.getTipo()) {
                     case Constantes.ARTICULATE:
-                        sb.append("/contenido/player.html?contenidoId=").append(contenido.getId());
-                        sb.append("&admin=true");
+                        sb.append("/conteni2");
+                        sb.append("/admin");
+                        sb.append("/0");
+                        sb.append("/").append(contenido.getId());
+                        sb.append("/player.html");
                         log.debug("vistaPrevia: {}", sb.toString());
                         modelo.addAttribute("vistaPrevia", sb.toString());
                         break cicloContenidos;
                     case Constantes.STORYLINE:
-                        sb.append("/contenido/story.html?contenidoId=").append(contenido.getId());
-                        sb.append("&admin=true");
+                        sb.append("/conteni2");
+                        sb.append("/admin");
+                        sb.append("/0");
+                        sb.append("/").append(contenido.getId());
+                        sb.append("/story.html");
                         log.debug("vistaPrevia: {}", sb.toString());
                         modelo.addAttribute("vistaPrevia", sb.toString());
                         break cicloContenidos;
@@ -228,7 +234,7 @@ public class ObjetoAprendizajePortlet extends BaseController {
     @RequestMapping(params = "action=agregaContenido")
     public void agregaContenido(ActionRequest request, ActionResponse response, @RequestParam Long objetoId, @RequestParam(required = false) Long[] contenidos) {
         log.debug("Agregando contenido {} a {}", contenidos, objetoId);
-        for(String key : request.getParameterMap().keySet()) {
+        for (String key : request.getParameterMap().keySet()) {
             log.debug("{} : {}", key, request.getParameterMap().get(key));
         }
 
@@ -239,41 +245,41 @@ public class ObjetoAprendizajePortlet extends BaseController {
     }
 
     @ResourceMapping(value = "actualizaContenidos")
-    public void actualizaContenidos(ResourceRequest request, ResourceResponse response, @RequestParam Long id, @RequestParam(value="contenidos[]", required = false) String[] contenidos) {
+    public void actualizaContenidos(ResourceRequest request, ResourceResponse response, @RequestParam Long id, @RequestParam(value = "contenidos[]", required = false) String[] contenidos) {
         log.debug("Actualizando contenidos {} para el objeto {}", contenidos, id);
 
         List<Long> contenidosArray = new ArrayList<>();
         int j = 0;
-        for(int i = 0;i<contenidos.length;i++) {
+        for (int i = 0; i < contenidos.length; i++) {
             log.debug("Contenido: {}", contenidos[i]);
             String[] x = StringUtils.split(contenidos[i], ",");
             if (x != null) {
-                for(String y : x) {
+                for (String y : x) {
                     contenidosArray.add(new Long(y));
                 }
             } else {
                 contenidosArray.add(new Long(contenidos[i]));
             }
         }
-        
+
         objetoAprendizajeDao.agregaContenido(id, contenidosArray.toArray(new Long[0]));
     }
-    
+
     @ResourceMapping(value = "buscaContenidos")
-    public void buscaContenidos(ResourceRequest request, ResourceResponse response, @RequestParam Long id, @RequestParam(value="term", required=false) String filtro) throws IOException {
+    public void buscaContenidos(ResourceRequest request, ResourceResponse response, @RequestParam Long id, @RequestParam(value = "term", required = false) String filtro) throws IOException {
         log.debug("Busca contenidos para objeto {} con filtro {}", id, filtro);
         JSONArray results = JSONFactoryUtil.createJSONArray();
-        
+
         List<Contenido> contenidos = objetoAprendizajeDao.buscaContenidos(id, filtro);
-        for(Contenido contenido : contenidos) {
+        for (Contenido contenido : contenidos) {
             JSONObject listEntry = JSONFactoryUtil.createJSONObject();
 
             listEntry.put("id", contenido.getId());
-            listEntry.put("value", contenido.getCodigo() + " | "+ contenido.getNombre());
+            listEntry.put("value", contenido.getCodigo() + " | " + contenido.getNombre());
 
             results.put(listEntry);
         }
-        
+
         PrintWriter writer = response.getWriter();
         writer.println(results.toString());
     }
