@@ -380,7 +380,10 @@ public class MisCursosPortlet extends BaseController {
                 Map<String, Object> params = new HashMap<>();
                 params.put("alumno", usuario.getFullName());
                 params.put("curso", curso.getNombre());
-                params.put("fecha", sdf.format(alumnoCurso.getFechaConclusion()));
+                params.put("codigo", curso.getCodigo());
+                params.put("horas", curso.getHoras());
+                String fechaString = StringUtils.capitalize(sdf.format(alumnoCurso.getFechaConclusion()));
+                params.put("fecha", fechaString);
                 log.debug("PARAMS: {}", params);
                 JasperPrint jasperPrint = JasperFillManager.fillReport(jr, params, new JREmptyDataSource());
                 byte[] archivo = JasperExportManager.exportReportToPdf(jasperPrint);
