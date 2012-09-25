@@ -87,6 +87,7 @@ public class Curso implements Serializable {
     @Column(name="correo_id")
     private Long correoId;
     private Boolean usarServicioPostal = false;
+    private Integer horas = 10;
 
     public Curso() {
     }
@@ -375,6 +376,20 @@ public class Curso implements Serializable {
      */
     public void setUsarServicioPostal(Boolean usarServicioPostal) {
         this.usarServicioPostal = usarServicioPostal;
+    }
+
+    /**
+     * @return the horas
+     */
+    public Integer getHoras() {
+        return horas;
+    }
+
+    /**
+     * @param horas the horas to set
+     */
+    public void setHoras(Integer horas) {
+        this.horas = horas;
     }
 
     @Override

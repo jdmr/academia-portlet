@@ -1150,7 +1150,8 @@ public class CursoDaoHibernate implements CursoDao {
         Query query = currentSession().createQuery("select r from Reporte r where r.curso.id = :cursoId");
         query.setLong("cursoId", cursoId);
         Reporte reporte = (Reporte) query.uniqueResult();
-        return reporte.getReporte();
+        JasperReport jr = reporte.getReporte();
+        return jr;
     }
 
     @Override

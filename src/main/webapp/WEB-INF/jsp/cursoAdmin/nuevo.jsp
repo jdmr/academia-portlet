@@ -55,7 +55,7 @@
         <div class="control-group">
             <label for="dias"><s:message code="dias" /></label>
             <form:input path="dias" type="number" min="0" step="1" />
-            <form:errors cssClass="errors" path="nombre" cssStyle="color:red;" />
+            <form:errors cssClass="errors" path="dias" cssStyle="color:red;" />
         </div>
         <div class="control-group">
             <label for="correo"><s:message code="correo" /></label>
@@ -73,6 +73,11 @@
                 <s:message code="usarServicioPostal" />
                 <form:errors cssClass="errors" path="usarServicioPostal" cssStyle="color:red;" />
             </label>
+        </div>
+        <div class="control-group">
+            <label for="horas"><s:message code="horas" /></label>
+            <form:input path="horas" type="number" min="0" step="1" />
+            <form:errors cssClass="errors" path="horas" cssStyle="color:red;" />
         </div>
 
         <div>

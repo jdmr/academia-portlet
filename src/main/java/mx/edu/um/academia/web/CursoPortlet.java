@@ -579,7 +579,7 @@ public class CursoPortlet extends BaseController {
         PortletCurso portletCurso = cursoDao.obtienePortlet(PortalUtil.getPortletId(request));
         if (portletCurso != null) {
             ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
-            SimpleDateFormat sdf = new SimpleDateFormat("EEEE dd MMMM yyyy", themeDisplay.getLocale());
+            SimpleDateFormat sdf = new SimpleDateFormat("MMMM dd, yyyy", themeDisplay.getLocale());
             try {
                 Curso curso = portletCurso.getCurso();
                 if (curso != null) {
@@ -591,7 +591,10 @@ public class CursoPortlet extends BaseController {
                         Map<String, Object> params = new HashMap<>();
                         params.put("alumno", usuario.getFullName());
                         params.put("curso", curso.getNombre());
-                        params.put("fecha", sdf.format(alumnoCurso.getFechaConclusion()));
+                        params.put("codigo", curso.getCodigo());
+                        params.put("horas", curso.getHoras());
+                        String fechaString = StringUtils.capitalize(sdf.format(alumnoCurso.getFechaConclusion()));
+                        params.put("fecha", fechaString);
                         log.debug("PARAMS: {}", params);
                         JasperPrint jasperPrint = JasperFillManager.fillReport(jr, params, new JREmptyDataSource());
                         byte[] archivo = JasperExportManager.exportReportToPdf(jasperPrint);

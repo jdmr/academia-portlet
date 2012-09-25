@@ -99,8 +99,8 @@
 </c:if>
 <div class="row-fluid">
     <div class="span6">
-        <h5><s:message code="creador" /></h5>
-        <h3>${curso.creador}</h3>
+        <h5><s:message code="horas" /></h5>
+        <h3>${curso.horas}</h3>
     </div>
     <div class="span6">
         <h5><s:message code="dias" /></h5>
@@ -133,6 +133,10 @@
             <input type="checkbox" disabled="disabled" <c:if test="${curso.usarServicioPostal}">checked="checked"</c:if> style="margin-top: 14px;" />
             <h3><s:message code="usarServicioPostal" /></h3>
         </label>
+    </div>
+    <div class="span6">
+        <h5><s:message code="creador" /></h5>
+        <h3>${curso.creador}</h3>
     </div>
 </div>
 <div class="row-fluid">

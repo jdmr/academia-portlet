@@ -180,17 +180,14 @@ public class Reporte implements Serializable {
     public JasperReport getReporte() {
         JasperReport jr = null;
         try {
-            jr = (JasperReport) JRLoader.loadObject(new ByteArrayInputStream(compilado));
+            if (compilado != null) {
+                jr = (JasperReport) JRLoader.loadObject(new ByteArrayInputStream(compilado));
+            } else {
+                return null;
+            }
         } catch (JRException e) {
             log.error(" No se pudo transformar a reporte", e);
         }
-//        try (ByteArrayInputStream bais = new ByteArrayInputStream(compilado)) {
-//            try (ObjectInputStream in = new ObjectInputStream(bais)) {
-//                jr = (JasperReport) in.readObject();
-//            }
-//        } catch (IOException | ClassNotFoundException e) {
-//            log.error("No se pudo transformar a reporte", e);
-//        }
         return jr;
     }
 
