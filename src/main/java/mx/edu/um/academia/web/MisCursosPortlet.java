@@ -243,6 +243,7 @@ public class MisCursosPortlet extends BaseController {
                                     model.addAttribute("preguntas", contenido.getExamen().getOtrasPreguntas());
                                     break cicloObjetos;
                                 case Constantes.ARTICULATE:
+                                case Constantes.STORYLINE:
                                     model.addAttribute("texto", contenido.getTexto());
                                     break cicloObjetos;
                             }
@@ -332,6 +333,7 @@ public class MisCursosPortlet extends BaseController {
                                         model.addAttribute("preguntas", contenido.getExamen().getOtrasPreguntas());
                                         break cicloObjetos;
                                     case Constantes.ARTICULATE:
+                                    case Constantes.STORYLINE:
                                         model.addAttribute("texto", contenido.getTexto());
                                         break cicloObjetos;
                                 }
