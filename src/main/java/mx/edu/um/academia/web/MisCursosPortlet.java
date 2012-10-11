@@ -116,6 +116,7 @@ public class MisCursosPortlet extends BaseController {
                     if (StringUtils.startsWith(autorizacion, "\"Y")) {
                         String comentario = rs.getString("comentario");
                         String[] tokens = StringUtils.splitByWholeSeparator(comentario, ", ");
+                        log.debug("Comentario {}, TOKENS: {}", comentario, tokens);
                         String codigo = tokens[4];
                         Curso curso = mapa.get(codigo);
                         if (curso == null) {
