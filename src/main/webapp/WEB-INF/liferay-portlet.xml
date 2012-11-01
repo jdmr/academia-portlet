@@ -18,6 +18,12 @@
         <header-portlet-javascript>/js/cursos_admin.js</header-portlet-javascript>
     </portlet>
     <portlet>
+        <portlet-name>Contenido</portlet-name>
+        <instanceable>false</instanceable>
+        <header-portlet-css>/css/contenido.css</header-portlet-css>
+        <header-portlet-javascript>/js/contenido.js</header-portlet-javascript>
+    </portlet>
+    <portlet>
         <portlet-name>Respuestas</portlet-name>
         <instanceable>false</instanceable>
         <header-portlet-css>/css/respuestas.css</header-portlet-css>
