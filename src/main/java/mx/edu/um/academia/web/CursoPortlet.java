@@ -471,7 +471,8 @@ public class CursoPortlet extends BaseController {
         }
 
         Map<Long, String> comunidades = ComunidadUtil.obtieneComunidades(request);
-
+        log.debug("Comunidades: {}", comunidades);
+        
         List<Curso> cursos = cursoDao.todos(comunidades.keySet());
         model.addAttribute("cursos", cursos);
 

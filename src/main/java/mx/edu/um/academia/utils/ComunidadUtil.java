@@ -84,6 +84,9 @@ public class ComunidadUtil {
         for (Group group : comunidadesList) {
             log.debug("Group |{}|{}|{}|", new Object[]{group.getName(), group.getDescriptiveName(), group.getDescription()});
             comunidades.put(group.getGroupId(), group.getDescriptiveName());
+            if (group.getGroupId() == 10157l) {
+                comunidades.put(23461l, "wheatlanddrivingacademy.com");
+            }
         }
         return comunidades;
     }

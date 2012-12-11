@@ -1290,7 +1290,9 @@ public class CursoDaoHibernate implements CursoDao {
         List<Long> ids = query.list();
 
         Criteria criteria = currentSession().createCriteria(ObjetoAprendizaje.class);
-        criteria.add(Restrictions.eq("comunidadId", comunidadId));
+        if (comunidadId != 23461L) {
+            criteria.add(Restrictions.eq("comunidadId", comunidadId));
+        }
         if (ids != null && ids.size() > 0) {
             criteria.add(Restrictions.not(Restrictions.in("id", ids)));
         }
