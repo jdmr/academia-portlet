@@ -45,7 +45,7 @@
                     
                     <td>${contenido.objetoTerminado}</td>
 
-                    <td>${contenido.contenido}</td>
+                    <td>${contenido.contenidoNombre}</td>
 
                     <td>${contenido.contenidoIniciado}</td>
 
