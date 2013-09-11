@@ -480,7 +480,7 @@ public class CursoAdminPortlet extends BaseController {
 
     @RequestMapping(params = "action=alumnos")
     public String alumnos(RenderRequest request, RenderResponse response, Model modelo, @RequestParam Long cursoId) {
-        log.debug("List de alumnos del curso {}", cursoId);
+        log.debug("Lista de alumnos del curso {}", cursoId);
 
         Map<String, Object> params = new HashMap<>();
         params.put("cursoId", cursoId);
@@ -490,6 +490,19 @@ public class CursoAdminPortlet extends BaseController {
         modelo.addAllAttributes(params);
 
         return "cursoAdmin/alumnos";
+    }
+
+    @RequestMapping(params = "action=alumnoContenido")
+    public String alumnoContenido(RenderRequest request, RenderResponse response, Model modelo, @RequestParam Long cursoId, @RequestParam Long alumnoId) {
+        log.debug("Contenidos del alumno {} en el curso {}", alumnoId, cursoId);
+
+        List<Map> contenidos =  cursoDao.contenidos(alumnoId, cursoId);
+        Curso curso = cursoDao.obtiene(cursoId);
+
+        modelo.addAttribute("contenidos", contenidos);
+        modelo.addAttribute("curso", curso);
+
+        return "cursoAdmin/contenidos";
     }
 
     @RequestMapping(params = "action=todos")

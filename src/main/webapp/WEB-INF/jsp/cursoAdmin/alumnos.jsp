@@ -52,6 +52,11 @@
                     <portlet:param name="cursoId" value="${curso.id}" />
                     <portlet:param name="alumnoId" value="${alumnoCurso.alumno.id}" />
                 </portlet:actionURL>
+                <portlet:renderURL var="alumnoContenidoUrl" >
+                    <portlet:param name="action" value="alumnoContenido" />
+                    <portlet:param name="cursoId" value="${curso.id}" />
+                    <portlet:param name="alumnoId" value="${alumnoCurso.alumno.id}" />
+                </portlet:renderURL>
                 <tr>
 
                     <td>${alumnoCurso.alumno.usuario}</td>
@@ -66,7 +71,10 @@
 
                     <td style="text-align: right;"><fmt:formatNumber value="${alumnoCurso.saldo}" type="currency" currencySymbol="$" /></td>
                     
-                    <td><a href="${eliminaUrl}" class="btn btn-danger btn-mini"><i class="icon-remove icon-white"></i> <s:message code="baja" /></a></td>
+                    <td>
+                        <a href="${alumnoContenidoUrl}" class="btn btn-success btn-mini"><i class="icon-eye-open icon-white"></i></a>
+                        <a href="${eliminaUrl}" class="btn btn-danger btn-mini" onclick="return confirm('<s:message code="confirma.baja.alumno" />')"><i class="icon-remove icon-white"></i></a>
+                    </td>
                     
                 </tr>
             </c:forEach>

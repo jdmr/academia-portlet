@@ -114,4 +114,6 @@ public interface CursoDao {
     public void actualizaObjetos(Long cursoId, Long[] objetos);
 
     public List<ObjetoAprendizaje> buscaObjetos(Long cursoId, String filtro);
+    
+    public List<Map> contenidos(Long alumnoId, Long cursoId);
 }

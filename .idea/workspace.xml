@@ -2,18 +2,18 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/resources/messages_en.properties" afterPath="$PROJECT_DIR$/src/main/resources/messages_en.properties" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="academia-portlet.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375628174354" ignored="false" />
+    <file path="/Dummy.txt" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375711010627" ignored="false" />
     <file path="$PROJECT_DIR$/../main-slider/pom.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375461127486" ignored="false" />
     <file path="/pom.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375464776314" ignored="false" />
     <file path="$PROJECT_DIR$/../main-slider/src/main/webapp/WEB-INF/liferay-plugin-package.properties" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375458706187" ignored="false" />
     <file path="/liferay-plugin-package.properties" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375462311583" ignored="false" />
     <file path="/view.jsp" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375458821494" ignored="false" />
     <file path="$PROJECT_DIR$/../main-slider/src/main/webapp/view.jsp" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375458821494" ignored="false" />
-    <file path="/portlet.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375464042217" ignored="false" />
+    <file path="/portlet.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375659745201" ignored="false" />
     <file path="$PROJECT_DIR$/../main-slider/src/main/webapp/WEB-INF/portlet.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375459082485" ignored="false" />
     <file path="$PROJECT_DIR$/../main-slider/src/main/webapp/WEB-INF/liferay-display.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375459102348" ignored="false" />
     <file path="/liferay-display.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375462280900" ignored="false" />
@@ -41,13 +41,13 @@
     <file path="$PROJECT_DIR$/../swau-portlets/src/main/webapp/WEB-INF/liferay-display.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375462280900" ignored="false" />
     <file path="$PROJECT_DIR$/../swau-portlets/src/main/webapp/WEB-INF/liferay-plugin-package.properties" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375462311583" ignored="false" />
     <file path="$PROJECT_DIR$/../swau-portlets/src/main/webapp/WEB-INF/liferay-portlet.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375464490035" ignored="false" />
-    <file path="/liferay-portlet.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375464490035" ignored="false" />
+    <file path="/liferay-portlet.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375658210723" ignored="false" />
     <file path="$PROJECT_DIR$/../swau-portlets/src/main/webapp/WEB-INF/portlet.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375464705414" ignored="false" />
-    <file path="/web.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375464553777" ignored="false" />
+    <file path="/web.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375659435207" ignored="false" />
     <file path="$PROJECT_DIR$/../swau-portlets/src/main/resources/swau-portlets.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375462883547" ignored="false" />
     <file path="/swau-portlets.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375462820027" ignored="false" />
     <file path="$PROJECT_DIR$/../swau-portlets/src/main/resources/portlets/main-slider.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375463952951" ignored="false" />
-    <file path="$PROJECT_DIR$/../swau-portlets/.idea/copyright/MIT.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375463344864" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/copyright/MIT.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380320" ignored="false" />
     <file path="$PROJECT_DIR$/../swau-portlets/src/main/java/edu/swau/portlets/web/BaseController.java" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375463551242" ignored="false" />
     <file path="/BaseController.java" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375463448360" ignored="false" />
     <file path="$PROJECT_DIR$/../swau-portlets/src/main/java/edu/swau/portlets/web/MainSliderPortlet.java" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375463720906" ignored="false" />
@@ -57,6 +57,195 @@
     <file path="/mainSlider.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375464842349" ignored="false" />
     <file path="/examen.jsp" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375628513976" ignored="false" />
     <file path="/messages_en.properties" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375630299056" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__net_sf_jasperreports_jasperreports_4_7_0.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380028" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__org_apache_poi_poi_ooxml_3_7.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380028" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__org_springframework_spring_expression_3_1_2_RELEASE.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380029" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__ch_qos_logback_logback_classic_1_0_6.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380029" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__org_hibernate_hibernate_validator_4_3_0_Final.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380029" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__org_apache_xmlbeans_xmlbeans_2_3_0.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380029" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__org_springframework_spring_jdbc_3_1_2_RELEASE.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380029" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__org_springframework_spring_tx_3_1_2_RELEASE.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380029" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__javax_validation_validation_api_1_0_0_GA.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380029" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__org_javassist_javassist_3_15_0_GA.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380029" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__javax_mail_mail_1_4_5.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380029" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__org_springframework_spring_context_support_3_1_2_RELEASE.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380029" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__org_hamcrest_hamcrest_core_1_1.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380029" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__org_slf4j_slf4j_api_1_6_6.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380029" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__org_apache_poi_poi_3_7.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380029" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__org_springframework_spring_core_3_1_2_RELEASE.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380029" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__org_springframework_spring_web_3_1_2_RELEASE.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380029" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__taglibs_standard_1_1_2.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380029" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__ch_qos_logback_logback_core_1_0_6.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380029" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__org_springframework_spring_asm_3_1_2_RELEASE.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380029" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__com_liferay_portal_util_taglib_6_1_1.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380029" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__javax_servlet_servlet_api_2_5.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380029" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__antlr_antlr_2_7_7.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380029" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__org_codehaus_castor_castor_1_2.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380029" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__commons_fileupload_commons_fileupload_1_2_2.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380029" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__commons_codec_commons_codec_1_6.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380029" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__javax_servlet_jsp_jsp_api_2_2.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380029" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__org_springframework_spring_beans_3_1_2_RELEASE.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380029" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__org_hibernate_common_hibernate_commons_annotations_4_0_1_Final.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380029" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__com_liferay_portal_util_java_6_1_1.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380029" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__com_lowagie_itext_2_1_7.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380029" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__cglib_cglib_2_2_2.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380029" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__org_bouncycastle_bcprov_jdk14_1_38.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380029" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__org_springframework_spring_webmvc_3_1_2_RELEASE.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380029" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__org_springframework_spring_test_3_1_2_RELEASE.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380029" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__org_springframework_spring_orm_3_1_2_RELEASE.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380029" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__commons_beanutils_commons_beanutils_1_8_0.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380029" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__org_codehaus_jackson_jackson_mapper_asl_1_9_4.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380038" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__org_springframework_spring_context_3_1_2_RELEASE.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380038" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__commons_collections_commons_collections_2_1.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380038" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__postgresql_postgresql_9_1_901_1_jdbc4.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380038" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__junit_junit_4_10.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380038" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__xml_apis_xml_apis_1_3_02.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380038" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__javax_activation_activation_1_1.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380038" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__commons_logging_commons_logging_1_1_1.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380038" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__com_liferay_portal_util_bridges_6_1_1.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380038" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__stax_stax_api_1_0_1.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380038" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__dom4j_dom4j_1_6_1.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380038" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__org_springframework_spring_webmvc_portlet_3_1_2_RELEASE.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380038" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__jfree_jcommon_1_0_15.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380038" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__joda_time_joda_time_2_1.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380038" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__org_springframework_spring_aop_3_1_2_RELEASE.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380038" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__aopalliance_aopalliance_1_0.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380038" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__org_bouncycastle_bctsp_jdk14_1_38.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380038" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__javax_servlet_jstl_1_2.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380038" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__org_codehaus_jackson_jackson_core_asl_1_9_4.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380038" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__commons_io_commons_io_2_3.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380038" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__org_jboss_logging_jboss_logging_3_1_0_GA.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380038" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__org_hibernate_javax_persistence_hibernate_jpa_2_0_api_1_0_1_Final.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380038" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__eclipse_jdtcore_3_1_0.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380038" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__mysql_mysql_connector_java_5_1_20.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380038" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__org_hibernate_hibernate_ehcache_4_1_4_Final.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380038" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__org_bouncycastle_bcmail_jdk14_1_38.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380038" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__org_hibernate_hibernate_core_4_1_4_Final.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380038" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__org_slf4j_jcl_over_slf4j_1_6_6.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380038" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__net_sf_ehcache_ehcache_core_2_4_3.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380038" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__com_liferay_portal_portal_service_6_1_1.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380038" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__org_jboss_spec_javax_transaction_jboss_transaction_api_1_1_spec_1_0_0_Final.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380038" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__org_apache_geronimo_specs_geronimo_stax_api_1_0_spec_1_0.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380038" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/artifacts/swau_portlets_war.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380320" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__asm_asm_3_3_1.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380320" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/scopes/scope_settings.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380320" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__commons_digester_commons_digester_2_1.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380320" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__org_apache_poi_poi_ooxml_schemas_3_7.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380320" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__jfree_jfreechart_1_0_12.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380320" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__javax_portlet_portlet_api_2_0.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380320" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/inspectionProfiles/Project_Default.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380320" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/inspectionProfiles/profiles_settings.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380320" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/libraries/Maven__commons_lang_commons_lang_2_6.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380320" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/copyright/profiles_settings.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380320" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/workspace.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380320" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlets/.idea/artifacts/swau_portlets_war_exploded.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657380320" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/modules.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657504769" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/workspace.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375660117843" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/vcs.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657504769" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/uiDesigner.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657504769" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/encodings.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657504769" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/misc.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375658327213" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/copyright/profiles_settings.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657830381" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/compiler.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657504769" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/scopes/scope_settings.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657504769" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/src/main/webapp/WEB-INF/liferay-display.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375658086073" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/src/main/webapp/WEB-INF/portlet.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375659762041" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/src/main/webapp/WEB-INF/liferay-portlet.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375658210723" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/src/main/resources/logback.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375659829601" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/src/main/resources/ehcache.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657504769" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/src/main/resources/swau-portlets.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657504769" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/src/main/webapp/WEB-INF/web.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375659436885" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/src/main/resources/portlets/mainSlider.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657504769" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/pom.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657504769" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__mysql_mysql_connector_java_5_1_20.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513126" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__org_springframework_spring_context_3_1_2_RELEASE.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513126" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__org_jboss_spec_javax_transaction_jboss_transaction_api_1_1_spec_1_0_0_Final.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513126" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__commons_collections_commons_collections_2_1.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513126" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__org_apache_geronimo_specs_geronimo_stax_api_1_0_spec_1_0.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513126" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__org_hibernate_hibernate_validator_4_3_0_Final.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513126" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__org_springframework_spring_core_3_1_2_RELEASE.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513126" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__org_springframework_spring_orm_3_1_2_RELEASE.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513126" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__org_springframework_spring_asm_3_1_2_RELEASE.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513126" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__javax_servlet_jstl_1_2.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513126" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__ch_qos_logback_logback_core_1_0_6.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513126" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__antlr_antlr_2_7_7.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513126" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__org_javassist_javassist_3_15_0_GA.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513126" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__com_liferay_portal_util_taglib_6_1_1.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513126" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__org_hibernate_common_hibernate_commons_annotations_4_0_1_Final.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513126" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__commons_digester_commons_digester_2_1.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513126" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__org_springframework_spring_aop_3_1_2_RELEASE.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513126" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__org_apache_xmlbeans_xmlbeans_2_3_0.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513126" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__commons_io_commons_io_2_3.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513126" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__org_apache_poi_poi_ooxml_schemas_3_7.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513126" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__org_slf4j_slf4j_api_1_6_6.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513126" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__ch_qos_logback_logback_classic_1_0_6.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513126" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__commons_fileupload_commons_fileupload_1_2_2.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513126" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__org_apache_poi_poi_3_7.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513126" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__javax_servlet_jsp_jsp_api_2_2.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513126" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__commons_codec_commons_codec_1_6.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513126" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__net_sf_ehcache_ehcache_core_2_4_3.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513126" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__commons_beanutils_commons_beanutils_1_8_0.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513126" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__org_bouncycastle_bctsp_jdk14_1_38.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513126" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__com_lowagie_itext_2_1_7.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513126" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__javax_validation_validation_api_1_0_0_GA.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513126" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__javax_activation_activation_1_1.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513126" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__org_hibernate_hibernate_ehcache_4_1_4_Final.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513126" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__org_hamcrest_hamcrest_core_1_1.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__javax_mail_mail_1_4_5.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__org_springframework_spring_webmvc_3_1_2_RELEASE.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__postgresql_postgresql_9_1_901_1_jdbc4.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__dom4j_dom4j_1_6_1.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__org_hibernate_javax_persistence_hibernate_jpa_2_0_api_1_0_1_Final.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__net_sf_jasperreports_jasperreports_4_7_0.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__asm_asm_3_3_1.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__org_bouncycastle_bcprov_jdk14_1_38.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__org_springframework_spring_jdbc_3_1_2_RELEASE.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__eclipse_jdtcore_3_1_0.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__org_springframework_spring_beans_3_1_2_RELEASE.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__org_slf4j_jcl_over_slf4j_1_6_6.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__org_codehaus_jackson_jackson_mapper_asl_1_9_4.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__cglib_cglib_2_2_2.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__taglibs_standard_1_1_2.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__jfree_jfreechart_1_0_12.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__org_springframework_spring_webmvc_portlet_3_1_2_RELEASE.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__org_springframework_spring_web_3_1_2_RELEASE.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__javax_servlet_servlet_api_2_5.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__joda_time_joda_time_2_1.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__org_springframework_spring_tx_3_1_2_RELEASE.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__jfree_jcommon_1_0_15.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__org_codehaus_castor_castor_1_2.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__com_liferay_portal_util_bridges_6_1_1.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__org_springframework_spring_test_3_1_2_RELEASE.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__xml_apis_xml_apis_1_3_02.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__org_springframework_spring_context_support_3_1_2_RELEASE.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__com_liferay_portal_portal_service_6_1_1.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__com_liferay_portal_util_java_6_1_1.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__org_springframework_spring_expression_3_1_2_RELEASE.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__org_bouncycastle_bcmail_jdk14_1_38.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__stax_stax_api_1_0_1.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__org_jboss_logging_jboss_logging_3_1_0_GA.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__javax_portlet_portlet_api_2_0.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__commons_lang_commons_lang_2_6.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__org_codehaus_jackson_jackson_core_asl_1_9_4.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/artifacts/swau_portlet_war_exploded.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/artifacts/swau_portlet_war.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513136" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__junit_junit_4_10.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513137" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__org_hibernate_hibernate_core_4_1_4_Final.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513137" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__org_apache_poi_poi_ooxml_3_7.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513137" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__aopalliance_aopalliance_1_0.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513137" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/libraries/Maven__commons_logging_commons_logging_1_1_1.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657513137" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/dictionaries/jdmr.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657554157" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/inspectionProfiles/Project_Default.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657554157" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/inspectionProfiles/profiles_settings.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657554157" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/.idea/copyright/MIT.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657718424" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/src/main/resources/portlets/slider.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375660115061" ignored="false" />
+    <file path="/slider.xml" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375660115061" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/src/main/resources/portlets/slider.properties" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375657902796" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/src/main/webapp/less/slider.less" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375658409768" ignored="false" />
+    <file path="/slider.less" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375658255201" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/src/main/webapp/js/slider.js" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375658281939" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/src/main/java/edu/swau/portlets/web/SliderPortlet.java" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375660057184" ignored="false" />
+    <file path="$PROJECT_DIR$/../swau-portlet/src/main/webapp/css/slider.css" changelist="dc2d1e15-bf68-47ae-ac42-a41aa46b413c" time="1375658542310" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -120,7 +309,7 @@
       <file leaf-file-name="CursoPortlet.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/mx/edu/um/academia/web/CursoPortlet.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="360" column="55" selection-start="20729" selection-end="20750" vertical-scroll-proportion="-15.884615">
+            <state line="360" column="55" selection-start="20729" selection-end="20750" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -129,7 +318,7 @@
       <file leaf-file-name="examen.jsp" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/jsp/curso/examen.jsp">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="19" column="52" selection-start="875" selection-end="875" vertical-scroll-proportion="-11.875">
+            <state line="19" column="52" selection-start="875" selection-end="875" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -137,25 +326,25 @@
       </file>
       <file leaf-file-name="messages_en.properties" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/resources/messages_en.properties">
-          <provider editor-type-id="ResourceBundle">
-            <state />
-          </provider>
           <provider selected="true" editor-type-id="text-editor">
-            <state line="194" column="72" selection-start="5855" selection-end="5855" vertical-scroll-proportion="0.9423077">
+            <state line="194" column="72" selection-start="5855" selection-end="5855" vertical-scroll-proportion="0.2413793">
               <folding />
             </state>
+          </provider>
+          <provider editor-type-id="ResourceBundle">
+            <state />
           </provider>
         </entry>
       </file>
       <file leaf-file-name="messages.properties" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/resources/messages.properties">
-          <provider editor-type-id="ResourceBundle">
-            <state />
-          </provider>
           <provider selected="true" editor-type-id="text-editor">
-            <state line="182" column="15" selection-start="6095" selection-end="6105" vertical-scroll-proportion="-3.0943396">
+            <state line="182" column="15" selection-start="6095" selection-end="6105" vertical-scroll-proportion="0.0">
               <folding />
             </state>
+          </provider>
+          <provider editor-type-id="ResourceBundle">
+            <state />
           </provider>
         </entry>
       </file>
@@ -577,7 +766,7 @@
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="MemberChooser.sorted" value="false" />
     <property name="options.lastSelected" value="Errors" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../swau-portlets" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../swau-portlet" />
     <property name="GoToClass.includeJavaFiles" value="false" />
     <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="GoToClass.toSaveIncludeLibraries" value="false" />
@@ -585,8 +774,8 @@
     <property name="MemberChooser.showClasses" value="true" />
     <property name="FullScreen" value="false" />
     <property name="GoToClass.includeLibraries" value="false" />
-    <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
+    <property name="options.splitter.details.proportions" value="0.2" />
   </component>
   <component name="RunManager">
     <configuration default="true" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" factoryName="Plugin">
@@ -601,6 +790,19 @@
       <option name="SHMEM_ADDRESS" value="javadebug" />
       <option name="HOST" value="localhost" />
       <option name="PORT" value="5005" />
+      <method />
+    </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <module name="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <option name="VM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
       <method />
     </configuration>
     <configuration default="true" type="TestNG" factoryName="TestNG">
@@ -629,19 +831,6 @@
       <envs />
       <properties />
       <listeners />
-      <method />
-    </configuration>
-    <configuration default="true" type="Applet" factoryName="Applet">
-      <module name="" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="HTML_FILE_NAME" />
-      <option name="HTML_USED" value="false" />
-      <option name="WIDTH" value="400" />
-      <option name="HEIGHT" value="300" />
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
-      <option name="VM_PARAMETERS" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
       <method />
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
@@ -714,7 +903,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="22" width="1680" height="1024" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -724,7 +913,7 @@
       <window_info id="JRebel Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.34955752" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.34878588" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="JRebel" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -735,7 +924,7 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.21481028" sideWeight="0.6504425" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.21481028" sideWeight="0.6512141" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -818,9 +1007,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/liferay-plugin-package.properties">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/liferay-portlet.xml">
@@ -831,9 +1018,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/web.xml">
-      <provider editor-type-id="com.intellij.javaee.module.view.web.viewlets.WebModuleGeneralEditorProvider">
-        <state />
-      </provider>
       <provider editor-type-id="com.intellij.javaee.module.view.web.viewlets.WebModuleAssemblyDescriptorReferencesProvider">
         <state />
       </provider>
@@ -841,6 +1025,9 @@
         <state line="74" column="0" selection-start="284" selection-end="2717" vertical-scroll-proportion="0.7748593">
           <folding />
         </state>
+      </provider>
+      <provider editor-type-id="com.intellij.javaee.module.view.web.viewlets.WebModuleGeneralEditorProvider">
+        <state />
       </provider>
       <provider editor-type-id="com.intellij.javaee.module.view.web.viewlets.WebModuleAssemblyDescriptorProvider">
         <state />
@@ -890,56 +1077,52 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/mx/edu/um/academia/web/CursoPortlet.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="360" column="55" selection-start="20729" selection-end="20750" vertical-scroll-proportion="-15.884615">
+        <state line="360" column="55" selection-start="20729" selection-end="20750" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/resources/mis_cursos.properties">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="5" vertical-scroll-proportion="0.0" />
+      </provider>
       <provider editor-type-id="ResourceBundle">
         <state />
-      </provider>
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="5" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/resources/cursos.properties">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
+      </provider>
       <provider editor-type-id="ResourceBundle">
         <state />
-      </provider>
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/jsp/curso/examen.jsp">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="19" column="52" selection-start="875" selection-end="875" vertical-scroll-proportion="-11.875">
+        <state line="19" column="52" selection-start="875" selection-end="875" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/resources/messages.properties">
-      <provider editor-type-id="ResourceBundle">
-        <state />
-      </provider>
       <provider selected="true" editor-type-id="text-editor">
-        <state line="182" column="15" selection-start="6095" selection-end="6105" vertical-scroll-proportion="-3.0943396">
+        <state line="182" column="15" selection-start="6095" selection-end="6105" vertical-scroll-proportion="0.0">
           <folding />
         </state>
+      </provider>
+      <provider editor-type-id="ResourceBundle">
+        <state />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/resources/messages_en.properties">
-      <provider editor-type-id="ResourceBundle">
-        <state />
-      </provider>
       <provider selected="true" editor-type-id="text-editor">
-        <state line="194" column="72" selection-start="5855" selection-end="5855" vertical-scroll-proportion="0.9423077">
+        <state line="194" column="72" selection-start="5855" selection-end="5855" vertical-scroll-proportion="0.2413793">
           <folding />
         </state>
+      </provider>
+      <provider editor-type-id="ResourceBundle">
+        <state />
       </provider>
     </entry>
   </component>

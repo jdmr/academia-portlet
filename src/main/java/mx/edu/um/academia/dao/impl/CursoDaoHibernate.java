@@ -45,9 +45,12 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.*;
+import static org.hibernate.type.StandardBasicTypes.STRING;
+import static org.hibernate.type.StandardBasicTypes.TIMESTAMP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -1302,5 +1305,31 @@ public class CursoDaoHibernate implements CursoDao {
         criteria.add(propiedades);
         criteria.addOrder(Order.asc("codigo"));
         return criteria.list();
+    }
+
+    @Override
+    public List<Map> contenidos(Long alumnoId, Long cursoId) {
+        String s = "SELECT o.nombre as objetoNombre, ao.iniciado as objetoIniciado, ao.terminado as objetoTerminado, c.nombre as contenidoNombre, ac.iniciado as contenidoIniciado, ac.terminado as contenidoTerminado "
+                + "FROM aca_cursos_aca_objetos co, aca_objetos_aca_contenidos oc, aca_alumno_objeto ao, aca_alumno_contenido ac, aca_objetos o, aca_contenidos c "
+                + "where co.cursos_id = :cursoId "
+                + "and co.objetos_id = oc.objetos_id "
+                + "and co.objetos_id = ao.objeto_id "
+                + "and ao.alumno_id = ac.alumno_id "
+                + "and oc.contenidos_id = ac.contenido_id "
+                + "and co.objetos_id = o.id "
+                + "and ac.contenido_id = c.id "
+                + "and ao.alumno_id = :alumnoId "
+                + "order by co.orden, oc.orden";
+        SQLQuery query = currentSession().createSQLQuery(s);
+        query.setLong("cursoId", cursoId);
+        query.setLong("alumnoId", alumnoId);
+        query.addScalar("objetoNombre", STRING);
+        query.addScalar("objetoIniciado", TIMESTAMP);
+        query.addScalar("objetoTerminado", TIMESTAMP);
+        query.addScalar("contenidoNombre", STRING);
+        query.addScalar("contenidoIniciado", TIMESTAMP);
+        query.addScalar("contenidoTerminado", TIMESTAMP);
+        query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+        return query.list();
     }
 }
