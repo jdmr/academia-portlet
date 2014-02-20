@@ -998,7 +998,7 @@ public class CursoDaoHibernate implements CursoDao {
                         log.debug("ENTRO 3");
                         respuestasLoop:
                         for (Respuesta correcta : pregunta.getCorrectas()) {
-                            log.debug("Sumando {} a {} para el total de puntos del examen", examenPregunta.getPuntos(), totalExamen);
+                            log.debug("Pregunta: {} | Examen: {} | Alumno: {}", new Object[] {examenPregunta.getPuntos(), totalExamen, totalUsuario});
                             totalExamen += examenPregunta.getPuntos();
                             for (String respuesta : respuestas) {
                                 if (respuesta.equals(correcta.getId().toString())) {
