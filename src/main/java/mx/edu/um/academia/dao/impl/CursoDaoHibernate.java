@@ -1048,6 +1048,7 @@ public class CursoDaoHibernate implements CursoDao {
                 AlumnoContenidoPK pk = new AlumnoContenidoPK(alumno, contenido);
                 AlumnoContenido alumnoContenido = (AlumnoContenido) currentSession().get(AlumnoContenido.class, pk);
                 if (alumnoContenido != null && alumnoContenido.getTerminado() != null) {
+                    alumnoContenido.setIniciado(null);
                     alumnoContenido.setTerminado(null);
                     currentSession().update(alumnoContenido);
                     currentSession().flush();
