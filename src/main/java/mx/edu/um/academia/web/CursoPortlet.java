@@ -471,8 +471,17 @@ public class CursoPortlet extends BaseController {
         }
 
         Map<Long, String> comunidades = ComunidadUtil.obtieneComunidades(request);
-        log.debug("Comunidades: {}", comunidades);
-        
+        boolean encontrado = false;
+        for(Long comunidadId : comunidades.keySet()) {
+            if (comunidadId == 22897) {
+                log.debug("Encontre la comunidad Homeschool");
+                encontrado = true;
+            }
+        }
+        if (encontrado) {
+            comunidades.put(new Long(24003), "Food for everyone");
+        }
+        log.debug("Buscando con Comunidades: {}", comunidades);
         List<Curso> cursos = cursoDao.todos(comunidades.keySet());
         model.addAttribute("cursos", cursos);
 
