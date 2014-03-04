@@ -89,4 +89,9 @@ public class AlumnoObjetoAprendizajePK implements Serializable {
         }
         return true;
     }
+
+    @Override
+    public String toString() {
+        return "AlumnoObjetoAprendizajePK{" + "alumno=" + alumno + ", objeto=" + objeto + '}';
+    }
 }

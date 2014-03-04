@@ -412,7 +412,7 @@ public class CursoPortlet extends BaseController {
                             for (Contenido contenido : objeto.getContenidos()) {
                                 log.debug("Contenido : {} : Activo : {}", contenido, contenido.getActivo());
                                 if (contenido.getActivo()) {
-                                    log.debug("Encontre el contenido activo {} y el texto {}", contenido, contenido.getTexto());
+                                    log.debug("Encontre el contenido activo {}", contenido);
                                     model.addAttribute("contenidoId", contenido.getId());
                                     model.addAttribute("objetoId", objeto.getId());
                                     if (contenido.getAlumno().getTerminado() != null) {

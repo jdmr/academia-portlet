@@ -89,4 +89,9 @@ public class AlumnoObjetoAprendizaje implements Serializable {
     public void setTerminado(Date terminado) {
         this.terminado = terminado;
     }
+
+    @Override
+    public String toString() {
+        return "AlumnoObjetoAprendizaje{" + "id=" + id + ", iniciado=" + iniciado + ", terminado=" + terminado + '}';
+    }
 }

@@ -925,8 +925,10 @@ public class CursoDaoHibernate implements CursoDao {
             }
             log.debug("Validando si ha sido iniciado {}", alumnoContenido.getIniciado());
             if (alumnoContenido.getIniciado() == null) {
+                
                 alumnoContenido.setIniciado(new Date());
                 currentSession().update(alumnoContenido);
+                log.debug("Flushing changes");
                 currentSession().flush();
             }
         } catch (PortalException | SystemException e) {
