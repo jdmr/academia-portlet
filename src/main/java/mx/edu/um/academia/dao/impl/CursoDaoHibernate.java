@@ -678,7 +678,9 @@ public class CursoDaoHibernate implements CursoDao {
                     currentSession().save(alumnoContenido);
                     currentSession().flush();
                 }
+                log.debug("Bandera: {} | Terminado: {} | Activo: ", new Object[] {bandera, alumnoContenido.getTerminado(), !activo});
                 if (bandera && alumnoContenido.getTerminado() == null && !activo) {
+                    log.debug("Iniciado: {}", alumnoContenido.getIniciado());
                     if (alumnoContenido.getIniciado() == null) {
                         log.debug("Asignando contenido {} {}", cursoId, alumnoContenido);
                         this.asignaContenido(cursoId, alumnoContenido, contenido, themeDisplay);
@@ -699,10 +701,12 @@ public class CursoDaoHibernate implements CursoDao {
                         currentSession().flush();
                         bandera = false;
                         noAsignado = false;
-//                    } else if (bandera) {
-//                        alumnoContenido.setTerminado(fecha);
-//                        currentSession().update(alumnoContenido);
-//                        currentSession().flush();
+                    } else if (!bandera) {
+                        
+                    } else if (bandera) {
+                        alumnoContenido.setTerminado(fecha);
+                        currentSession().update(alumnoContenido);
+                        currentSession().flush();
                     }
                 }
                 contenido.setAlumno(alumnoContenido);
