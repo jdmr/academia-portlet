@@ -702,8 +702,9 @@ public class CursoDaoHibernate implements CursoDao {
                         bandera = false;
                         noAsignado = false;
                     } else if (!bandera) {
-                        
+                        log.debug("La bandera esta apagada {}", bandera);
                     } else if (bandera) {
+                        log.debug("La bandera esta encendida {} y estoy actualizando {}", bandera, alumnoContenido);
                         alumnoContenido.setTerminado(fecha);
                         currentSession().update(alumnoContenido);
                         currentSession().flush();
