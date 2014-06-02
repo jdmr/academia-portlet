@@ -429,7 +429,8 @@ public class CursoDaoHibernate implements CursoDao {
                 currentSession().flush();
             }
             for (Contenido contenido : objeto.getContenidos()) {
-                log.debug("Cargando contenido {} del objeto {} : activo : {}", new Object[]{contenido, objeto, contenido.getActivo()});
+                log.debug("Cargando contenido {} del objeto {}", contenido, objeto);
+                log.debug("activo: {}", contenido.getActivo());
                 AlumnoContenidoPK pk = new AlumnoContenidoPK(alumno, contenido);
                 AlumnoContenido alumnoContenido = (AlumnoContenido) currentSession().get(AlumnoContenido.class, pk);
                 if (alumnoContenido == null) {
@@ -1005,6 +1006,7 @@ public class CursoDaoHibernate implements CursoDao {
                     log.debug("ENTRO 2");
                     String[] respuestas = params.get(pregunta.getId().toString());
                     List<String> correctas = new ArrayList<>();
+                    log.debug("Respuestas: {} | Correctas: {}", respuestas.length, pregunta.getCorrectas().size());
                     if (respuestas.length <= pregunta.getCorrectas().size()) {
                         log.debug("ENTRO 3");
                         respuestasLoop:
